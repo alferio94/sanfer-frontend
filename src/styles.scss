@@ -1,1 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
+@use "styles/themes/sanfer-theme.scss";
+
+/* Estilos globales de la aplicación */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Clase para alternar tema oscuro */
+.dark-theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}

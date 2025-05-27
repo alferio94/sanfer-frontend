@@ -1,0 +1,409 @@
+// Tema personalizado para Angular Material 19 basado en Sanfer
+// Compatible con Material Design 3 y la nueva sintaxis @use
+@use "@angular/material" as mat;
+
+// Incluir los core styles de Angular Material 19
+@include mat.core();
+
+// =============================================================================
+// TEMA LIGHT Y DARK USANDO LA NUEVA API DE ANGULAR MATERIAL 19
+// =============================================================================
+
+// Definir el tema usando la nueva API simplificada de Angular Material 19
+$sanfer-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$red-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: (
+      brand-family: 'Roboto, "Helvetica Neue", sans-serif',
+      plain-family: 'Roboto, "Helvetica Neue", sans-serif',
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
+// Tema oscuro
+$sanfer-dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$red-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: (
+      brand-family: 'Roboto, "Helvetica Neue", sans-serif',
+      plain-family: 'Roboto, "Helvetica Neue", sans-serif',
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
+// =============================================================================
+// APLICAR TEMAS
+// =============================================================================
+
+// Aplicar tema light por defecto
+html {
+  @include mat.all-component-themes($sanfer-theme);
+}
+
+// Tema dark con clase
+html.dark-theme {
+  @include mat.all-component-themes($sanfer-dark-theme);
+}
+
+// =============================================================================
+// PERSONALIZACIÓN CON CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+// =============================================================================
+:root {
+  // Colores principales de Sanfer - sobrescribimos los de Material
+  --mdc-theme-primary: #ef3b42;
+  --mdc-theme-on-primary: #ffffff;
+  --mdc-theme-secondary: #3fa4c5;
+  --mdc-theme-on-secondary: #ffffff;
+  --mdc-theme-tertiary: #81c181;
+  --mdc-theme-on-tertiary: #000000;
+  --mdc-theme-error: #ff9800;
+  --mdc-theme-on-error: #000000;
+
+  // Design tokens de Material 3 personalizados
+  --mat-sys-primary: #ef3b42;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #ffdad6;
+  --mat-sys-on-primary-container: #410002;
+
+  --mat-sys-secondary: #3fa4c5;
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-secondary-container: #c5e4ee;
+  --mat-sys-on-secondary-container: #001f29;
+
+  --mat-sys-tertiary: #81c181;
+  --mat-sys-on-tertiary: #000000;
+  --mat-sys-tertiary-container: #d9edd9;
+  --mat-sys-on-tertiary-container: #002111;
+
+  --mat-sys-surface: #ffffff;
+  --mat-sys-on-surface: #1c1b1b;
+  --mat-sys-surface-variant: #f5ddda;
+  --mat-sys-on-surface-variant: #534341;
+
+  --mat-sys-outline: #857371;
+  --mat-sys-outline-variant: #d8c2be;
+
+  --mat-sys-error: #ff9800;
+  --mat-sys-on-error: #000000;
+  --mat-sys-error-container: #ffe0b3;
+  --mat-sys-on-error-container: #2e1500;
+
+  // Variables personalizadas de Sanfer
+  --sanfer-primary: #ef3b42;
+  --sanfer-primary-rgb: 239, 59, 66;
+  --sanfer-accent: #3fa4c5;
+  --sanfer-accent-rgb: 63, 164, 197;
+  --sanfer-success: #81c181;
+  --sanfer-warning: #ff9800;
+  --sanfer-danger: #ef3b42;
+
+  // Gradientes
+  --sanfer-gradient-primary: linear-gradient(135deg, #ef3b42 0%, #ed353c 100%);
+  --sanfer-gradient-accent: linear-gradient(135deg, #3fa4c5 0%, #399cbf 100%);
+  --sanfer-gradient-hero: linear-gradient(135deg, #ef3b42 0%, #3fa4c5 100%);
+
+  // Sombras
+  --sanfer-shadow-sm: 0 2px 8px rgba(239, 59, 66, 0.1);
+  --sanfer-shadow-md: 0 4px 20px rgba(239, 59, 66, 0.15);
+  --sanfer-shadow-lg: 0 8px 30px rgba(239, 59, 66, 0.2);
+
+  // Bordes
+  --sanfer-border-radius: 12px;
+  --sanfer-border-radius-sm: 8px;
+  --sanfer-border-radius-lg: 16px;
+}
+
+// Tema oscuro - Design Tokens
+html.dark-theme {
+  --mdc-theme-primary: #ff6961;
+  --mdc-theme-on-primary: #680003;
+  --mdc-theme-secondary: #6ec1ff;
+  --mdc-theme-on-secondary: #003045;
+
+  --mat-sys-primary: #ff6961;
+  --mat-sys-on-primary: #680003;
+  --mat-sys-primary-container: #930006;
+  --mat-sys-on-primary-container: #ffdad6;
+
+  --mat-sys-secondary: #6ec1ff;
+  --mat-sys-on-secondary: #003045;
+  --mat-sys-secondary-container: #004862;
+  --mat-sys-on-secondary-container: #b8d8ff;
+
+  --mat-sys-surface: #1c1b1b;
+  --mat-sys-on-surface: #e6e1e1;
+  --mat-sys-surface-variant: #534341;
+  --mat-sys-on-surface-variant: #d8c2be;
+
+  --mat-sys-outline: #a08c89;
+  --mat-sys-outline-variant: #534341;
+}
+
+// =============================================================================
+// ESTILOS PERSONALIZADOS PARA SANFER
+// =============================================================================
+
+// Contenedores principales
+.sanfer-container {
+  background: linear-gradient(135deg, #fefefe 0%, #faf7f7 100%);
+  min-height: 100vh;
+}
+
+.dark-theme .sanfer-container {
+  background: linear-gradient(135deg, #1c1b1b 0%, #2d2d2d 100%);
+}
+
+// Tarjetas con estilo Sanfer
+.sanfer-card {
+  background: var(--mat-sys-surface);
+  border-radius: var(--sanfer-border-radius);
+  box-shadow: var(--sanfer-shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1.5rem;
+
+  &:hover {
+    box-shadow: var(--sanfer-shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+// Botones personalizados
+.sanfer-btn {
+  border-radius: 24px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  padding: 12px 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+
+  &.sanfer-btn-primary {
+    background: var(--sanfer-gradient-primary);
+    color: white;
+
+    &:hover {
+      box-shadow: var(--sanfer-shadow-md);
+      transform: translateY(-1px);
+    }
+  }
+
+  &.sanfer-btn-secondary {
+    background: var(--sanfer-gradient-accent);
+    color: white;
+
+    &:hover {
+      box-shadow: var(--sanfer-shadow-md);
+      transform: translateY(-1px);
+    }
+  }
+
+  &.sanfer-btn-outline {
+    background: transparent;
+    color: var(--sanfer-primary);
+    border: 2px solid var(--sanfer-primary);
+
+    &:hover {
+      background: var(--sanfer-primary);
+      color: white;
+    }
+  }
+}
+
+// Headers con gradiente
+.sanfer-header {
+  background: var(--sanfer-gradient-hero);
+  color: white;
+  padding: 1rem 2rem;
+
+  .mat-mdc-button,
+  .mat-button {
+    color: white;
+  }
+}
+
+// Hero section
+.sanfer-hero {
+  background: var(--sanfer-gradient-hero);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  h1 {
+    font-size: 3rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+}
+
+// =============================================================================
+// PERSONALIZACIÓN DE COMPONENTES MATERIAL
+// =============================================================================
+
+// Sobrescribir colores de botones Material
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: var(--sanfer-primary);
+  --mdc-protected-button-label-text-color: white;
+  border-radius: 24px;
+}
+
+.mat-mdc-button.mat-primary {
+  --mdc-text-button-label-text-color: var(--sanfer-primary);
+}
+
+.mat-mdc-fab.mat-primary {
+  --mdc-fab-container-color: var(--sanfer-primary);
+  --mdc-fab-icon-color: white;
+}
+
+// Form Fields
+.mat-mdc-form-field.mat-accent {
+  --mdc-outlined-text-field-focus-outline-color: var(--sanfer-accent);
+  --mdc-outlined-text-field-hover-outline-color: var(--sanfer-accent);
+}
+
+// Checkboxes
+.mat-mdc-checkbox.mat-accent {
+  --mdc-checkbox-selected-checkmark-color: white;
+  --mdc-checkbox-selected-focus-icon-color: var(--sanfer-accent);
+  --mdc-checkbox-selected-hover-icon-color: var(--sanfer-accent);
+  --mdc-checkbox-selected-icon-color: var(--sanfer-accent);
+  --mdc-checkbox-selected-pressed-icon-color: var(--sanfer-accent);
+}
+
+// Progress bars
+.mat-mdc-progress-bar.mat-primary {
+  --mdc-linear-progress-active-indicator-color: var(--sanfer-primary);
+}
+
+// Sliders
+.mat-mdc-slider.mat-primary {
+  --mdc-slider-active-track-color: var(--sanfer-primary);
+  --mdc-slider-handle-color: var(--sanfer-primary);
+}
+
+// Tabs
+.mat-mdc-tab-group.mat-primary {
+  --mdc-tab-indicator-active-indicator-color: var(--sanfer-primary);
+  --mat-tab-header-active-label-text-color: var(--sanfer-primary);
+}
+
+// Cards de Material
+.mat-mdc-card {
+  border-radius: var(--sanfer-border-radius);
+  box-shadow: var(--sanfer-shadow-sm);
+
+  &:hover {
+    box-shadow: var(--sanfer-shadow-md);
+  }
+}
+
+// =============================================================================
+// CLASES UTILITARIAS
+// =============================================================================
+.text-primary {
+  color: var(--sanfer-primary) !important;
+}
+.text-accent {
+  color: var(--sanfer-accent) !important;
+}
+.text-success {
+  color: var(--sanfer-success) !important;
+}
+.text-warning {
+  color: var(--sanfer-warning) !important;
+}
+.text-danger {
+  color: var(--sanfer-danger) !important;
+}
+
+.bg-primary {
+  background-color: var(--sanfer-primary) !important;
+}
+.bg-accent {
+  background-color: var(--sanfer-accent) !important;
+}
+.bg-gradient-primary {
+  background: var(--sanfer-gradient-primary) !important;
+}
+.bg-gradient-accent {
+  background: var(--sanfer-gradient-accent) !important;
+}
+.bg-gradient-hero {
+  background: var(--sanfer-gradient-hero) !important;
+}
+
+.border-primary {
+  border-color: var(--sanfer-primary) !important;
+}
+.border-accent {
+  border-color: var(--sanfer-accent) !important;
+}
+
+.shadow-sanfer-sm {
+  box-shadow: var(--sanfer-shadow-sm) !important;
+}
+.shadow-sanfer-md {
+  box-shadow: var(--sanfer-shadow-md) !important;
+}
+.shadow-sanfer-lg {
+  box-shadow: var(--sanfer-shadow-lg) !important;
+}
+
+.rounded-sanfer {
+  border-radius: var(--sanfer-border-radius) !important;
+}
+.rounded-sanfer-sm {
+  border-radius: var(--sanfer-border-radius-sm) !important;
+}
+.rounded-sanfer-lg {
+  border-radius: var(--sanfer-border-radius-lg) !important;
+}
+
+// Espaciado
+.p-sanfer {
+  padding: 1.5rem !important;
+}
+.m-sanfer {
+  margin: 1.5rem !important;
+}
+.mb-sanfer {
+  margin-bottom: 1.5rem !important;
+}
+.mt-sanfer {
+  margin-top: 1.5rem !important;
+}
+
+// Efectos de hover
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
