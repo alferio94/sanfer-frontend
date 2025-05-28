@@ -1,0 +1,181 @@
+<!-- src/app/features/events/components/event-card/event-card.component.html -->
+<mat-card
+  class="event-card sanfer-card hover-lift"
+  (click)="onCardClick($event)"
+>
+  <!-- Event Banner -->
+  <div class="event-banner" [class.no-banner]="!hasBanner()">
+    @if (hasBanner()) {
+      <img
+        [src]="event.banner"
+        [alt]="event.name"
+        class="banner-image"
+        (error)="onImageError($event)"
+        loading="lazy"
+      />
+    } @else {
+      <div class="default-banner">
+        <mat-icon>event</mat-icon>
+        <span class="banner-text">{{ event.name }}</span>
+      </div>
+    }
+
+    <!-- Status Badge -->
+    <div class="status-badge" [ngClass]="eventStatus().class">
+      <mat-icon class="status-icon">{{
+        eventStatus().class === "active"
+          ? "play_circle"
+          : eventStatus().class === "upcoming"
+            ? "schedule"
+            : "check_circle"
+      }}</mat-icon>
+      {{ eventStatus().label }}
+    </div>
+
+    <!-- Action Menu -->
+    <button
+      mat-icon-button
+      class="event-menu-button"
+      [matMenuTriggerFor]="eventMenu"
+      matTooltip="Opciones del evento"
+      aria-label="Opciones del evento"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+
+    <mat-menu #eventMenu="matMenu" class="event-menu">
+      <button mat-menu-item (click)="onViewDetailsClick()">
+        <mat-icon>visibility</mat-icon>
+        <span>Ver Detalles</span>
+      </button>
+      <button mat-menu-item (click)="onEditClick()">
+        <mat-icon>edit</mat-icon>
+        <span>Editar</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="onDeleteClick()" class="delete-option">
+        <mat-icon>delete</mat-icon>
+        <span>Eliminar</span>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Event Content -->
+  <mat-card-content class="event-content">
+    <!-- Event Header -->
+    <div class="event-header">
+      <h3 class="event-name" [matTooltip]="event.name">
+        {{ event.name }}
+      </h3>
+      <div class="event-dates">
+        <div class="date-info">
+          <mat-icon class="date-icon">calendar_today</mat-icon>
+          <span>{{ formattedDates() }}</span>
+        </div>
+        <div class="time-info">
+          <mat-icon class="time-icon">access_time</mat-icon>
+          <span>{{ formattedTimes() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Details -->
+    <div class="event-details">
+      @if (event.campus) {
+        <div class="detail-item">
+          <mat-icon class="detail-icon">location_on</mat-icon>
+          <span class="detail-text">{{ event.campus }}</span>
+        </div>
+      }
+
+      <div class="detail-item">
+        <mat-icon class="detail-icon">schedule</mat-icon>
+        <span class="detail-text">{{ eventDuration() }}</span>
+      </div>
+
+      @if (eventStats().users > 0) {
+        <div class="detail-item">
+          <mat-icon class="detail-icon">people</mat-icon>
+          <span class="detail-text"
+            >{{ eventStats().users }} participantes</span
+          >
+        </div>
+      }
+
+      @if (eventStats().groups > 0) {
+        <div class="detail-item">
+          <mat-icon class="detail-icon">groups</mat-icon>
+          <span class="detail-text">{{ eventStats().groups }} grupos</span>
+        </div>
+      }
+    </div>
+
+    <!-- Event Tags/Chips -->
+    <div class="event-tags">
+      @if (event.dressCode) {
+        <mat-chip class="dress-code-chip">
+          <mat-icon matChipAvatar>style</mat-icon>
+          {{ event.dressCode }}
+        </mat-chip>
+      }
+
+      @if (eventStats().activities > 0) {
+        <mat-chip class="agenda-chip">
+          <mat-icon matChipAvatar>event_available</mat-icon>
+          {{ eventStats().activities }} actividades
+        </mat-chip>
+      }
+
+      @if (eventStats().users === 0 && eventStats().groups === 0) {
+        <mat-chip class="setup-chip">
+          <mat-icon matChipAvatar>settings</mat-icon>
+          Configuración pendiente
+        </mat-chip>
+      }
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="event-progress">
+      <div class="progress-item">
+        <mat-icon [class.completed]="eventStats().groups > 0">groups</mat-icon>
+        <span>Grupos</span>
+      </div>
+      <div class="progress-item">
+        <mat-icon [class.completed]="eventStats().users > 0">people</mat-icon>
+        <span>Usuarios</span>
+      </div>
+      <div class="progress-item">
+        <mat-icon [class.completed]="eventStats().activities > 0"
+          >event_available</mat-icon
+        >
+        <span>Agenda</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <!-- Event Actions -->
+  <mat-card-actions class="event-actions">
+    <button
+      mat-button
+      color="primary"
+      (click)="onViewDetailsClick()"
+      class="primary-action"
+    >
+      <mat-icon>arrow_forward</mat-icon>
+      Gestionar Evento
+    </button>
+
+    <div class="action-spacer"></div>
+
+    <button mat-icon-button (click)="onEditClick()" matTooltip="Editar evento">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </mat-card-actions>
+
+  <!-- Debug info temporal -->
+  <!--
+  <div class="debug-card">
+    <small>ID: {{ debugInfo.eventId }} | Status: {{ debugInfo.status.label }}</small>
+  </div>
+  -->
+</mat-card>

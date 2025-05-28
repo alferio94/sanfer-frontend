@@ -1,1 +1,126 @@
-<p>header works!</p>
+<!-- src/app/shared/components/header/header.component.html -->
+<mat-toolbar [ngClass]="headerClasses()">
+  <div class="header-content">
+    <!-- Menu button for mobile -->
+    <button
+      *ngIf="isHandset"
+      mat-icon-button
+      (click)="onMenuToggle()"
+      class="menu-button"
+      aria-label="Toggle menu"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <!-- Logo and title -->
+    <div class="logo-section" (click)="navigateHome()">
+      <h1 class="app-title">Sanfer Eventos</h1>
+    </div>
+
+    <!-- Spacer -->
+    <div class="spacer"></div>
+
+    <!-- Actions -->
+    <div class="header-actions">
+      <!-- Notifications -->
+      <!-- <button -->
+      <!--   mat-icon-button -->
+      <!--   class="action-button" -->
+      <!--   [matMenuTriggerFor]="notificationsMenu" -->
+      <!--   aria-label="Notifications" -->
+      <!-- > -->
+      <!--   <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small"> -->
+      <!--     notifications -->
+      <!--   </mat-icon> -->
+      <!-- </button> -->
+
+      <!-- Theme toggle -->
+      <app-theme-toggle></app-theme-toggle>
+
+      <!-- User menu -->
+      <button
+        mat-icon-button
+        class="action-button user-button"
+        [matMenuTriggerFor]="userMenu"
+        aria-label="User menu"
+      >
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<!-- Notifications Menu -->
+<!-- <mat-menu #notificationsMenu="matMenu" class="notifications-menu"> -->
+<!--   <div class="menu-header"> -->
+<!--     <h3>Notificaciones</h3> -->
+<!--     <button mat-icon-button> -->
+<!--       <mat-icon>settings</mat-icon> -->
+<!--     </button> -->
+<!--   </div> -->
+<!--   <mat-divider></mat-divider> -->
+<!---->
+<!--   <button mat-menu-item class="notification-item"> -->
+<!--     <mat-icon color="primary">event</mat-icon> -->
+<!--     <div class="notification-content"> -->
+<!--       <p class="notification-title">Nuevo evento creado</p> -->
+<!--       <p class="notification-time">Hace 2 horas</p> -->
+<!--     </div> -->
+<!--   </button> -->
+<!---->
+<!--   <button mat-menu-item class="notification-item"> -->
+<!--     <mat-icon color="accent">group</mat-icon> -->
+<!--     <div class="notification-content"> -->
+<!--       <p class="notification-title">Usuarios asignados</p> -->
+<!--       <p class="notification-time">Hace 1 día</p> -->
+<!--     </div> -->
+<!--   </button> -->
+<!---->
+<!--   <button mat-menu-item class="notification-item"> -->
+<!--     <mat-icon color="warn">schedule</mat-icon> -->
+<!--     <div class="notification-content"> -->
+<!--       <p class="notification-title">Evento próximo</p> -->
+<!--       <p class="notification-time">Hace 2 días</p> -->
+<!--     </div> -->
+<!--   </button> -->
+<!---->
+<!--   <mat-divider></mat-divider> -->
+<!--   <button mat-menu-item class="view-all"> -->
+<!--     <mat-icon>visibility</mat-icon> -->
+<!--     Ver todas las notificaciones -->
+<!--   </button> -->
+<!-- </mat-menu> -->
+<!---->
+<!-- User Menu -->
+<mat-menu #userMenu="matMenu" class="user-menu">
+  <div class="user-info">
+    <mat-icon class="user-avatar">account_circle</mat-icon>
+    <div>
+      <p class="user-name">Usuario Admin</p>
+      <p class="user-email">admin&#64;sanfer.com.mx</p>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+
+  <button mat-menu-item>
+    <mat-icon>person</mat-icon>
+    Mi Perfil
+  </button>
+
+  <button mat-menu-item>
+    <mat-icon>settings</mat-icon>
+    Configuración
+  </button>
+
+  <button mat-menu-item>
+    <mat-icon>help</mat-icon>
+    Ayuda
+  </button>
+
+  <mat-divider></mat-divider>
+
+  <button mat-menu-item class="logout-item">
+    <mat-icon>logout</mat-icon>
+    Cerrar Sesión
+  </button>
+</mat-menu>

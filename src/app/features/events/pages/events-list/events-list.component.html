@@ -1,1 +1,125 @@
-<p>events-list works!</p>
+<!-- src/app/features/events/pages/events-list/events-list.component.html -->
+<div class="events-list-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">Eventos Activos</h1>
+        <p class="page-subtitle">Gestiona los eventos próximos y en curso</p>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          class="sanfer-btn sanfer-btn-primary"
+          [disabled]="loading()"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Evento
+        </button>
+
+        <button
+          mat-icon-button
+          (click)="loadEvents()"
+          matTooltip="Actualizar lista"
+          [disabled]="loading()"
+        >
+          <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Summary -->
+    @if (activeAndUpcomingEvents().length > 0) {
+      <div class="stats-summary">
+        <div class="stat-item active">
+          <span class="stat-number">{{ stats().active }}</span>
+          <span class="stat-label">En Curso</span>
+        </div>
+        <div class="stat-item upcoming">
+          <span class="stat-number">{{ stats().upcoming }}</span>
+          <span class="stat-label">Próximos</span>
+        </div>
+        <div class="stat-item total">
+          <span class="stat-number">{{ stats().total }}</span>
+          <span class="stat-label">Total Activos</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Debug info temporal -->
+  <!--
+  <div class="debug-events">
+    <small>
+      All: {{ debugInfo.totalEvents }} |
+      Filtered: {{ debugInfo.filteredEvents }} |
+      Loading: {{ debugInfo.loading }}
+    </small>
+  </div>
+  -->
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando eventos...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h3>Error al cargar eventos</h3>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadEvents()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && activeAndUpcomingEvents().length === 0) {
+    <div class="empty-container">
+      <div class="empty-content">
+        <mat-icon class="empty-icon">event_note</mat-icon>
+        <h2>No hay eventos activos</h2>
+        <p>
+          No tienes eventos próximos o en curso. Crea tu primer evento para
+          comenzar.
+        </p>
+        <button
+          mat-raised-button
+          color="primary"
+          class="sanfer-btn sanfer-btn-primary"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Primer Evento
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Events Grid -->
+  @if (!loading() && !error() && activeAndUpcomingEvents().length > 0) {
+    <div class="events-grid">
+      @for (event of activeAndUpcomingEvents(); track event.id) {
+        <app-event-card [event]="event"> </app-event-card>
+      }
+    </div>
+  }
+
+  <!-- Footer info -->
+  @if (!loading() && activeAndUpcomingEvents().length > 0) {
+    <div class="footer-info">
+      <p class="info-text">
+        <mat-icon>info</mat-icon>
+        Solo se muestran eventos activos y próximos. Los eventos finalizados
+        están archivados.
+      </p>
+    </div>
+  }
+</div>

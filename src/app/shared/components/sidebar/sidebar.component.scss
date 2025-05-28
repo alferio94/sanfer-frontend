@@ -1,0 +1,261 @@
+/* src/app/shared/components/sidebar/sidebar.component.scss */
+
+// =====================================
+// SIDEBAR CONTAINER
+// =====================================
+.sidebar-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface);
+}
+
+// =====================================
+// HEADER SECTION
+// =====================================
+.sidebar-header {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background: var(--sanfer-gradient-hero);
+  color: white;
+}
+
+.sidebar-logo {
+  height: 40px;
+  width: auto;
+  margin-bottom: 0.5rem;
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+// =====================================
+// NAVIGATION SECTION
+// =====================================
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.menu-section {
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  padding: 0.5rem 1rem;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.7;
+}
+
+.section-divider {
+  margin: 0.5rem 1rem;
+}
+
+// =====================================
+// MENU ITEMS
+// =====================================
+.mat-mdc-list-item {
+  margin: 0.25rem 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover:not(.disabled) {
+    background-color: rgba(var(--sanfer-primary-rgb), 0.04) !important;
+  }
+
+  &.active {
+    background-color: rgba(var(--sanfer-primary-rgb), 0.08) !important;
+    color: var(--sanfer-primary) !important;
+
+    .mat-icon {
+      color: var(--sanfer-primary) !important;
+    }
+
+    // Indicador activo
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 24px;
+      background-color: var(--sanfer-primary);
+      border-radius: 2px 0 0 2px;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    .mat-icon,
+    span {
+      color: var(--mat-sys-on-surface-variant) !important;
+    }
+
+    &:hover {
+      background-color: transparent !important;
+    }
+  }
+}
+
+.mat-icon {
+  color: var(--mat-sys-on-surface-variant);
+  transition: color 0.2s ease;
+}
+
+// =====================================
+// BADGES
+// =====================================
+.menu-badge {
+  position: relative;
+
+  ::ng-deep .mat-badge-content {
+    background-color: var(--sanfer-primary);
+    color: white;
+    font-size: 10px;
+    font-weight: 500;
+  }
+}
+
+// =====================================
+// FOOTER SECTION
+// =====================================
+.sidebar-footer {
+  margin-top: auto;
+}
+
+.footer-content {
+  padding: 1rem;
+  text-align: center;
+
+  .version,
+  .copyright {
+    margin: 0.25rem 0;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.7;
+  }
+}
+
+// =====================================
+// DEBUG INFO (remove in production)
+// =====================================
+.debug-sidebar {
+  padding: 0.5rem 1rem;
+  background-color: var(--mat-sys-surface-variant);
+
+  small {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 10px;
+  }
+}
+
+// =====================================
+// SCROLLBAR STYLING
+// =====================================
+.sidebar-nav {
+  // Webkit scrollbar
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--mat-sys-outline-variant);
+    border-radius: 2px;
+
+    &:hover {
+      background: var(--mat-sys-outline);
+    }
+  }
+
+  // Firefox scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: var(--mat-sys-outline-variant) transparent;
+}
+
+// =====================================
+// RESPONSIVE DESIGN
+// =====================================
+@media (max-width: 768px) {
+  .sidebar-header {
+    padding: 1rem;
+  }
+
+  .sidebar-logo {
+    height: 32px;
+  }
+
+  .sidebar-title {
+    font-size: 1rem;
+  }
+}
+
+// =====================================
+// ACCESSIBILITY
+// =====================================
+// Focus styles
+.mat-mdc-list-item:focus {
+  outline: 2px solid var(--sanfer-primary);
+  outline-offset: -2px;
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .mat-mdc-list-item.active {
+    border: 2px solid var(--sanfer-primary);
+  }
+
+  .disabled {
+    text-decoration: line-through;
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .mat-mdc-list-item,
+  .mat-icon,
+  .sidebar-logo {
+    transition: none;
+  }
+
+  .sidebar-logo:hover {
+    transform: none;
+  }
+}
+
+// =====================================
+// DARK THEME SPECIFIC ADJUSTMENTS
+// =====================================
+:host-context(.dark-theme) {
+  .sidebar-container {
+    border-right: 1px solid var(--mat-sys-outline);
+  }
+
+  .section-title {
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.8;
+  }
+}

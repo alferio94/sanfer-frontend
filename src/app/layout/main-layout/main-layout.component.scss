@@ -1,0 +1,199 @@
+/* src/app/layout/main-layout/main-layout.component.scss */
+
+// =====================================
+// MAIN LAYOUT
+// =====================================
+.main-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidenav-container {
+  position: relative;
+}
+
+// =====================================
+// SIDEBAR STYLES - FIXED TRANSITIONS
+// =====================================
+.sidenav {
+  width: 300px;
+  background: var(--mat-sys-surface);
+  border-right: 1px solid var(--mat-sys-outline-variant);
+
+  // IMPORTANTE: Forzar transiciones suaves para el sidebar
+  &.mat-drawer-side {
+    // Cuando está en modo 'side' (desktop)
+    transition: margin-left 300ms cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  }
+
+  &.mat-drawer-over {
+    // Cuando está en modo 'over' (mobile)
+    transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  }
+}
+
+// Forzar transiciones en el contenedor del sidenav
+.mat-drawer-container {
+  transition: margin-left 300ms cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+// Forzar transiciones en el contenido principal
+.mat-drawer-content {
+  transition: margin-left 300ms cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+// =====================================
+// MAIN CONTENT
+// =====================================
+.main-content {
+  padding: 2rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+// =====================================
+// SIDEBAR TOGGLE BUTTONS (DESKTOP)
+// =====================================
+.sidebar-toggle-fab {
+  position: fixed;
+  top: 80px;
+  left: 16px;
+  z-index: 1000;
+  background-color: var(--sanfer-primary) !important;
+  color: white !important;
+  box-shadow: var(--sanfer-shadow-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: var(--sanfer-primary) !important;
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(var(--sanfer-primary-rgb), 0.3);
+  }
+
+  .mat-icon {
+    color: white;
+  }
+}
+
+.sidebar-toggle-button {
+  position: fixed;
+  top: 80px;
+  left: 300px; // 280px - 32px para centrarlo en el borde
+  z-index: 1001;
+  background-color: var(--mat-sys-surface) !important;
+  color: var(--mat-sys-on-surface) !important;
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-shadow: var(--sanfer-shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: var(--mat-sys-surface-variant) !important;
+    transform: translateX(-4px);
+  }
+
+  .mat-icon {
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+// =====================================
+// DEBUG INFO (remove in production)
+// =====================================
+.debug-layout {
+  position: fixed;
+  top: 50px;
+  right: 16px;
+  z-index: 1000;
+
+  small {
+    background: rgba(0, 255, 0, 0.8);
+    color: black;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+}
+
+// =====================================
+// RESPONSIVE DESIGN
+// =====================================
+@media (max-width: 768px) {
+  .sidenav {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  // Ocultar botones de toggle en mobile
+  .sidebar-toggle-fab,
+  .sidebar-toggle-button {
+    display: none;
+  }
+}
+
+// =====================================
+// ANIMATIONS & TRANSITIONS
+// =====================================
+.sidebar-toggle-fab,
+.sidebar-toggle-button {
+  // Animación de entrada
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// =====================================
+// ACCESSIBILITY
+// =====================================
+// Reducir motion para usuarios que prefieren menos animación
+@media (prefers-reduced-motion: reduce) {
+  .sidenav,
+  .mat-drawer-container,
+  .mat-drawer-content {
+    transition: none !important;
+  }
+
+  .main-content {
+    scroll-behavior: auto;
+  }
+
+  .sidebar-toggle-fab,
+  .sidebar-toggle-button {
+    transition: none;
+    animation: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// =====================================
+// FORCE SMOOTH TRANSITIONS - IMPORTANT
+// =====================================
+// Esto es crucial para evitar el efecto de "aparecer/desaparecer"
+::ng-deep {
+  .mat-drawer-transition .mat-drawer {
+    transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  }
+
+  .mat-drawer-transition .mat-drawer-content {
+    transition: margin-left 300ms cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  }
+}

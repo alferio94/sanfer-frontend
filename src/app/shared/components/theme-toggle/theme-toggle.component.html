@@ -1,1 +1,57 @@
-<p>theme-toggle works!</p>
+<!-- src/app/shared/components/theme-toggle/theme-toggle.component.html -->
+<button
+  mat-icon-button
+  [ngClass]="buttonClasses()"
+  [matMenuTriggerFor]="themeMenu"
+  [matTooltip]="getTooltipText()"
+  aria-label="Cambiar tema"
+>
+  <mat-icon>{{ getThemeIcon() }}</mat-icon>
+</button>
+
+<!-- Debug info temporal -->
+<!-- <small class="debug-toggle">{{ debugInfo.mode }} - {{ debugInfo.isDark ? 'Dark' : 'Light' }} - {{ debugInfo.icon }}</small> -->
+
+<mat-menu #themeMenu="matMenu" class="theme-menu">
+  <div class="menu-header">
+    <mat-icon>palette</mat-icon>
+    <span>Tema de la aplicación</span>
+  </div>
+  <mat-divider></mat-divider>
+
+  <button
+    mat-menu-item
+    (click)="setTheme('light')"
+    [class.active]="themeService.themeMode() === 'light'"
+  >
+    <mat-icon>light_mode</mat-icon>
+    <span>Claro</span>
+    <mat-icon class="check-icon" *ngIf="themeService.themeMode() === 'light'">
+      check
+    </mat-icon>
+  </button>
+
+  <button
+    mat-menu-item
+    (click)="setTheme('dark')"
+    [class.active]="themeService.themeMode() === 'dark'"
+  >
+    <mat-icon>dark_mode</mat-icon>
+    <span>Oscuro</span>
+    <mat-icon class="check-icon" *ngIf="themeService.themeMode() === 'dark'">
+      check
+    </mat-icon>
+  </button>
+
+  <button
+    mat-menu-item
+    (click)="setTheme('auto')"
+    [class.active]="themeService.themeMode() === 'auto'"
+  >
+    <mat-icon>settings_brightness</mat-icon>
+    <span>Automático</span>
+    <mat-icon class="check-icon" *ngIf="themeService.themeMode() === 'auto'">
+      check
+    </mat-icon>
+  </button>
+</mat-menu>

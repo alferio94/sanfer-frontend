@@ -1,0 +1,417 @@
+/* src/app/features/events/components/event-card/event-card.component.scss */
+
+// =====================================
+// EVENT CARD
+// =====================================
+.event-card {
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--mat-sys-outline-variant);
+
+  &:hover {
+    box-shadow: var(--sanfer-shadow-lg) !important;
+    transform: translateY(-4px);
+    border-color: var(--sanfer-primary);
+  }
+}
+
+// =====================================
+// EVENT BANNER
+// =====================================
+.event-banner {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: var(--sanfer-gradient-hero);
+
+  &.no-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .default-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: white;
+    padding: 1rem;
+
+    mat-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.8;
+    }
+
+    .banner-text {
+      font-weight: 500;
+      font-size: 1.1rem;
+      opacity: 0.9;
+      text-align: center;
+      line-height: 1.3;
+    }
+  }
+
+  &:hover .banner-image {
+    transform: scale(1.05);
+  }
+}
+
+// =====================================
+// STATUS BADGE
+// =====================================
+.status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(8px);
+
+  .status-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &.upcoming {
+    background: rgba(var(--sanfer-accent-rgb), 0.9);
+    color: white;
+    box-shadow: 0 2px 8px rgba(var(--sanfer-accent-rgb), 0.3);
+  }
+
+  &.active {
+    background: rgba(129, 193, 129, 0.9); // Verde success
+    color: white;
+    box-shadow: 0 2px 8px rgba(129, 193, 129, 0.3);
+  }
+
+  &.completed {
+    background: rgba(var(--mat-sys-on-surface-variant-rgb, 83, 67, 65), 0.9);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// =====================================
+// EVENT MENU BUTTON
+// =====================================
+.event-menu-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+// =====================================
+// EVENT CONTENT
+// =====================================
+.event-content {
+  padding: 1.5rem !important;
+}
+
+// Event Header
+.event-header {
+  margin-bottom: 1.25rem;
+
+  .event-name {
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin: 0 0 0.75rem 0;
+    color: var(--mat-sys-on-surface);
+    line-height: 1.3;
+
+    // Truncate long names
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .event-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .date-info,
+  .time-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    .date-icon,
+    .time-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+// Event Details
+.event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .detail-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--sanfer-primary);
+  }
+
+  .detail-text {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-weight: 500;
+  }
+}
+
+// =====================================
+// EVENT TAGS
+// =====================================
+.event-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+
+  .mat-mdc-chip {
+    font-size: 0.75rem;
+    min-height: 32px;
+    font-weight: 500;
+
+    &.dress-code-chip {
+      background: rgba(var(--sanfer-accent-rgb), 0.1);
+      color: var(--sanfer-accent);
+      border: 1px solid rgba(var(--sanfer-accent-rgb), 0.3);
+    }
+
+    &.agenda-chip {
+      background: rgba(var(--sanfer-primary-rgb), 0.1);
+      color: var(--sanfer-primary);
+      border: 1px solid rgba(var(--sanfer-primary-rgb), 0.3);
+    }
+
+    &.setup-chip {
+      background: rgba(var(--sanfer-warning-rgb, 255, 152, 0), 0.1);
+      color: var(--sanfer-warning);
+      border: 1px solid rgba(var(--sanfer-warning-rgb, 255, 152, 0), 0.3);
+    }
+  }
+}
+
+// =====================================
+// PROGRESS INDICATOR
+// =====================================
+.event-progress {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  margin-bottom: 0.5rem;
+}
+
+.progress-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+
+  mat-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--mat-sys-on-surface-variant);
+    transition: color 0.2s ease;
+
+    &.completed {
+      color: var(--sanfer-primary);
+    }
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-weight: 500;
+  }
+}
+
+// =====================================
+// EVENT ACTIONS
+// =====================================
+.event-actions {
+  padding: 0 1.5rem 1rem 1.5rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.primary-action {
+  font-weight: 500;
+
+  mat-icon {
+    margin-left: 0.25rem;
+  }
+}
+
+.action-spacer {
+  flex: 1;
+}
+
+// =====================================
+// MENU STYLES
+// =====================================
+.event-menu {
+  .delete-option {
+    color: var(--sanfer-danger);
+
+    mat-icon {
+      color: var(--sanfer-danger);
+    }
+  }
+}
+
+// =====================================
+// DEBUG INFO
+// =====================================
+.debug-card {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 0, 0.9);
+  padding: 4px 8px;
+
+  small {
+    color: black;
+    font-size: 10px;
+    font-family: monospace;
+  }
+}
+
+// =====================================
+// RESPONSIVE DESIGN
+// =====================================
+@media (max-width: 480px) {
+  .event-banner {
+    height: 160px;
+
+    .default-banner {
+      padding: 0.75rem;
+
+      mat-icon {
+        font-size: 2.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      .banner-text {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .event-content {
+    padding: 1rem !important;
+  }
+
+  .event-header .event-name {
+    font-size: 1.25rem;
+  }
+
+  .event-progress {
+    padding: 0.75rem 0;
+  }
+
+  .progress-item {
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    span {
+      font-size: 0.7rem;
+    }
+  }
+}
+
+// =====================================
+// ACCESSIBILITY
+// =====================================
+@media (prefers-reduced-motion: reduce) {
+  .event-card,
+  .banner-image,
+  .progress-item mat-icon {
+    transition: none;
+  }
+
+  .event-card:hover {
+    transform: none;
+  }
+
+  .event-banner:hover .banner-image {
+    transform: none;
+  }
+}
+
+// =====================================
+// HIGH CONTRAST MODE
+// =====================================
+@media (prefers-contrast: high) {
+  .event-card {
+    border-width: 2px;
+  }
+
+  .status-badge {
+    border: 2px solid white;
+  }
+
+  .progress-item mat-icon.completed {
+    background: var(--sanfer-primary);
+    border-radius: 50%;
+    padding: 2px;
+  }
+}

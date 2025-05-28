@@ -1,0 +1,246 @@
+/* src/app/shared/components/header/header.component.scss */
+
+// =====================================
+// BASE STYLES
+// =====================================
+.header-base {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--sanfer-shadow-sm);
+}
+
+// =====================================
+// GRADIENT HEADER (Always white text)
+// =====================================
+.gradient-header {
+  background: var(--sanfer-gradient-hero) !important;
+  color: white !important;
+
+  .menu-button,
+  .action-button {
+    color: white !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+
+  .app-title {
+    color: white !important;
+  }
+}
+
+// =====================================
+// ADAPTIVE HEADER (Changes with theme)
+// =====================================
+.adaptive-header {
+  background: var(--mat-sys-surface) !important;
+  color: var(--mat-sys-on-surface) !important;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  .menu-button,
+  .action-button {
+    color: var(--mat-sys-on-surface) !important;
+
+    &:hover {
+      background-color: var(--mat-sys-surface-variant) !important;
+    }
+  }
+
+  .app-title {
+    color: var(--mat-sys-on-surface) !important;
+  }
+}
+
+// =====================================
+// LOGO STYLES
+// =====================================
+.logo-base {
+  height: 32px;
+  width: auto;
+  margin-right: 1rem;
+  transition: filter 0.3s ease;
+}
+
+.logo-white {
+  filter: brightness(0) invert(1);
+}
+
+.logo-adaptive {
+  filter: none;
+}
+
+.logo-dark {
+  filter: brightness(0) invert(1);
+}
+
+// =====================================
+// LAYOUT STYLES
+// =====================================
+.header-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: none;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin: 0;
+  transition: color 0.3s ease;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-button {
+  transition: all 0.2s ease;
+}
+
+.user-button {
+  .mat-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+// =====================================
+// DEBUG INFO (remove in production)
+// =====================================
+.debug-info {
+  small {
+    background: rgba(255, 255, 0, 0.8);
+    color: black;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    margin: 0 1rem;
+  }
+}
+
+// =====================================
+// MENU STYLES
+// =====================================
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--mat-sys-surface-variant);
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  max-width: 300px;
+
+  .mat-icon {
+    margin-right: 1rem;
+    margin-top: 0.2rem;
+  }
+}
+
+.notification-content {
+  .notification-title {
+    margin: 0 0 0.25rem 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .notification-time {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.view-all {
+  text-align: center;
+  font-weight: 500;
+  color: var(--sanfer-primary);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--mat-sys-surface-variant);
+
+  .user-avatar {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: 1rem;
+    color: var(--sanfer-primary);
+  }
+
+  .user-name {
+    margin: 0 0 0.25rem 0;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .user-email {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.logout-item {
+  color: var(--sanfer-danger);
+
+  .mat-icon {
+    color: var(--sanfer-danger);
+  }
+}
+
+// =====================================
+// RESPONSIVE DESIGN
+// =====================================
+@media (max-width: 480px) {
+  .header-actions {
+    gap: 0.25rem;
+  }
+
+  .logo-base {
+    height: 28px;
+    margin-right: 0.75rem;
+  }
+
+  .debug-info {
+    display: none; // Hide debug on mobile
+  }
+}

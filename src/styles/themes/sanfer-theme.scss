@@ -54,9 +54,9 @@ html {
   @include mat.all-component-themes($sanfer-theme);
 }
 
-// Tema dark con clase
+// Tema dark con clase - SOLO colores, no toda la tipografía de nuevo
 html.dark-theme {
-  @include mat.all-component-themes($sanfer-dark-theme);
+  @include mat.all-component-colors($sanfer-dark-theme);
 }
 
 // =============================================================================

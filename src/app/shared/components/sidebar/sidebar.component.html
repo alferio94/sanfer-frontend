@@ -1,1 +1,86 @@
-<p>sidebar works!</p>
+<!-- src/app/shared/components/sidebar/sidebar.component.html -->
+<div class="sidebar-container">
+  <!-- Logo section -->
+  <div class="sidebar-header">
+    <h2 class="sidebar-title">Event Manager</h2>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Debug info temporal -->
+  <!--
+  <div class="debug-sidebar">
+    <small>Events: {{ debugInfo.eventsCount }} | Route: {{ debugInfo.currentRoute }}</small>
+  </div>
+  -->
+
+  <!-- Main navigation -->
+  <nav class="sidebar-nav">
+    <mat-nav-list>
+      <ng-container *ngFor="let item of menuItems">
+        <!-- Menu item with children -->
+        <div
+          *ngIf="item.children && item.children.length > 0"
+          class="menu-section"
+        >
+          <h3 class="section-title">{{ item.label }}</h3>
+          <ng-container *ngFor="let child of item.children">
+            <a
+              mat-list-item
+              [routerLink]="child.route"
+              routerLinkActive="active"
+              [class.disabled]="child.disabled"
+              (click)="onItemClick(child)"
+              [matTooltip]="
+                child.disabled ? 'Próximamente disponible' : child.label
+              "
+            >
+              <mat-icon matListItemIcon>{{ child.icon }}</mat-icon>
+              <span matListItemTitle>{{ child.label }}</span>
+              <span
+                *ngIf="child.badge && child.badge > 0"
+                class="menu-badge"
+                [matBadge]="child.badge"
+                matBadgeSize="small"
+                matBadgeColor="primary"
+              >
+              </span>
+            </a>
+          </ng-container>
+          <mat-divider class="section-divider"></mat-divider>
+        </div>
+
+        <!-- Simple menu item -->
+        <a
+          *ngIf="!item.children || item.children.length === 0"
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [class.disabled]="item.disabled"
+          (click)="onItemClick(item)"
+          [matTooltip]="item.disabled ? 'Próximamente disponible' : item.label"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+          <span
+            *ngIf="item.badge && item.badge > 0"
+            class="menu-badge"
+            [matBadge]="item.badge"
+            matBadgeSize="small"
+            matBadgeColor="primary"
+          >
+          </span>
+        </a>
+      </ng-container>
+    </mat-nav-list>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <mat-divider></mat-divider>
+    <div class="footer-content">
+      <p class="version">Versión 1.0.0</p>
+      <p class="copyright">© 2025 Sanfer</p>
+    </div>
+  </div>
+</div>

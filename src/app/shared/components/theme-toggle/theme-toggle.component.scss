@@ -1,0 +1,147 @@
+/* src/app/shared/components/theme-toggle/theme-toggle.component.scss */
+
+// =====================================
+// THEME TOGGLE BUTTON
+// =====================================
+.theme-toggle-button {
+  transition: all 0.2s ease;
+
+  // El color se hereda del header padre
+  // No necesitamos forzar color aquí
+
+  &:hover {
+    // El background se hereda del header padre
+    transform: rotate(15deg);
+  }
+
+  .mat-icon {
+    transition: transform 0.3s ease;
+  }
+}
+
+// =====================================
+// ADAPTACIÓN PARA HEADER GRADIENTE
+// =====================================
+:host-context(.gradient-header) {
+  .theme-toggle-button {
+    color: white !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+}
+
+// =====================================
+// ADAPTACIÓN PARA HEADER ADAPTATIVO
+// =====================================
+:host-context(.adaptive-header) {
+  .theme-toggle-button {
+    color: var(--mat-sys-on-surface) !important;
+
+    &:hover {
+      background-color: var(--mat-sys-surface-variant) !important;
+    }
+  }
+}
+
+// =====================================
+// MENU STYLES
+// =====================================
+.theme-menu {
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--mat-sys-surface-variant);
+  font-weight: 500;
+
+  .mat-icon {
+    margin-right: 0.75rem;
+    color: var(--sanfer-primary);
+  }
+}
+
+.mat-mdc-menu-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+
+  .mat-icon:first-child {
+    margin-right: 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  span {
+    flex: 1;
+  }
+
+  .check-icon {
+    color: var(--sanfer-primary);
+    font-size: 1.2rem;
+  }
+
+  &.active {
+    background-color: rgba(var(--sanfer-primary-rgb), 0.08);
+
+    .mat-icon:first-child {
+      color: var(--sanfer-primary);
+    }
+
+    span {
+      color: var(--sanfer-primary);
+      font-weight: 500;
+    }
+  }
+
+  &:hover {
+    background-color: rgba(var(--sanfer-primary-rgb), 0.04);
+  }
+}
+
+// =====================================
+// DEBUG INFO (remove in production)
+// =====================================
+.debug-toggle {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: rgba(255, 255, 0, 0.8);
+  color: black;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+// =====================================
+// ACCESSIBILITY
+// =====================================
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-button:hover {
+    transform: none;
+  }
+
+  .mat-icon {
+    transition: none;
+  }
+}
+
+// =====================================
+// RESPONSIVE DESIGN
+// =====================================
+@media (max-width: 480px) {
+  .theme-toggle-button {
+    .mat-icon {
+      font-size: 1.2rem;
+    }
+  }
+}
