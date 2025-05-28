@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { EventCardComponent } from '../../components/event-card/event-card.component';
 import { AppEvent } from '@core/models';
 import { EventsService } from '@core/services/events.service';
-// import { ModalService } from '@core/services/modal.service';
+import { ModalService } from '@core/services/modal.service';
 @Component({
   selector: 'app-events-list',
   imports: [
@@ -30,7 +30,7 @@ import { EventsService } from '@core/services/events.service';
 export class EventsListComponent {
   private router = inject(Router);
   private eventsService = inject(EventsService);
-  // private modalService = inject(ModalService);
+  private modalService = inject(ModalService);
   private snackBar = inject(MatSnackBar);
 
   // Reactive properties
@@ -95,20 +95,20 @@ export class EventsListComponent {
     });
   }
 
-  // openCreateEventModal(): void {
-  //   this.modalService.openCreateEventModal().subscribe({
-  //     next: (result) => {
-  //       if (result && result.action === 'create' && result.data) {
-  //         this.createEvent(result.data);
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Error opening create event modal:', error);
-  //       this.showMessage('Error al abrir el formulario', 'error');
-  //     }
-  //   });
-  // }
-  //
+  openCreateEventModal(): void {
+    this.modalService.openCreateEventModal().subscribe({
+      next: (result) => {
+        if (result && result.action === 'create' && result.data) {
+          this.createEvent(result.data);
+        }
+      },
+      error: (error) => {
+        console.error('Error opening create event modal:', error);
+        this.showMessage('Error al abrir el formulario', 'error');
+      },
+    });
+  }
+
   private createEvent(eventData: any): void {
     this.eventsService.createEvent(eventData).subscribe({
       next: (event) => {
@@ -131,30 +131,30 @@ export class EventsListComponent {
     this.router.navigate(['/events', event.id]);
   }
 
-  // onEventEdit(event: AppEvent): void {
-  //   this.modalService.openEditEventModal(event).subscribe({
-  //     next: (result) => {
-  //       if (result && result.action === 'edit' && result.data) {
-  //         this.updateEvent(event.id, result.data);
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Error opening edit event modal:', error);
-  //       this.showMessage('Error al abrir el formulario', 'error');
-  //     }
-  //   });
-  // }
-  //
-  // onEventDelete(event: AppEvent): void {
-  //   this.modalService.openDeleteConfirmModal(event.name).subscribe({
-  //     next: (confirmed) => {
-  //       if (confirmed) {
-  //         this.deleteEvent(event);
-  //       }
-  //     }
-  //   });
-  // }
-  //
+  onEventEdit(event: AppEvent): void {
+    this.modalService.openEditEventModal(event).subscribe({
+      next: (result) => {
+        if (result && result.action === 'edit' && result.data) {
+          this.updateEvent(event.id, result.data);
+        }
+      },
+      error: (error) => {
+        console.error('Error opening edit event modal:', error);
+        this.showMessage('Error al abrir el formulario', 'error');
+      },
+    });
+  }
+
+  onEventDelete(event: AppEvent): void {
+    this.modalService.openDeleteConfirmModal(event.name).subscribe({
+      next: (confirmed) => {
+        if (confirmed) {
+          this.deleteEvent(event);
+        }
+      },
+    });
+  }
+
   private updateEvent(eventId: string, eventData: any): void {
     this.eventsService.updateEvent(eventId, eventData).subscribe({
       next: (event) => {
@@ -171,22 +171,22 @@ export class EventsListComponent {
     });
   }
 
-  // private deleteEvent(event: AppEvent): void {
-  //   this.eventsService.deleteEvent(event.id).subscribe({
-  //     next: (success) => {
-  //       if (success) {
-  //         this.showMessage('Evento eliminado correctamente');
-  //       } else {
-  //         this.showMessage('Error al eliminar el evento', 'error');
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Error deleting event:', error);
-  //       this.showMessage('Error al eliminar el evento', 'error');
-  //     }
-  //   });
-  // }
-  //
+  private deleteEvent(event: AppEvent): void {
+    this.eventsService.deleteEvent(event.id).subscribe({
+      next: (success) => {
+        if (success) {
+          this.showMessage('Evento eliminado correctamente');
+        } else {
+          this.showMessage('Error al eliminar el evento', 'error');
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting event:', error);
+        this.showMessage('Error al eliminar el evento', 'error');
+      },
+    });
+  }
+
   private showMessage(
     message: string,
     type: 'success' | 'error' = 'success',
