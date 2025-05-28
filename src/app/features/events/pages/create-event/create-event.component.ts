@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-create-event',
   imports: [],
   templateUrl: './create-event.component.html',
-  styleUrl: './create-event.component.scss'
+  styleUrl: './create-event.component.scss',
 })
-export class CreateEventComponent {
-
-}
+export class CreateEventComponent {}

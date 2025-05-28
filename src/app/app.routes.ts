@@ -9,7 +9,7 @@ export const routes: Routes = [
       ),
     children: [
       {
-        path: 'events',
+        path: '',
         loadChildren: () =>
           import('./features/events/events.routes').then((m) => m.routes),
       },

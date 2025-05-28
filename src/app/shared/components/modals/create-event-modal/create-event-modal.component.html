@@ -1,1 +1,228 @@
-<p>create-event-modal works!</p>
+<!-- src/app/shared/components/modals/create-event-modal/create-event-modal.component.html -->
+<div class="create-event-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">{{
+          isEditMode ? "edit" : "add_circle"
+        }}</mat-icon>
+        <h2>{{ isEditMode ? "Editar Evento" : "Crear Nuevo Evento" }}</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      {{
+        isEditMode
+          ? "Modifica la información básica del evento"
+          : "Completa la información básica para crear un nuevo evento"
+      }}
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="event-form">
+      <!-- Nombre del Evento -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del Evento</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Ej. Convención Anual 2025"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>event</mat-icon>
+          <mat-hint align="end"
+            >{{ eventForm.get("name")?.value?.length || 0 }}/100</mat-hint
+          >
+          <mat-error *ngIf="eventForm.get('name')?.hasError('required')">
+            El nombre del evento es obligatorio
+          </mat-error>
+          <mat-error *ngIf="eventForm.get('name')?.hasError('minlength')">
+            El nombre debe tener al menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Fecha y Hora de Inicio -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>schedule</mat-icon>
+          Fecha y Hora de Inicio
+        </h3>
+
+        <div class="datetime-row">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Fecha de Inicio</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startDatePicker"
+              formControlName="startDate"
+              placeholder="Selecciona la fecha"
+              readonly
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="startDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
+            <mat-error *ngIf="eventForm.get('startDate')?.hasError('required')">
+              La fecha de inicio es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Hora de Inicio</mat-label>
+            <input
+              matInput
+              [matTimepicker]="startTimePicker"
+              formControlName="startTime"
+              placeholder="Selecciona la hora"
+              readonly
+            />
+            <mat-timepicker-toggle matIconSuffix [for]="startTimePicker">
+              <mat-icon>access_time</mat-icon>
+            </mat-timepicker-toggle>
+            <mat-timepicker #startTimePicker interval="5min"></mat-timepicker>
+            <mat-error *ngIf="eventForm.get('startTime')?.hasError('required')">
+              La hora de inicio es obligatoria
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Fecha y Hora de Fin -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>event_available</mat-icon>
+          Fecha y Hora de Fin
+        </h3>
+
+        <div class="datetime-row">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Fecha de Fin</mat-label>
+            <input
+              matInput
+              [matDatepicker]="endDatePicker"
+              formControlName="endDate"
+              placeholder="Selecciona la fecha"
+              readonly
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="endDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
+            <mat-error *ngIf="eventForm.get('endDate')?.hasError('required')">
+              La fecha de fin es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Hora de Fin</mat-label>
+            <input
+              matInput
+              [matTimepicker]="endTimePicker"
+              formControlName="endTime"
+              placeholder="Selecciona la hora"
+              readonly
+            />
+            <mat-timepicker-toggle matIconSuffix [for]="endTimePicker">
+              <mat-icon>access_time</mat-icon>
+            </mat-timepicker-toggle>
+            <mat-timepicker interval="5min" #endTimePicker></mat-timepicker>
+            <mat-error *ngIf="eventForm.get('endTime')?.hasError('required')">
+              La hora de fin es obligatoria
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Error de validación de fechas -->
+        <div
+          *ngIf="eventForm.hasError('dateTimeRange')"
+          class="date-range-error"
+        >
+          <mat-icon>error</mat-icon>
+          <span>La fecha y hora de fin debe ser posterior a la de inicio</span>
+        </div>
+      </div>
+
+      <!-- Preview de las fechas -->
+      <div class="form-section" *ngIf="getStartDateTime() && getEndDateTime()">
+        <div class="datetime-preview">
+          <h4>Resumen del Evento</h4>
+          <div class="preview-content">
+            <div class="preview-item">
+              <mat-icon>play_circle</mat-icon>
+              <div>
+                <strong>Inicio:</strong>
+                <span>{{
+                  getStartDateTime()
+                    | date: "EEEE, d MMMM y 'a las' HH:mm" : "es-ES"
+                }}</span>
+              </div>
+            </div>
+            <div class="preview-item">
+              <mat-icon>stop_circle</mat-icon>
+              <div>
+                <strong>Fin:</strong>
+                <span>{{
+                  getEndDateTime()
+                    | date: "EEEE, d MMMM y 'a las' HH:mm" : "es-ES"
+                }}</span>
+              </div>
+            </div>
+            <div class="preview-item">
+              <mat-icon>schedule</mat-icon>
+              <div>
+                <strong>Duración:</strong>
+                <span>{{ getDuration() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSubmit()"
+        [disabled]="eventForm.invalid || loading()"
+      >
+        <mat-icon *ngIf="loading()">
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-icon>
+        <mat-icon *ngIf="!loading()">{{
+          isEditMode ? "save" : "add"
+        }}</mat-icon>
+        {{ isEditMode ? "Guardar Cambios" : "Crear Evento" }}
+      </button>
+    </div>
+  </div>
+</div>

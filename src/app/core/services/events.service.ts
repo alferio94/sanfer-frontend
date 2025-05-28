@@ -108,27 +108,29 @@ export class EventsService {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.post<AppEvent>(this.baseUrl, eventData).pipe(
-      tap((newEvent) => {
-        const processedEvent = {
-          ...newEvent,
-          startDate: new Date(newEvent.startDate),
-          endDate: new Date(newEvent.endDate),
-        };
+    return this.http
+      .post<AppEvent>(environment.apiUrl + this.baseUrl, eventData)
+      .pipe(
+        tap((newEvent) => {
+          const processedEvent = {
+            ...newEvent,
+            startDate: new Date(newEvent.startDate),
+            endDate: new Date(newEvent.endDate),
+          };
 
-        // Agregar a la lista local
-        const currentEvents = this._events();
-        this._events.set([...currentEvents, processedEvent]);
-        this.eventsSubject.next([...currentEvents, processedEvent]);
-        this._loading.set(false);
-      }),
-      catchError((error) => {
-        this._error.set('Error al crear el evento');
-        this._loading.set(false);
-        console.error('Error creating event:', error);
-        return of(null);
-      }),
-    );
+          // Agregar a la lista local
+          const currentEvents = this._events();
+          this._events.set([...currentEvents, processedEvent]);
+          this.eventsSubject.next([...currentEvents, processedEvent]);
+          this._loading.set(false);
+        }),
+        catchError((error) => {
+          this._error.set('Error al crear el evento');
+          this._loading.set(false);
+          console.error('Error creating event:', error);
+          return of(null);
+        }),
+      );
   }
 
   // Actualizar evento
@@ -139,31 +141,33 @@ export class EventsService {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.put<AppEvent>(`${this.baseUrl}/${id}`, eventData).pipe(
-      tap((updatedEvent) => {
-        const processedEvent = {
-          ...updatedEvent,
-          startDate: new Date(updatedEvent.startDate),
-          endDate: new Date(updatedEvent.endDate),
-        };
+    return this.http
+      .put<AppEvent>(`${environment.apiUrl}${this.baseUrl}${id}`, eventData)
+      .pipe(
+        tap((updatedEvent) => {
+          const processedEvent = {
+            ...updatedEvent,
+            startDate: new Date(updatedEvent.startDate),
+            endDate: new Date(updatedEvent.endDate),
+          };
 
-        // Actualizar en la lista local
-        const currentEvents = this._events();
-        const updatedEvents = currentEvents.map((event) =>
-          event.id === id ? processedEvent : event,
-        );
+          // Actualizar en la lista local
+          const currentEvents = this._events();
+          const updatedEvents = currentEvents.map((event) =>
+            event.id === id ? processedEvent : event,
+          );
 
-        this._events.set(updatedEvents);
-        this.eventsSubject.next(updatedEvents);
-        this._loading.set(false);
-      }),
-      catchError((error) => {
-        this._error.set('Error al actualizar el evento');
-        this._loading.set(false);
-        console.error('Error updating event:', error);
-        return of(null);
-      }),
-    );
+          this._events.set(updatedEvents);
+          this.eventsSubject.next(updatedEvents);
+          this._loading.set(false);
+        }),
+        catchError((error) => {
+          this._error.set('Error al actualizar el evento');
+          this._loading.set(false);
+          console.error('Error updating event:', error);
+          return of(null);
+        }),
+      );
   }
 
   // Eliminar evento

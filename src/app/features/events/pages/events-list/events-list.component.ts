@@ -42,18 +42,15 @@ export class EventsListComponent {
   readonly activeAndUpcomingEvents = computed(() => {
     const events = this.allEvents();
     const now = new Date();
-
-    return events
+    const filteredEvents = events
       .filter((event) => {
-        const endDate = new Date(event.endDate);
-        return endDate >= now; // Solo eventos que no han terminado
+        return new Date(event.endDate) >= now;
       })
-      .sort((a, b) => {
-        // Ordenar por fecha de inicio (próximos primero)
-        return (
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-        );
-      });
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+      );
+    return filteredEvents;
   });
 
   // Computed para estadísticas
@@ -122,7 +119,7 @@ export class EventsListComponent {
       },
       error: (error) => {
         console.error('Error creating event:', error);
-        this.showMessage('Error al crear el evento', 'error');
+        this.showMessage(error.error.message);
       },
     });
   }

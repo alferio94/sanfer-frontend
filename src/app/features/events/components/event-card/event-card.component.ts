@@ -5,6 +5,7 @@ import {
   Output,
   EventEmitter,
   computed,
+  input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

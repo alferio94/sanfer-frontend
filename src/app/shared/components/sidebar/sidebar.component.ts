@@ -52,13 +52,8 @@ export class SidebarComponent {
         {
           label: 'Todos los Eventos',
           icon: 'event_note',
-          route: '/events',
+          route: '',
           badge: this.eventsService.events().length,
-        },
-        {
-          label: 'Crear Evento',
-          icon: 'add_circle',
-          route: '/events/create',
         },
       ],
     },
@@ -71,6 +66,7 @@ export class SidebarComponent {
           label: 'Usuarios',
           icon: 'person',
           route: '/users',
+          disabled: true, // Hasta que implementemos la selección de evento
         },
         {
           label: 'Grupos',

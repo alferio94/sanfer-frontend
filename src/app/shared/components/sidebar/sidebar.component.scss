@@ -173,6 +173,7 @@
 // SCROLLBAR STYLING
 // =====================================
 .sidebar-nav {
+  padding: 0.5rem 1rem;
   // Webkit scrollbar
   &::-webkit-scrollbar {
     width: 4px;
