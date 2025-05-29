@@ -1,0 +1,146 @@
+<!-- src/app/shared/components/modals/create-group-modal/create-group-modal.component.html -->
+<div class="create-group-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">{{
+          isEditMode ? "edit" : "add_circle"
+        }}</mat-icon>
+        <h2>{{ isEditMode ? "Editar Grupo" : "Crear Nuevo Grupo" }}</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      {{
+        isEditMode
+          ? "Modifica la información del grupo"
+          : "Crea un nuevo grupo para organizar a los participantes"
+      }}
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <form [formGroup]="groupForm" (ngSubmit)="onSubmit()" class="group-form">
+      <!-- Group Name -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del Grupo</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Ej. Desarrolladores, Gerentes, VIP"
+            maxlength="50"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>groups</mat-icon>
+          <mat-hint align="end"
+            >{{ groupForm.get("name")?.value?.length || 0 }}/50</mat-hint
+          >
+          <mat-error *ngIf="groupForm.get('name')?.hasError('required')">
+            El nombre del grupo es obligatorio
+          </mat-error>
+          <mat-error *ngIf="groupForm.get('name')?.hasError('minlength')">
+            El nombre debe tener al menos 2 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Color Selection -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>palette</mat-icon>
+          Color del Grupo
+        </h3>
+
+        <div class="color-preview">
+          <div
+            class="selected-color-display"
+            [style.background-color]="selectedColor"
+          >
+            <mat-icon>group</mat-icon>
+            <span>{{
+              groupForm.get("name")?.value || "Nombre del Grupo"
+            }}</span>
+          </div>
+        </div>
+
+        <div class="color-palette">
+          @for (color of predefinedColors; track color) {
+            <button
+              type="button"
+              class="color-option"
+              [class.selected]="selectedColor === color"
+              [style.background-color]="color"
+              (click)="onColorSelect(color)"
+              [attr.title]="color"
+            >
+              @if (selectedColor === color) {
+                <mat-icon>check</mat-icon>
+              }
+            </button>
+          }
+        </div>
+
+        <!-- Custom Color Input -->
+        <div class="custom-color-section">
+          <mat-form-field appearance="outline" class="color-input">
+            <mat-label>Color personalizado</mat-label>
+            <input
+              matInput
+              formControlName="color"
+              placeholder="#FF5733"
+              pattern="^#[0-9A-Fa-f]{6}$"
+            />
+            <mat-icon matPrefix>colorize</mat-icon>
+            <mat-error *ngIf="groupForm.get('color')?.hasError('required')">
+              Selecciona un color para el grupo
+            </mat-error>
+            <mat-error *ngIf="groupForm.get('color')?.hasError('pattern')">
+              Formato de color inválido (debe ser #RRGGBB)
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSubmit()"
+        [disabled]="groupForm.invalid || loading()"
+      >
+        <mat-icon *ngIf="loading()">
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-icon>
+        <mat-icon *ngIf="!loading()">{{
+          isEditMode ? "save" : "add"
+        }}</mat-icon>
+        {{ isEditMode ? "Guardar Cambios" : "Crear Grupo" }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -8,4 +8,11 @@ export const routes: Routes = [
         (m) => m.EventsListComponent,
       ),
   },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./pages/event-details/event-details.component').then(
+        (m) => m.EventDetailsComponent,
+      ),
+  },
 ];

@@ -72,35 +72,37 @@ export class EventsService {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.get<AppEvent>(`${this.baseUrl}/${id}`).pipe(
-      tap((event) => {
-        // Convertir strings de fecha a Date objects
-        const processedEvent = {
-          ...event,
-          startDate: new Date(event.startDate),
-          endDate: new Date(event.endDate),
-        };
+    return this.http
+      .get<AppEvent>(`${environment.apiUrl}${this.baseUrl}${id}`)
+      .pipe(
+        tap((event) => {
+          // Convertir strings de fecha a Date objects
+          const processedEvent = {
+            ...event,
+            startDate: new Date(event.startDate),
+            endDate: new Date(event.endDate),
+          };
 
-        // Actualizar el evento en la lista local si existe
-        const currentEvents = this._events();
-        const updatedEvents = currentEvents.map((e) =>
-          e.id === id ? processedEvent : e,
-        );
+          // Actualizar el evento en la lista local si existe
+          const currentEvents = this._events();
+          const updatedEvents = currentEvents.map((e) =>
+            e.id === id ? processedEvent : e,
+          );
 
-        if (!currentEvents.find((e) => e.id === id)) {
-          updatedEvents.push(processedEvent);
-        }
+          if (!currentEvents.find((e) => e.id === id)) {
+            updatedEvents.push(processedEvent);
+          }
 
-        this._events.set(updatedEvents);
-        this._loading.set(false);
-      }),
-      catchError((error) => {
-        this._error.set('Error al cargar el evento');
-        this._loading.set(false);
-        console.error('Error loading event:', error);
-        return of(null);
-      }),
-    );
+          this._events.set(updatedEvents);
+          this._loading.set(false);
+        }),
+        catchError((error) => {
+          this._error.set('Error al cargar el evento');
+          this._loading.set(false);
+          console.error('Error loading event:', error);
+          return of(null);
+        }),
+      );
   }
 
   // Crear nuevo evento

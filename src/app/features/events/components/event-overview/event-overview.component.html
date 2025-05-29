@@ -1,0 +1,149 @@
+<!-- src/app/features/events/components/event-overview/event-overview.component.html -->
+<mat-card class="event-overview-card">
+  <!-- Event Banner Section -->
+  <div class="event-banner" [class.no-banner]="!hasBanner()">
+    @if (hasBanner()) {
+      <img
+        [src]="event.banner"
+        [alt]="event.name"
+        class="banner-image"
+        (error)="onImageError($event)"
+        loading="lazy"
+      />
+    } @else {
+      <div class="default-banner">
+        <mat-icon>event</mat-icon>
+        <span class="banner-text">{{ event.name }}</span>
+      </div>
+    }
+
+    <!-- Status Badge -->
+    <div class="status-badge" [ngClass]="eventStatus.class">
+      <mat-icon class="status-icon">{{
+        eventStatus.class === "active"
+          ? "play_circle"
+          : eventStatus.class === "upcoming"
+            ? "schedule"
+            : "check_circle"
+      }}</mat-icon>
+      {{ eventStatus.label }}
+    </div>
+  </div>
+
+  <!-- Event Information -->
+  <mat-card-content class="event-info">
+    <!-- Main Event Details -->
+    <div class="event-header">
+      <h1 class="event-title">{{ event.name }}</h1>
+
+      <!-- Date and Time Info -->
+      <div class="datetime-info">
+        <div class="date-info">
+          <mat-icon>calendar_today</mat-icon>
+          <div class="date-details">
+            <span class="date-text">{{ formattedDates() }}</span>
+            <span class="time-text">{{ formattedTimes() }}</span>
+          </div>
+        </div>
+
+        <div class="duration-info">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ eventDuration() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Details Grid -->
+    <div class="event-details-grid">
+      <!-- Campus Info -->
+      @if (event.campus) {
+        <div class="detail-card">
+          <mat-icon class="detail-icon">location_on</mat-icon>
+          <div class="detail-content">
+            <h4>Ubicación</h4>
+            <p>{{ event.campus }}</p>
+            @if (event.campusPhone) {
+              <p class="phone">
+                <mat-icon>phone</mat-icon>
+                {{ event.campusPhone }}
+              </p>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Dress Code -->
+      @if (event.dressCode) {
+        <div class="detail-card">
+          <mat-icon class="detail-icon">style</mat-icon>
+          <div class="detail-content">
+            <h4>Código de Vestimenta</h4>
+            <p>{{ event.dressCode }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Tips -->
+      @if (event.tips) {
+        <div class="detail-card">
+          <mat-icon class="detail-icon">lightbulb</mat-icon>
+          <div class="detail-content">
+            <h4>Consejos</h4>
+            <p>{{ event.tips }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Extra Info -->
+      @if (event.extra) {
+        <div class="detail-card">
+          <mat-icon class="detail-icon">info</mat-icon>
+          <div class="detail-content">
+            <h4>Información Adicional</h4>
+            <p>{{ event.extra }}</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Stats Section -->
+    <!-- Action Links -->
+    <div class="action-links">
+      @if (event.campusMap) {
+        <a
+          [href]="event.campusMap"
+          target="_blank"
+          mat-stroked-button
+          class="link-button"
+        >
+          <mat-icon>map</mat-icon>
+          Ver Mapa del Campus
+        </a>
+      }
+
+      @if (event.dressCodeImage) {
+        <a
+          [href]="event.dressCodeImage"
+          target="_blank"
+          mat-stroked-button
+          class="link-button"
+        >
+          <mat-icon>image</mat-icon>
+          Ver Código de Vestimenta
+        </a>
+      }
+
+      @if (event.campusImage) {
+        <a
+          [href]="event.campusImage"
+          target="_blank"
+          mat-stroked-button
+          class="link-button"
+        >
+          <mat-icon>photo</mat-icon>
+          Ver Imágenes del Campus
+        </a>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,113 @@
+<!-- src/app/features/events/components/event-groups-list/event-groups-list.component.html -->
+<div class="groups-list-container">
+  <!-- Header with actions -->
+  <div class="list-header">
+    <div class="header-info">
+      <h3>Grupos del Evento</h3>
+      <p class="subtitle">Organiza a los participantes en grupos específicos</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateGroupModal()"
+        [disabled]="loading()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Grupo
+      </button>
+
+      <button
+        mat-icon-button
+        matTooltip="Actualizar lista"
+        (onClick)="loadGroups()"
+        [disabled]="loading()"
+      >
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Reusable Table -->
+  <app-reusable-table
+    [data]="groups()"
+    [columns]="tableColumns"
+    [config]="tableConfig"
+    [loading]="loading()"
+    [error]="error()"
+    [actions]="tableActions"
+    [trackByFn]="trackByGroupId"
+    emptyMessage="No hay grupos creados para este evento"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)"
+  >
+    <!-- Custom Cell Template -->
+    <ng-template #cellTemplate let-value let-item="item" let-column="column">
+      @switch (column.key) {
+        @case ("color") {
+          <div class="color-cell">
+            <div
+              class="color-indicator"
+              [style.background-color]="item.color"
+            ></div>
+          </div>
+        }
+
+        <!--   <div class="participants-cell"> -->
+        <!--     <mat-icon class="cell-icon">people</mat-icon> -->
+        <!--     <span>{{ item.assignments?.length || 0 }}</span> -->
+        <!--   </div> -->
+        <!-- } -->
+        <!-- @case ("activities.length") { -->
+        <!--   <div class="activities-cell"> -->
+        <!--     <mat-icon class="cell-icon">event_available</mat-icon> -->
+        <!--     <span>{{ item.activities?.length || 0 }}</span> -->
+        <!--   </div> -->
+        <!-- } -->
+        <!-- @case ("id") { -->
+        <!--   <div class="id-cell"> -->
+        <!--     <code>{{ item.id.substring(0, 8) }}...</code> -->
+        <!--   </div> -->
+        <!-- } -->
+        @default {
+          <span>{{ value }}</span>
+        }
+      }
+    </ng-template>
+
+    <!-- Empty State Template -->
+    <ng-template #emptyTemplate>
+      <div class="custom-empty-state">
+        <mat-icon class="empty-icon">groups</mat-icon>
+        <h3>No hay grupos creados</h3>
+        <p>
+          Crea el primer grupo para organizar a los participantes del evento.
+        </p>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openCreateGroupModal()"
+          class="create-first-button"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Primer Grupo
+        </button>
+      </div>
+    </ng-template>
+  </app-reusable-table>
+
+  <!-- Summary Info -->
+  @if (!loading() && !error() && groups().length > 0) {
+    <div class="summary-info">
+      <div class="summary-item">
+        <mat-icon>groups</mat-icon>
+        <span
+          >Total de grupos: <strong>{{ groups().length }}</strong></span
+        >
+      </div>
+    </div>
+  }
+</div>

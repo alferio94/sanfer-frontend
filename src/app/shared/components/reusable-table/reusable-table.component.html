@@ -1,0 +1,205 @@
+<!-- src/app/shared/components/reusable-table/reusable-table.component.html -->
+<div class="reusable-table-container">
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="table-state loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando datos...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error) {
+    <div class="table-state error-state">
+      <mat-icon class="state-icon">error_outline</mat-icon>
+      <h4>Error al cargar datos</h4>
+      <p>{{ error }}</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else if (data.length === 0) {
+    <div class="table-state empty-state">
+      @if (emptyTemplate) {
+        <ng-container [ngTemplateOutlet]="emptyTemplate"></ng-container>
+      } @else {
+        <mat-icon class="state-icon">inbox</mat-icon>
+        <h4>Sin datos</h4>
+        <p>{{ emptyMessage }}</p>
+      }
+    </div>
+  }
+
+  <!-- Table Content -->
+  @else {
+    <div class="table-wrapper">
+      <!-- Bulk Actions Bar -->
+      @if (
+        showSelection && selectedItems.length > 0 && bulkActions.length > 0
+      ) {
+        <div class="bulk-actions-bar">
+          <span class="selection-info">
+            {{ selectedItems.length }} elemento(s) seleccionado(s)
+          </span>
+          <div class="bulk-actions">
+            @for (action of bulkActions; track action.label) {
+              <button
+                mat-button
+                [color]="action.color || 'primary'"
+                (click)="action.handler(selectedItems)"
+                [disabled]="action.disabled?.(selectedItems)"
+              >
+                <mat-icon>{{ action.icon }}</mat-icon>
+                {{ action.label }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Table -->
+      <div class="table-container" [class.sticky-header]="config.stickyHeader">
+        <table
+          mat-table
+          [dataSource]="paginatedData"
+          matSort
+          [matSortDisabled]="!config.sortable"
+          (matSortChange)="onSortChange($event)"
+          class="data-table"
+        >
+          <!-- Selection Column -->
+          @if (showSelection) {
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="select-column">
+                <mat-checkbox
+                  [checked]="isAllSelected()"
+                  [indeterminate]="selectedItems.length > 0 && !isAllSelected()"
+                  (change)="onSelectAll()"
+                >
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let item" class="select-column">
+                <mat-checkbox
+                  [checked]="isSelected(item)"
+                  (change)="onSelectionToggle(item)"
+                  (click)="$event.stopPropagation()"
+                >
+                </mat-checkbox>
+              </td>
+            </ng-container>
+          }
+
+          <!-- Data Columns -->
+          @for (column of columns; track column.key) {
+            <ng-container [matColumnDef]="column.key">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                [mat-sort-header]="column.sortable ? column.key : ''"
+                [disabled]="!column.sortable"
+                [class]="getColumnClass(column)"
+                [style.width]="column.width"
+              >
+                {{ column.label }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let item"
+                [class]="getColumnClass(column)"
+                [style.width]="column.width"
+              >
+                @if (cellTemplate) {
+                  <ng-container
+                    [ngTemplateOutlet]="cellTemplate"
+                    [ngTemplateOutletContext]="{
+                      $implicit: getCellValue(item, column),
+                      item: item,
+                      column: column,
+                    }"
+                  ></ng-container>
+                } @else {
+                  <span class="cell-content" [ngSwitch]="column.type">
+                    <!-- Date formatting -->
+                    <span *ngSwitchCase="'date'">
+                      {{ getCellValue(item, column) | date: "short" }}
+                    </span>
+                    <!-- Number formatting -->
+                    <span *ngSwitchCase="'number'">
+                      {{ getCellValue(item, column) | number }}
+                    </span>
+                    <!-- Default text -->
+                    <span *ngSwitchDefault>
+                      {{ getCellValue(item, column) }}
+                    </span>
+                  </span>
+                }
+              </td>
+            </ng-container>
+          }
+
+          <!-- Actions Column -->
+          @if (actions.length > 0) {
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="actions-column">
+                Acciones
+              </th>
+              <td mat-cell *matCellDef="let item" class="actions-column">
+                @if (actionsTemplate) {
+                  <ng-container
+                    [ngTemplateOutlet]="actionsTemplate"
+                    [ngTemplateOutletContext]="{ $implicit: item }"
+                  ></ng-container>
+                } @else {
+                  <div class="action-buttons">
+                    @for (action of actions; track action.label) {
+                      <button
+                        *ngIf="isActionVisible(action, item)"
+                        mat-icon-button
+                        [color]="action.color"
+                        [disabled]="isActionDisabled(action, item)"
+                        (click)="
+                          executeAction(action, item); $event.stopPropagation()
+                        "
+                        [matTooltip]="action.label"
+                      >
+                        <mat-icon>{{ action.icon }}</mat-icon>
+                      </button>
+                    }
+                  </div>
+                }
+              </td>
+            </ng-container>
+          }
+
+          <!-- Table Rows -->
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayedColumns; sticky: config.stickyHeader"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns; trackBy: trackByFn"
+            (click)="onRowClick(row)"
+            class="data-row"
+            [class.selected]="isSelected(row)"
+          ></tr>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      @if (config.showPagination) {
+        <div class="pagination-container">
+          <mat-paginator
+            [length]="totalItems"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="config.pageSizeOptions!"
+            [showFirstLastButtons]="config.showFirstLastButtons!"
+            (page)="onPageChange($event)"
+          >
+          </mat-paginator>
+        </div>
+      }
+    </div>
+  }
+</div>

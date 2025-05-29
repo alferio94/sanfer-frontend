@@ -1,0 +1,149 @@
+<!-- src/app/features/events/pages/event-detail/event-detail.component.html -->
+<div class="event-detail-container">
+  <!-- Header with breadcrumb and actions -->
+  <div class="page-header">
+    <div class="breadcrumb-section">
+      <button
+        mat-icon-button
+        (click)="goBack()"
+        matTooltip="Volver a eventos"
+        class="back-button"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="breadcrumb-text">
+        <span class="breadcrumb-link" (click)="goBack()">Eventos</span>
+        <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+        <span class="breadcrumb-current">{{
+          event()?.name || "Cargando..."
+        }}</span>
+      </div>
+    </div>
+
+    <div class="header-actions" *ngIf="event()">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onEditEvent()"
+        class="action-button"
+      >
+        <mat-icon>edit</mat-icon>
+        Editar Evento
+      </button>
+
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="onDeleteEvent()"
+        class="action-button delete-button"
+      >
+        <mat-icon>delete</mat-icon>
+        Eliminar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando evento...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h3>Error al cargar el evento</h3>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Volver a la lista
+      </button>
+    </div>
+  }
+
+  <!-- Event Content -->
+  @if (event() && !loading() && !error()) {
+    <div class="event-content">
+      <app-event-overview
+        [event]="event()!"
+        [eventStatus]="eventStatus()"
+        [eventStats]="eventStats()"
+      />
+
+      <!-- Tabs Section -->
+      <mat-card class="tabs-container">
+        <mat-tab-group
+          [(selectedIndex)]="selectedTab"
+          (selectedTabChange)="onTabChange($event.index)"
+          class="event-tabs"
+        >
+          <!-- Groups Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">groups</mat-icon>
+              <span>Grupos</span>
+              <mat-chip class="tab-badge" *ngIf="eventStats().groups > 0">
+                {{ eventStats().groups }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <app-event-group-list
+                [eventId]="eventId!"
+                [eventGroups]="eventGroups()"
+              />
+            </div>
+          </mat-tab>
+
+          <!-- Users Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">people</mat-icon>
+              <span>Usuarios</span>
+              <mat-chip class="tab-badge" *ngIf="eventStats().users > 0">
+                {{ eventStats().users }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <!-- <app-event-users-list -->
+              <!--   [eventId]="eventId!" -->
+              <!--   *ngIf="eventId" -->
+              <!-- ></app-event-users-list> -->
+              <app-event-users-list />
+            </div>
+          </mat-tab>
+
+          <!-- Agenda Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">event_available</mat-icon>
+              <span>Agenda</span>
+              <mat-chip class="tab-badge" *ngIf="eventStats().activities > 0">
+                {{ eventStats().activities }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <!-- <app-event-agenda-list -->
+              <!--   [eventId]="eventId!" -->
+              <!--   *ngIf="eventId" -->
+              <!-- ></app-event-agenda-list> -->
+              <app-event-agenda-list />
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Debug info temporal -->
+  <!--
+  <div class="debug-info">
+    <small>{{ debugInfo | json }}</small>
+  </div>
+  -->
+</div>
