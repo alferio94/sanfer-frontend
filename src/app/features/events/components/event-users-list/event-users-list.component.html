@@ -1,1 +1,96 @@
-<p>event-users-list works!</p>
+<div class="list-container">
+  <!-- Header with actions -->
+  <div class="list-header">
+    <div class="header-info">
+      <h3>Participantes del Evento</h3>
+      <p class="subtitle">Lista de usuarios registrados en el evento</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="loading()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Usuario
+      </button>
+
+      <button
+        mat-icon-button
+        matTooltip="Actualizar lista"
+        (click)="loadUsers()"
+        [disabled]="loading()"
+      >
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Reusable Table -->
+  <app-reusable-table
+    [data]="users()"
+    [columns]="tableColumns"
+    [config]="tableConfig"
+    [loading]="loading()"
+    [error]="error()"
+    [actions]="tableActions"
+    [trackByFn]="trackByUserId"
+    emptyMessage="No hay usuarios registrados para este evento"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)"
+  >
+    <ng-template #cellTemplate let-value let-item="item" let-column="column">
+      @switch (column.key) {
+        @case ("assignedGroups") {
+          <div class="groups-cell">
+            @if (item.assignedGroups && item.assignedGroups.length > 0) {
+              <div class="groups-chips">
+                @for (group of item.assignedGroups; track group.id) {
+                  <mat-chip
+                    class="group-chip"
+                    [style.background-color]="group.color"
+                  >
+                    {{ group.name }}
+                  </mat-chip>
+                }
+              </div>
+            } @else {
+              <span class="all-participants">
+                <mat-icon>public</mat-icon>
+                Todos
+              </span>
+            }
+          </div>
+        }
+        @default {
+          <span class="cell-name">{{ value }}</span>
+        }
+      }
+    </ng-template>
+    <ng-template #emptyTemplate>
+      <div class="custom-empty-state">
+        <mat-icon class="empty-icon">people</mat-icon>
+        <h3>No hay usuarios asignados</h3>
+        <p>Carga usuarios al evento</p>
+        <button mat-raised-button color="primary" class="create-first-button">
+          <mat-icon>add</mat-icon>
+          Cargar Usuarios
+        </button>
+      </div>
+    </ng-template>
+  </app-reusable-table>
+  <!-- Summary Info -->
+  @if (!loading() && !error() && users().length > 0) {
+    <div class="summary-info">
+      <div class="summary-item">
+        <mat-icon>people</mat-icon>
+        <span
+          >Total de usuarios: <strong>{{ users().length }}</strong></span
+        >
+      </div>
+    </div>
+  }
+</div>

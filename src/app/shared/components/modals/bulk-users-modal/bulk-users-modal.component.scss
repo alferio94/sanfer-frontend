@@ -1,0 +1,236 @@
+/* src/app/features/events/components/event-agenda-list/event-agenda-list.component.scss */
+
+// =====================================
+// MAIN CONTAINER
+// =====================================
+.agenda-list-container {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// =====================================
+// HEADER SECTION
+// =====================================
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.header-info {
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--sanfer-primary);
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.95rem;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.create-button {
+  font-weight: 500;
+  border-radius: 24px;
+
+  mat-icon {
+    margin-right: 0.5rem;
+  }
+}
+
+// =====================================
+// ANIMATIONS
+// =====================================
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// =====================================
+// CUSTOM CELL STYLES
+// =====================================
+.date-cell,
+.time-cell,
+.duration-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .cell-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--sanfer-primary);
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+}
+
+.groups-cell {
+  .groups-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    max-width: 180px;
+  }
+
+  .group-chip {
+    color: white !important;
+    font-size: 0.75rem;
+    font-weight: 500;
+    height: 24px;
+    border-radius: 12px;
+  }
+
+  .all-participants {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+    font-style: italic;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      color: var(--sanfer-accent);
+    }
+  }
+}
+
+// =====================================
+// CUSTOM EMPTY STATE
+// =====================================
+.custom-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+
+  .empty-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+    color: var(--sanfer-primary);
+    opacity: 0.6;
+  }
+
+  h3 {
+    margin: 0;
+    color: var(--mat-sys-on-surface);
+  }
+
+  p {
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .create-first-button {
+    font-weight: 500;
+    border-radius: 24px;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+// =====================================
+// SUMMARY INFO
+// =====================================
+.summary-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem;
+  background: var(--mat-sys-surface-variant);
+  border-radius: var(--sanfer-border-radius);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    color: var(--sanfer-primary);
+  }
+
+  strong {
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+// =====================================
+// RESPONSIVE DESIGN
+// =====================================
+@media (max-width: 480px) {
+  .agenda-list-container {
+    padding: 1rem;
+  }
+
+  .header-actions {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .groups-cell .groups-chips {
+    max-width: 120px;
+  }
+
+  .groups-cell .group-chip {
+    font-size: 0.7rem;
+    height: 20px;
+  }
+}

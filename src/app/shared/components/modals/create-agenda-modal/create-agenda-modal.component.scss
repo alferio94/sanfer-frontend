@@ -1,0 +1,543 @@
+/* src/app/shared/components/modals/create-agenda-modal/create-agenda-modal.component.scss */
+
+// =====================================
+// MODAL CONTAINER
+// =====================================
+.create-agenda-modal {
+  width: 100%;
+  max-width: 700px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface);
+  border-radius: var(--sanfer-border-radius);
+  overflow: hidden;
+  box-shadow: var(--sanfer-shadow-lg);
+}
+
+// =====================================
+// MODAL HEADER
+// =====================================
+.modal-header {
+  background: var(--sanfer-gradient-hero);
+  color: white;
+  padding: 1.5rem 2rem 1rem 2rem;
+  position: relative;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .header-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    opacity: 0.9;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: white;
+  }
+}
+
+.close-button {
+  color: white !important;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.85;
+  line-height: 1.4;
+}
+
+// =====================================
+// MODAL BODY
+// =====================================
+.modal-body {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+.agenda-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// =====================================
+// FORM SECTIONS
+// =====================================
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--sanfer-primary);
+
+  .mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+// =====================================
+// FORM FIELDS
+// =====================================
+.full-width {
+  width: 100%;
+}
+
+.datetime-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.date-field {
+  flex: 2;
+  min-width: 200px;
+}
+
+.time-field {
+  flex: 1;
+  min-width: 120px;
+}
+
+// =====================================
+// DATE RANGE ERROR
+// =====================================
+.date-range-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: rgba(var(--sanfer-danger-rgb, 239, 59, 66), 0.1);
+  border: 1px solid rgba(var(--sanfer-danger-rgb, 239, 59, 66), 0.3);
+  border-radius: var(--sanfer-border-radius-sm);
+  color: var(--sanfer-danger);
+  font-size: 0.875rem;
+
+  .mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+// =====================================
+// DATETIME PREVIEW
+// =====================================
+.datetime-preview {
+  background: var(--mat-sys-surface-variant);
+  border-radius: var(--sanfer-border-radius);
+  padding: 1.5rem;
+  border-left: 4px solid var(--sanfer-primary);
+
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--sanfer-primary);
+  }
+}
+
+.preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .mat-icon {
+    color: var(--sanfer-primary);
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    strong {
+      font-size: 0.875rem;
+      color: var(--mat-sys-on-surface-variant);
+      font-weight: 500;
+    }
+
+    span {
+      font-size: 0.95rem;
+      color: var(--mat-sys-on-surface);
+    }
+  }
+}
+
+// =====================================
+// GROUPS SECTION
+// =====================================
+.groups-loading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  justify-content: center;
+
+  span {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.no-groups {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(var(--mat-sys-on-surface-variant-rgb), 0.1);
+  border-radius: var(--sanfer-border-radius-sm);
+  color: var(--mat-sys-on-surface-variant);
+
+  .mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.groups-section {
+  background: var(--mat-sys-surface-variant);
+  border-radius: var(--sanfer-border-radius);
+  padding: 1rem;
+}
+
+.select-all-toggle {
+  padding: 0.5rem 0 1rem 0;
+
+  .mat-slide-toggle {
+    ::ng-deep .mdc-switch {
+      --mdc-switch-selected-track-color: var(--sanfer-primary);
+      --mdc-switch-selected-handle-color: var(--sanfer-primary);
+    }
+  }
+}
+
+.groups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+
+.group-toggle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--mat-sys-surface);
+  border-radius: var(--sanfer-border-radius-sm);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+}
+
+.group-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.group-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: var(--sanfer-shadow-sm);
+  flex-shrink: 0;
+}
+
+.group-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .group-name {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    font-size: 0.95rem;
+  }
+
+  .group-stats {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.selection-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(var(--sanfer-primary-rgb), 0.1);
+  border-radius: var(--sanfer-border-radius-sm);
+  color: var(--sanfer-primary);
+  font-size: 0.875rem;
+  margin-top: 1rem;
+
+  .mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+// =====================================
+// MODAL FOOTER
+// =====================================
+.modal-footer {
+  background: var(--mat-sys-surface-variant);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  padding: 1.5rem 2rem;
+}
+
+.footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cancel-button {
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 500;
+
+  &:hover {
+    background-color: rgba(var(--mat-sys-on-surface-rgb), 0.04);
+  }
+}
+
+.save-button {
+  min-width: 160px;
+  font-weight: 500;
+  border-radius: 24px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .mat-icon {
+    margin-right: 0.5rem;
+  }
+
+  .mat-spinner {
+    margin-right: 0.5rem;
+  }
+}
+
+// =====================================
+// LOADING STATE
+// =====================================
+.mat-spinner {
+  ::ng-deep circle {
+    stroke: white;
+  }
+}
+
+// =====================================
+// SLIDE TOGGLE CUSTOMIZATION
+// =====================================
+.mat-slide-toggle {
+  ::ng-deep {
+    .mdc-switch {
+      --mdc-switch-selected-track-color: var(--sanfer-primary);
+      --mdc-switch-selected-handle-color: var(--sanfer-primary);
+      --mdc-switch-selected-hover-track-color: var(--sanfer-primary);
+      --mdc-switch-selected-hover-handle-color: var(--sanfer-primary);
+      --mdc-switch-selected-pressed-track-color: var(--sanfer-primary);
+      --mdc-switch-selected-pressed-handle-color: var(--sanfer-primary);
+    }
+  }
+}
+
+// =====================================
+// RESPONSIVE DESIGN
+// =====================================
+@media (max-width: 768px) {
+  .create-agenda-modal {
+    max-width: 100%;
+    margin: 0;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-header {
+    padding: 1rem 1.5rem 0.75rem 1.5rem;
+
+    .header-title {
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      .header-icon {
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .datetime-row {
+    flex-direction: column;
+    gap: 1rem;
+
+    .date-field,
+    .time-field {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+
+  .modal-footer {
+    padding: 1rem 1.5rem;
+  }
+
+  .footer-actions {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+
+    .cancel-button,
+    .save-button {
+      width: 100%;
+    }
+  }
+
+  .group-toggle-item {
+    padding: 1rem 0.75rem;
+  }
+
+  .group-info {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+  }
+
+  .datetime-preview {
+    padding: 1rem;
+  }
+
+  .groups-section {
+    padding: 0.75rem;
+  }
+
+  .group-toggle-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+
+    .mat-slide-toggle {
+      align-self: flex-end;
+    }
+  }
+}
+
+// =====================================
+// ACCESSIBILITY
+// =====================================
+@media (prefers-reduced-motion: reduce) {
+  .close-button,
+  .save-button,
+  .cancel-button,
+  .group-toggle-item {
+    transition: none;
+  }
+}
+
+// =====================================
+// HIGH CONTRAST MODE
+// =====================================
+@media (prefers-contrast: high) {
+  .modal-header {
+    border-bottom: 2px solid white;
+  }
+
+  .datetime-preview {
+    border: 2px solid var(--sanfer-primary);
+  }
+
+  .groups-section {
+    border: 2px solid var(--mat-sys-outline);
+  }
+
+  .group-color {
+    border-width: 3px;
+  }
+
+  .date-range-error {
+    border-width: 2px;
+  }
+}
+
+// =====================================
+// FORM FIELD CUSTOMIZATION
+// =====================================
+.mat-mdc-form-field-prefix .mat-icon,
+.mat-mdc-form-field-suffix .mat-icon {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.mat-mdc-form-field.mat-focused {
+  .mat-mdc-form-field-prefix .mat-icon,
+  .mat-mdc-form-field-suffix .mat-icon {
+    color: var(--sanfer-primary);
+  }
+}

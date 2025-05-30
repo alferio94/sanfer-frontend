@@ -1,0 +1,264 @@
+<div class="bulk-users-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">upload_file</mat-icon>
+        <h2>Carga Masiva de Usuarios</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+        [disabled]="uploading()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      Sube un archivo Excel o CSV con los datos de los usuarios para cargarlos
+      al evento
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <!-- File Upload Section -->
+    @if (!selectedFile()) {
+      <div class="upload-section">
+        <!-- Drag and Drop Area -->
+        <div
+          class="drop-zone"
+          [class.drag-over]="dragOver()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <div class="drop-content">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <h3>Arrastra tu archivo aquí</h3>
+            <p>o haz clic para seleccionar</p>
+
+            <input
+              type="file"
+              #fileInput
+              accept=".xlsx,.xls,.csv"
+              (change)="onFileSelected($event)"
+              style="display: none"
+            />
+
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="fileInput.click()"
+              class="select-file-button"
+            >
+              <mat-icon>folder_open</mat-icon>
+              Seleccionar Archivo
+            </button>
+          </div>
+
+          <div class="file-requirements">
+            <h4>Requisitos del archivo:</h4>
+            <ul>
+              <li><strong>Formatos:</strong> .xlsx</li>
+              <li><strong>Columnas requeridas:</strong> name, email</li>
+              <li>
+                <strong>Columna opcional:</strong> groups (separados por comas)
+              </li>
+              <li><strong>Tamaño máximo:</strong> 5MB</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- File Processing -->
+    @if (selectedFile() && loading()) {
+      <div class="processing-section">
+        <mat-spinner diameter="50"></mat-spinner>
+        <h3>Procesando archivo...</h3>
+        <p>{{ selectedFile()!.name }}</p>
+      </div>
+    }
+
+    <!-- Results Section -->
+    @if (selectedFile() && !loading()) {
+      <div class="results-section">
+        <!-- File Info -->
+        <div class="file-info">
+          <div class="file-details">
+            <mat-icon>description</mat-icon>
+            <div>
+              <h4>{{ selectedFile()!.name }}</h4>
+              <p>{{ (selectedFile()!.size / 1024).toFixed(1) }} KB</p>
+            </div>
+          </div>
+          <button
+            mat-icon-button
+            (click)="removeFile()"
+            matTooltip="Remover archivo"
+            [disabled]="uploading()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Summary Stats -->
+        <div class="summary-stats">
+          <div class="stat-card valid">
+            <mat-icon>check_circle</mat-icon>
+            <div>
+              <span class="stat-number">{{ validUsers().length }}</span>
+              <span class="stat-label">Usuarios válidos</span>
+            </div>
+          </div>
+
+          <div class="stat-card total">
+            <mat-icon>people</mat-icon>
+            <div>
+              <span class="stat-number">{{ parsedUsers().length }}</span>
+              <span class="stat-label">Total procesados</span>
+            </div>
+          </div>
+
+          @if (hasErrors) {
+            <div class="stat-card errors">
+              <mat-icon>error</mat-icon>
+              <div>
+                <span class="stat-number">{{ validationErrors().length }}</span>
+                <span class="stat-label">Errores encontrados</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Errors Section -->
+        @if (hasErrors) {
+          <div class="errors-section">
+            <h4>
+              <mat-icon>error_outline</mat-icon>
+              Errores encontrados
+            </h4>
+            <div class="errors-list">
+              @for (error of validationErrors(); track $index) {
+                <div class="error-item">
+                  <span class="error-row">Fila {{ error.row }}</span>
+                  <span class="error-field">{{ error.field }}</span>
+                  <span class="error-message">{{ error.message }}</span>
+                  @if (error.value) {
+                    <span class="error-value">{{ error.value }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Preview Table -->
+        @if (hasValidUsers) {
+          <div class="preview-section">
+            <h4>
+              <mat-icon>preview</mat-icon>
+              Vista previa (primeros 10 usuarios)
+            </h4>
+
+            <div class="table-container">
+              <table
+                mat-table
+                [dataSource]="validUsers().slice(0, 10)"
+                class="preview-table"
+              >
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                  <td mat-cell *matCellDef="let user">{{ user.name }}</td>
+                </ng-container>
+
+                <!-- Email Column -->
+                <ng-container matColumnDef="email">
+                  <th mat-header-cell *matHeaderCellDef>Email</th>
+                  <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+                </ng-container>
+
+                <!-- Groups Column -->
+                <ng-container matColumnDef="groups">
+                  <th mat-header-cell *matHeaderCellDef>Grupos</th>
+                  <td mat-cell *matCellDef="let user">
+                    @if (user.groups.length > 0) {
+                      <div class="groups-chips">
+                        @for (group of user.groups; track group) {
+                          <mat-chip class="group-chip">{{ group }}</mat-chip>
+                        }
+                      </div>
+                    } @else {
+                      <span class="no-groups">Sin grupos</span>
+                    }
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumns"
+                ></tr>
+              </table>
+            </div>
+
+            @if (validUsers().length > 10) {
+              <p class="more-users">
+                Y {{ validUsers().length - 10 }} usuarios más...
+              </p>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Upload Progress -->
+    @if (uploading()) {
+      <div class="upload-progress">
+        <h3>Cargando usuarios...</h3>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="uploadProgress()"
+        ></mat-progress-bar>
+        <p>{{ uploadProgress() }}% completado</p>
+      </div>
+    }
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+        [disabled]="uploading()"
+      >
+        Cancelar
+      </button>
+
+      @if (hasValidUsers && !uploading()) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="upload-button"
+          (click)="uploadUsers()"
+          [disabled]="!canUpload"
+        >
+          <mat-icon>upload</mat-icon>
+          Cargar {{ validUsers().length }} Usuario{{
+            validUsers().length !== 1 ? "s" : ""
+          }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

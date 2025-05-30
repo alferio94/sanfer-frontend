@@ -1,1 +1,129 @@
-<p>event-agenda-list works!</p>
+<!-- src/app/features/events/components/event-agenda-list/event-agenda-list.component.html -->
+<div class="list-container">
+  <!-- Header with actions -->
+  <div class="list-header">
+    <div class="header-info">
+      <h3>Agenda del Evento</h3>
+      <p class="subtitle">Programa de actividades y horarios</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateAgendaModal()"
+        [disabled]="loading()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Actividad
+      </button>
+
+      <button
+        mat-icon-button
+        (click)="loadAgendaItems()"
+        matTooltip="Actualizar agenda"
+        [disabled]="loading()"
+      >
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Reusable Table -->
+  <app-reusable-table
+    [data]="sortedAgendaItems()"
+    [columns]="tableColumns"
+    [config]="tableConfig"
+    [loading]="loading()"
+    [error]="error()"
+    [actions]="tableActions"
+    [trackByFn]="trackByAgendaId"
+    emptyMessage="No hay actividades programadas para este evento"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)"
+  >
+    <!-- Custom Cell Template -->
+    <ng-template #cellTemplate let-value let-item="item" let-column="column">
+      @switch (column.key) {
+        @case ("startDate") {
+          <div class="date-cell">
+            <mat-icon class="cell-icon">calendar_today</mat-icon>
+            <span>{{ formatDate(item.startDate) }}</span>
+          </div>
+        }
+        @case ("startTime") {
+          <div class="time-cell">
+            <mat-icon class="cell-icon">access_time</mat-icon>
+            <span>{{ formatTime(item.startDate) }}</span>
+          </div>
+        }
+        @case ("duration") {
+          <div class="duration-cell">
+            <mat-icon class="cell-icon">schedule</mat-icon>
+            <span>{{ formatDuration(item.startDate, item.endDate) }}</span>
+          </div>
+        }
+        @case ("groups") {
+          <div class="groups-cell">
+            @if (item.groups && item.groups.length > 0) {
+              <div class="groups-chips">
+                @for (group of item.groups; track group.id) {
+                  <mat-chip
+                    class="group-chip"
+                    [style.background-color]="group.color"
+                  >
+                    {{ group.name }}
+                  </mat-chip>
+                }
+              </div>
+            } @else {
+              <span class="all-participants">
+                <mat-icon>public</mat-icon>
+                Todos
+              </span>
+            }
+          </div>
+        }
+        @default {
+          <span>{{ value || "-" }}</span>
+        }
+      }
+    </ng-template>
+
+    <!-- Empty State Template -->
+    <ng-template #emptyTemplate>
+      <div class="custom-empty-state">
+        <mat-icon class="empty-icon">event_available</mat-icon>
+        <h3>No hay actividades programadas</h3>
+        <p>
+          Crea la primera actividad para comenzar a planificar la agenda del
+          evento.
+        </p>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openCreateAgendaModal()"
+          class="create-first-button"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Primera Actividad
+        </button>
+      </div>
+    </ng-template>
+  </app-reusable-table>
+
+  <!-- Summary Info -->
+  @if (!loading() && !error() && agendaItems().length > 0) {
+    <div class="summary-info">
+      <div class="summary-item">
+        <mat-icon>event_available</mat-icon>
+        <span
+          >Total de actividades:
+          <strong>{{ agendaItems().length }}</strong></span
+        >
+      </div>
+    </div>
+  }
+</div>

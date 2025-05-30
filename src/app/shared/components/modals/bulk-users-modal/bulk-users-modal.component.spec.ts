@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EventFormComponent } from './event-form.component';
+import { BulkUsersModalComponent } from './bulk-users-modal.component';
 
-describe('EventFormComponent', () => {
-  let component: EventFormComponent;
-  let fixture: ComponentFixture<EventFormComponent>;
+describe('BulkUsersModalComponent', () => {
+  let component: BulkUsersModalComponent;
+  let fixture: ComponentFixture<BulkUsersModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EventFormComponent]
+      imports: [BulkUsersModalComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EventFormComponent);
+    fixture = TestBed.createComponent(BulkUsersModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

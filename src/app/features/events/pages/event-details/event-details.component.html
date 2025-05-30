@@ -113,7 +113,7 @@
               <!--   [eventId]="eventId!" -->
               <!--   *ngIf="eventId" -->
               <!-- ></app-event-users-list> -->
-              <app-event-users-list />
+              <app-event-users-list [eventId]="eventId!" />
             </div>
           </mat-tab>
 
@@ -132,7 +132,7 @@
               <!--   [eventId]="eventId!" -->
               <!--   *ngIf="eventId" -->
               <!-- ></app-event-agenda-list> -->
-              <app-event-agenda-list />
+              <app-event-agenda-list [eventId]="eventId!" />
             </div>
           </mat-tab>
         </mat-tab-group>

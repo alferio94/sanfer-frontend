@@ -1,0 +1,342 @@
+<!-- src/app/shared/components/modals/create-agenda-modal/create-agenda-modal.component.html -->
+<div class="create-agenda-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">{{
+          isEditMode ? "edit" : "add_circle"
+        }}</mat-icon>
+        <h2>{{ isEditMode ? "Editar Actividad" : "Crear Nueva Actividad" }}</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      {{
+        isEditMode
+          ? "Modifica la información de la actividad"
+          : "Crea una nueva actividad para la agenda del evento"
+      }}
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <form [formGroup]="agendaForm" (ngSubmit)="onSubmit()" class="agenda-form">
+      <!-- Título de la Actividad -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Título de la Actividad</mat-label>
+          <input
+            matInput
+            formControlName="title"
+            placeholder="Ej. Conferencia Magistral, Taller de React"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>event_available</mat-icon>
+          <mat-hint align="end"
+            >{{ agendaForm.get("title")?.value?.length || 0 }}/100</mat-hint
+          >
+          <mat-error *ngIf="agendaForm.get('title')?.hasError('required')">
+            El título de la actividad es obligatorio
+          </mat-error>
+          <mat-error *ngIf="agendaForm.get('title')?.hasError('minlength')">
+            El título debe tener al menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción (opcional)</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            placeholder="Describe los detalles de la actividad..."
+            rows="3"
+            maxlength="500"
+          ></textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-hint align="end"
+            >{{
+              agendaForm.get("description")?.value?.length || 0
+            }}/500</mat-hint
+          >
+        </mat-form-field>
+      </div>
+
+      <!-- Ubicación -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Ubicación (opcional)</mat-label>
+          <input
+            matInput
+            formControlName="location"
+            placeholder="Ej. Auditorio Principal, Sala A, Área de Networking"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>place</mat-icon>
+          <mat-hint align="end"
+            >{{ agendaForm.get("location")?.value?.length || 0 }}/100</mat-hint
+          >
+        </mat-form-field>
+      </div>
+
+      <!-- Fecha y Hora de Inicio -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>schedule</mat-icon>
+          Horario de la Actividad
+        </h3>
+
+        <div class="datetime-row">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Fecha de Inicio</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startDatePicker"
+              formControlName="startDate"
+              placeholder="Selecciona la fecha"
+              readonly
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="startDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
+            <mat-error
+              *ngIf="agendaForm.get('startDate')?.hasError('required')"
+            >
+              La fecha de inicio es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Hora de Inicio</mat-label>
+            <input
+              matInput
+              [matTimepicker]="startTimePicker"
+              formControlName="startTime"
+              placeholder="Selecciona la hora"
+              readonly
+            />
+            <mat-timepicker-toggle matIconSuffix [for]="startTimePicker">
+              <mat-icon>access_time</mat-icon>
+            </mat-timepicker-toggle>
+            <mat-timepicker #startTimePicker interval="5min"></mat-timepicker>
+            <mat-error
+              *ngIf="agendaForm.get('startTime')?.hasError('required')"
+            >
+              La hora de inicio es obligatoria
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="datetime-row">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Fecha de Fin</mat-label>
+            <input
+              matInput
+              [matDatepicker]="endDatePicker"
+              formControlName="endDate"
+              placeholder="Selecciona la fecha"
+              readonly
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="endDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
+            <mat-error *ngIf="agendaForm.get('endDate')?.hasError('required')">
+              La fecha de fin es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Hora de Fin</mat-label>
+            <input
+              matInput
+              [matTimepicker]="endTimePicker"
+              formControlName="endTime"
+              placeholder="Selecciona la hora"
+              readonly
+            />
+            <mat-timepicker-toggle matIconSuffix [for]="endTimePicker">
+              <mat-icon>access_time</mat-icon>
+            </mat-timepicker-toggle>
+            <mat-timepicker interval="5min" #endTimePicker></mat-timepicker>
+            <mat-error *ngIf="agendaForm.get('endTime')?.hasError('required')">
+              La hora de fin es obligatoria
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Error de validación de fechas -->
+        <div
+          *ngIf="agendaForm.hasError('dateTimeRange')"
+          class="date-range-error"
+        >
+          <mat-icon>error</mat-icon>
+          <span>La fecha y hora de fin debe ser posterior a la de inicio</span>
+        </div>
+      </div>
+
+      <!-- Preview de las fechas -->
+      <div class="form-section" *ngIf="getStartDateTime() && getEndDateTime()">
+        <div class="datetime-preview">
+          <h4>Resumen de la Actividad</h4>
+          <div class="preview-content">
+            <div class="preview-item">
+              <mat-icon>play_circle</mat-icon>
+              <div>
+                <strong>Inicio:</strong>
+                <span>{{
+                  getStartDateTime()
+                    | date: "EEEE, d MMMM y 'a las' HH:mm" : "es-ES"
+                }}</span>
+              </div>
+            </div>
+            <div class="preview-item">
+              <mat-icon>stop_circle</mat-icon>
+              <div>
+                <strong>Fin:</strong>
+                <span>{{
+                  getEndDateTime()
+                    | date: "EEEE, d MMMM y 'a las' HH:mm" : "es-ES"
+                }}</span>
+              </div>
+            </div>
+            <div class="preview-item">
+              <mat-icon>schedule</mat-icon>
+              <div>
+                <strong>Duración:</strong>
+                <span>{{ getDuration() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupos Asignados -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>groups</mat-icon>
+          Grupos Asignados
+        </h3>
+
+        @if (availableGroups().length === 0) {
+          <div class="no-groups">
+            <mat-icon>info</mat-icon>
+            <span>No hay grupos disponibles en este evento</span>
+          </div>
+        } @else {
+          <div class="groups-section">
+            <!-- Select All Toggle -->
+            <div class="select-all-toggle">
+              <mat-slide-toggle
+                [checked]="isAllGroupsSelected"
+                (change)="toggleAllGroups()"
+                color="primary"
+              >
+                <strong>
+                  @if (selectedGroups().size === 0) {
+                    Seleccionar todos los grupos
+                  } @else if (isAllGroupsSelected) {
+                    Deseleccionar todos los grupos
+                  } @else {
+                    Seleccionar todos los grupos ({{ selectedGroups().size }}/{{
+                      availableGroups().length
+                    }})
+                  }
+                </strong>
+              </mat-slide-toggle>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Groups List -->
+            <div class="groups-list">
+              @for (group of availableGroups(); track group.id) {
+                <div class="group-toggle-item">
+                  <div class="group-info">
+                    <div
+                      class="group-color"
+                      [style.background-color]="group.color"
+                    ></div>
+                    <div class="group-details">
+                      <span class="group-name">{{ group.name }}</span>
+                      <span class="group-stats">
+                        {{ group.assignments?.length || 0 }} participantes
+                      </span>
+                    </div>
+                  </div>
+
+                  <mat-slide-toggle
+                    [checked]="isGroupSelected(group.id)"
+                    (change)="onGroupToggle(group.id, $event.checked)"
+                    color="primary"
+                  >
+                  </mat-slide-toggle>
+                </div>
+              }
+            </div>
+
+            <!-- Selected Summary -->
+            <div class="selection-summary">
+              <mat-icon>info</mat-icon>
+              <span>
+                @if (selectedGroups().size === 0) {
+                  La actividad no será visible para ningún grupo
+                } @else {
+                  Actividad para {{ selectedGroups().size }} grupo(s)
+                  seleccionado(s)
+                }
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSubmit()"
+        [disabled]="agendaForm.invalid || loading()"
+      >
+        <mat-icon *ngIf="loading()">
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-icon>
+        <mat-icon *ngIf="!loading()">{{
+          isEditMode ? "save" : "add"
+        }}</mat-icon>
+        {{ isEditMode ? "Guardar Cambios" : "Crear Actividad" }}
+      </button>
+    </div>
+  </div>
+</div>

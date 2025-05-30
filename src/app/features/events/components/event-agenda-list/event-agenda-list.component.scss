@@ -1,0 +1,20 @@
+@use "../list-styles/list-style.scss";
+.date-cell,
+.time-cell,
+.duration-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .cell-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--sanfer-primary);
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+}

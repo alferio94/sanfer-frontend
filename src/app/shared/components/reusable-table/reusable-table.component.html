@@ -178,7 +178,7 @@
           ></tr>
           <tr
             mat-row
-            *matRowDef="let row; columns: displayedColumns; trackBy: trackByFn"
+            *matRowDef="let row; columns: displayedColumns"
             (click)="onRowClick(row)"
             class="data-row"
             [class.selected]="isSelected(row)"
