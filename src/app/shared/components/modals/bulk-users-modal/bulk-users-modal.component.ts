@@ -271,8 +271,8 @@ export class BulkUsersModalComponent implements OnInit {
         groups.push(
           ...groupsStr
             .split(',')
-            .map((g) => g.trim())
-            .filter((g) => g),
+            .map((g: string) => g.trim())
+            .filter((g: string) => g),
         );
       }
 
@@ -316,7 +316,7 @@ export class BulkUsersModalComponent implements OnInit {
   }
 
   // Upload users
-  async uploadUsers(): Promise<void> {
+  uploadUsers(): void {
     const users = this.validUsers();
     if (users.length === 0) {
       alert('No hay usuarios válidos para cargar.');
@@ -326,39 +326,30 @@ export class BulkUsersModalComponent implements OnInit {
     this.uploading.set(true);
     this.uploadProgress.set(0);
 
-    try {
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        const current = this.uploadProgress();
-        if (current < 90) {
-          this.uploadProgress.set(current + 10);
-        }
-      }, 200);
-
-      // Send to API
-      const result = await firstValueFrom(
-        this.eventsService.assignUsersToEvent(this.data.eventId, users),
-      );
-
-      clearInterval(progressInterval);
-      this.uploadProgress.set(100);
-
-      if (result) {
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      const current = this.uploadProgress();
+      if (current < 90) {
+        this.uploadProgress.set(current + 10);
+      }
+    }, 200);
+    this.eventsService.assignUsersToEvent(this.data.eventId, users).subscribe({
+      next: (result) => {
+        clearInterval(progressInterval);
+        this.uploadProgress.set(100);
         setTimeout(() => {
           this.dialogRef.close({
             action: 'upload',
             usersCount: users.length,
           });
         }, 500);
-      } else {
-        throw new Error('Error en la respuesta del servidor');
-      }
-    } catch (error) {
-      console.error('Error uploading users:', error);
-      this.uploading.set(false);
-      this.uploadProgress.set(0);
-      alert('Error al cargar los usuarios. Inténtalo de nuevo.');
-    }
+      },
+      error: (error) => {
+        console.error('Error uploading users:', error);
+        this.uploading.set(false);
+        this.uploadProgress.set(100);
+      },
+    });
   }
 
   onCancel(): void {

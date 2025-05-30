@@ -115,6 +115,16 @@ export class EventUsersListComponent implements OnInit {
       width: '600px',
       data: { eventId: this.eventId },
     });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.action === 'upload') {
+        this.loadUsers();
+        this.showMessage(
+          `Se han cargado ${result.usersCount} usuarios correctamente.`,
+          'success',
+        );
+      }
+    });
   }
 
   onEditUser(user: EventUser): void {

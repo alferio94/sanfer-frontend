@@ -11,6 +11,7 @@
         mat-raised-button
         color="primary"
         [disabled]="loading()"
+        (click)="openBulkUsersUploadModal()"
         class="create-button"
       >
         <mat-icon>add</mat-icon>

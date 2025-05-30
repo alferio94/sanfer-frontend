@@ -199,12 +199,14 @@ export class EventsService {
 
   // Asignar usuarios a evento
   assignUsersToEvent(eventId: string, users: any[]): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assignment/${eventId}`, users).pipe(
-      catchError((error) => {
-        console.error('Error assigning users to event:', error);
-        return of(null);
-      }),
-    );
+    return this.http
+      .post(`${environment.apiUrl}${this.baseUrl}assignment/${eventId}`, users)
+      .pipe(
+        catchError((error) => {
+          console.error('Error assigning users to event:', error);
+          return of(null);
+        }),
+      );
   }
 
   // Obtener estadísticas de eventos
