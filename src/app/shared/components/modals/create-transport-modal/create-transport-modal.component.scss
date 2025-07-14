@@ -1,0 +1,91 @@
+// src/app/shared/components/modals/create-transport-modal/create-transport-modal.component.scss
+// Reutilizamos los estilos base de create-agenda-modal con algunas personalizaciones específicas
+
+@import "../create-agenda-modal/create-agenda-modal.component.scss";
+
+// Estilos específicos para transportes
+.transport-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    color: var(--sanfer-primary);
+  }
+
+  span {
+    font-weight: 500;
+  }
+}
+
+.datetime-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(var(--sanfer-primary-rgb), 0.1);
+  border-radius: var(--sanfer-border-radius-sm);
+  margin-top: 1rem;
+  color: var(--sanfer-primary);
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+// Ajustes del modal para transportes
+.create-transport-modal {
+  max-width: 750px; // Slightly wider than other modals
+
+  .modal-body {
+    max-height: 75vh; // Allow more space for groups section
+  }
+}
+
+// Ajustes responsivos específicos para transportes
+@media (max-width: 768px) {
+  .create-transport-modal {
+    .transport-option {
+      gap: 0.5rem;
+
+      mat-icon {
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+      }
+
+      span {
+        font-size: 0.9rem;
+      }
+    }
+
+    .datetime-preview {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+
+      mat-icon {
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+      }
+
+      span {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .datetime-preview {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+}

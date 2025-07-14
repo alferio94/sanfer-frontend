@@ -1,0 +1,155 @@
+// src/app/features/events/components/event-transport-list/event-transport-list.component.scss
+@use "../list-styles/list-style.scss";
+
+// Estilos específicos para la lista de transportes
+.transport-type-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .transport-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--sanfer-primary);
+    padding: 0.25rem;
+    border-radius: 50%;
+    background: rgba(var(--sanfer-primary-rgb), 0.1);
+  }
+}
+
+.departure-time-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .cell-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--sanfer-accent);
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+}
+
+.details-cell {
+  .details-text {
+    display: block;
+    line-height: 1.4;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.groups-cell {
+  .groups-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    max-width: 180px;
+  }
+
+  .group-chip {
+    color: white !important;
+    font-size: 0.75rem;
+    font-weight: 500;
+    height: 24px;
+    border-radius: 12px;
+  }
+
+  .all-participants {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+    font-style: italic;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      color: var(--sanfer-accent);
+    }
+  }
+}
+
+.map-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sanfer-primary);
+  text-decoration: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--sanfer-primary-rgb), 0.1);
+    transform: scale(1.1);
+  }
+
+  mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.no-map {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .transport-type-cell .transport-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .departure-time-cell {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+
+    span {
+      font-size: 0.8rem;
+    }
+  }
+
+  .details-cell .details-text {
+    max-width: 150px;
+    font-size: 0.85rem;
+  }
+
+  .groups-cell .groups-chips {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .details-cell .details-text {
+    max-width: 100px;
+    font-size: 0.8rem;
+  }
+
+  .groups-cell .groups-chips {
+    max-width: 80px;
+  }
+
+  .groups-cell .group-chip {
+    font-size: 0.7rem;
+    height: 20px;
+  }
+}

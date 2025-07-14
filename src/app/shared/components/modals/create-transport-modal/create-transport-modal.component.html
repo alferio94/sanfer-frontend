@@ -1,0 +1,308 @@
+<div class="create-transport-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">{{
+          isEditMode ? "edit" : "add_circle"
+        }}</mat-icon>
+        <h2>
+          {{ isEditMode ? "Editar Transporte" : "Crear Nuevo Transporte" }}
+        </h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      {{
+        isEditMode
+          ? "Modifica la información del transporte"
+          : "Registra una nueva opción de transporte para el evento"
+      }}
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <form
+      [formGroup]="transportForm"
+      (ngSubmit)="onSubmit()"
+      class="transport-form"
+    >
+      <!-- Nombre del Transporte -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del Transporte</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Ej. Autobús al Aeropuerto"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>directions</mat-icon>
+          <mat-hint align="end"
+            >{{ transportForm.get("name")?.value?.length || 0 }}/100</mat-hint
+          >
+          <mat-error *ngIf="transportForm.get('name')?.hasError('required')">
+            El nombre del transporte es obligatorio
+          </mat-error>
+          <mat-error *ngIf="transportForm.get('name')?.hasError('minlength')">
+            El nombre debe tener al menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Tipo de Transporte -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo de Transporte</mat-label>
+          <mat-select formControlName="type">
+            @for (transportType of transportTypes; track transportType.value) {
+              <mat-option [value]="transportType.value">
+                <div class="transport-option">
+                  <mat-icon>{{ transportType.icon }}</mat-icon>
+                  <span>{{ transportType.label }}</span>
+                </div>
+              </mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>{{ getSelectedTypeIcon() }}</mat-icon>
+          <mat-error *ngIf="transportForm.get('type')?.hasError('required')">
+            Selecciona el tipo de transporte
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Detalles -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Detalles del Transporte</mat-label>
+          <textarea
+            matInput
+            formControlName="details"
+            placeholder="Describe las instrucciones, punto de encuentro, etc."
+            rows="3"
+            maxlength="500"
+          ></textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-hint align="end"
+            >{{
+              transportForm.get("details")?.value?.length || 0
+            }}/500</mat-hint
+          >
+          <mat-error *ngIf="transportForm.get('details')?.hasError('required')">
+            Los detalles son obligatorios
+          </mat-error>
+          <mat-error
+            *ngIf="transportForm.get('details')?.hasError('minlength')"
+          >
+            Los detalles deben tener al menos 10 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Fecha y Hora de Salida -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>schedule</mat-icon>
+          Hora de Salida
+        </h3>
+
+        <div class="datetime-row">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Fecha de Salida</mat-label>
+            <input
+              matInput
+              [matDatepicker]="departureDatePicker"
+              formControlName="departureDate"
+              placeholder="Selecciona la fecha"
+              readonly
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="departureDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #departureDatePicker></mat-datepicker>
+            <mat-error
+              *ngIf="transportForm.get('departureDate')?.hasError('required')"
+            >
+              La fecha de salida es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Hora de Salida</mat-label>
+            <input
+              matInput
+              [matTimepicker]="departureTimePicker"
+              formControlName="departureTime"
+              placeholder="Selecciona la hora"
+              readonly
+            />
+            <mat-timepicker-toggle matIconSuffix [for]="departureTimePicker">
+              <mat-icon>access_time</mat-icon>
+            </mat-timepicker-toggle>
+            <mat-timepicker
+              #departureTimePicker
+              interval="5min"
+            ></mat-timepicker>
+            <mat-error
+              *ngIf="transportForm.get('departureTime')?.hasError('required')"
+            >
+              La hora de salida es obligatoria
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Preview de fecha y hora -->
+        @if (getDepartureDateTime()) {
+          <div class="datetime-preview">
+            <mat-icon>schedule</mat-icon>
+            <span
+              >Salida:
+              {{
+                getDepartureDateTime()
+                  | date: "EEEE, d MMMM y 'a las' HH:mm" : "es-ES"
+              }}</span
+            >
+          </div>
+        }
+      </div>
+
+      <!-- URL del Mapa -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Enlace de Mapa (opcional)</mat-label>
+          <input
+            matInput
+            formControlName="mapUrl"
+            placeholder="https://maps.google.com/..."
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>map</mat-icon>
+          <mat-error *ngIf="transportForm.get('mapUrl')?.hasError('pattern')">
+            Debe ser una URL válida (http:// o https://)
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Grupos Asignados -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>groups</mat-icon>
+          Grupos Asignados
+        </h3>
+
+        @if (availableGroups().length === 0) {
+          <div class="no-groups">
+            <mat-icon>info</mat-icon>
+            <span>No hay grupos disponibles en este evento</span>
+          </div>
+        } @else {
+          <div class="groups-section">
+            <!-- Select All Toggle -->
+            <div class="select-all-toggle">
+              <mat-slide-toggle
+                [checked]="isAllGroupsSelected"
+                (change)="toggleAllGroups()"
+                color="primary"
+              >
+                <strong>
+                  @if (selectedGroups().size === 0) {
+                    Seleccionar todos los grupos
+                  } @else if (isAllGroupsSelected) {
+                    Deseleccionar todos los grupos
+                  } @else {
+                    Seleccionar todos los grupos ({{ selectedGroups().size }}/{{
+                      availableGroups().length
+                    }})
+                  }
+                </strong>
+              </mat-slide-toggle>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Groups List -->
+            <div class="groups-list">
+              @for (group of availableGroups(); track group.id) {
+                <div class="group-toggle-item">
+                  <div class="group-info">
+                    <div
+                      class="group-color"
+                      [style.background-color]="group.color"
+                    ></div>
+                    <div class="group-details">
+                      <span class="group-name">{{ group.name }}</span>
+                      <span class="group-stats">
+                        {{ group.assignments?.length || 0 }} participantes
+                      </span>
+                    </div>
+                  </div>
+
+                  <mat-slide-toggle
+                    [checked]="isGroupSelected(group.id)"
+                    (change)="onGroupToggle(group.id, $event.checked)"
+                    color="primary"
+                  >
+                  </mat-slide-toggle>
+                </div>
+              }
+            </div>
+
+            <!-- Selected Summary -->
+            <div class="selection-summary">
+              <mat-icon>info</mat-icon>
+              <span>
+                @if (selectedGroups().size === 0) {
+                  El transporte no será visible para ningún grupo
+                } @else {
+                  Transporte para {{ selectedGroups().size }} grupo(s)
+                  seleccionado(s)
+                }
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSubmit()"
+        [disabled]="transportForm.invalid || loading()"
+      >
+        <mat-icon *ngIf="loading()">
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-icon>
+        <mat-icon *ngIf="!loading()">{{
+          isEditMode ? "save" : "add"
+        }}</mat-icon>
+        {{ isEditMode ? "Guardar Cambios" : "Crear Transporte" }}
+      </button>
+    </div>
+  </div>
+</div>

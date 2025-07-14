@@ -1,0 +1,97 @@
+// src/app/features/events/components/event-speakers-list/event-speakers-list.component.scss
+@use "../list-styles/list-style.scss";
+
+// Estilos específicos para la lista de speakers
+.photo-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.speaker-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--sanfer-shadow-sm);
+  border: 2px solid var(--mat-sys-outline-variant);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.no-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--mat-sys-surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--mat-sys-outline-variant);
+
+  mat-icon {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.presentation-cell {
+  .presentation-title {
+    display: block;
+    font-weight: 500;
+    line-height: 1.4;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.specialty-cell {
+  .specialty-chip {
+    background: rgba(var(--sanfer-accent-rgb), 0.1);
+    color: var(--sanfer-accent);
+    font-size: 0.8rem;
+    font-weight: 500;
+    height: 28px;
+    border-radius: 14px;
+    border: 1px solid rgba(var(--sanfer-accent-rgb), 0.3);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .speaker-photo,
+  .no-photo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .presentation-cell .presentation-title {
+    max-width: 180px;
+    font-size: 0.9rem;
+  }
+
+  .specialty-cell .specialty-chip {
+    font-size: 0.75rem;
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .speaker-photo,
+  .no-photo {
+    width: 35px;
+    height: 35px;
+  }
+
+  .presentation-cell .presentation-title {
+    max-width: 120px;
+    font-size: 0.85rem;
+  }
+}

@@ -22,6 +22,8 @@ import { EventGroupListComponent } from '../../components/event-group-list/event
 import { EventAgendaListComponent } from '../../components/event-agenda-list/event-agenda-list.component';
 import { EventUsersListComponent } from '../../components/event-users-list/event-users-list.component';
 import { EventHotelListComponent } from '../../components/event-hotel-list/event-hotel-list.component';
+import { EventSpeakersListComponent } from '../../components/event-speakers-list/event-speakers-list.component';
+import { EventTransportListComponent } from '../../components/event-transport-list/event-transport-list.component';
 @Component({
   selector: 'app-event-details',
   imports: [
@@ -39,6 +41,8 @@ import { EventHotelListComponent } from '../../components/event-hotel-list/event
     EventAgendaListComponent,
     EventUsersListComponent,
     EventHotelListComponent,
+    EventSpeakersListComponent,
+    EventTransportListComponent,
   ],
   templateUrl: './event-details.component.html',
   styleUrl: './event-details.component.scss',
@@ -76,13 +80,23 @@ export class EventDetailsComponent {
 
   readonly eventStats = computed(() => {
     const currentEvent = this.event();
-    if (!currentEvent) return { users: 0, groups: 0, activities: 0, hotels: 0 };
+    if (!currentEvent)
+      return {
+        users: 0,
+        groups: 0,
+        activities: 0,
+        hotels: 0,
+        speakers: 0,
+        transports: 0,
+      };
 
     return {
       users: currentEvent.users?.length || 0,
       groups: currentEvent.groups?.length || 0,
       activities: currentEvent.agendas?.length || 0,
       hotels: currentEvent.hotels?.length || 0,
+      speakers: currentEvent.speakers?.length || 0,
+      transports: currentEvent.transports?.length || 0,
     };
   });
 

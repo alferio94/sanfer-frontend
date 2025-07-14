@@ -140,6 +140,32 @@
               <app-event-hotel-list [eventId]="eventId!" />
             </div>
           </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">record_voice_over</mat-icon>
+              <span>Speakers</span>
+              <mat-chip class="tab-badge" *ngIf="eventStats().speakers > 0">
+                {{ eventStats().speakers }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <app-event-speakers-list [eventId]="eventId!" />
+            </div>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">directions</mat-icon>
+              <span>Transportes</span>
+              <mat-chip class="tab-badge" *ngIf="eventStats().transports > 0">
+                {{ eventStats().transports }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <app-event-transport-list [eventId]="eventId!" />
+            </div>
+          </mat-tab>
         </mat-tab-group>
       </mat-card>
     </div>

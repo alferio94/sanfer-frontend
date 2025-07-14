@@ -2,6 +2,8 @@ import { EventAgenda } from './agenda.interface';
 import { EventUserAssignment } from './event-user-assigment.interface';
 import { EventGroup } from './group.interface';
 import { Hotel } from './hotel.interface';
+import { Speaker } from './speaker.interface';
+import { Transport } from './transport.interface';
 
 export interface AppEvent {
   id: string;
@@ -21,4 +23,6 @@ export interface AppEvent {
   users?: EventUserAssignment[];
   agendas?: EventAgenda[];
   hotels?: Hotel[];
+  speakers?: Speaker[]; // Array of speaker IDs
+  transports?: Transport[];
 }

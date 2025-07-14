@@ -1,6 +1,7 @@
 export * from './create-event-group.dto';
 export * from './create-event-agendum.dto';
 export * from './create-event.dto';
+export * from './create-event-speaker.dto';
 export * from './create-event-user.dto';
 export * from './create-hotel.dto';
 export * from './update-event-group.dto';
@@ -8,3 +9,6 @@ export * from './update-event-agendum.dto';
 export * from './update-event-user.dto';
 export * from './update-event.dto';
 export * from './update-hotel.dto';
+export * from './update-event-speaker.dto';
+export * from './create-transport.dto';
+export * from './update-transport.dto';

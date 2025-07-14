@@ -1,0 +1,115 @@
+<!-- src/app/features/events/components/event-speakers-list/event-speakers-list.component.html -->
+<div class="list-container">
+  <!-- Header with actions -->
+  <div class="list-header">
+    <div class="header-info">
+      <h3>Speakers del Evento</h3>
+      <p class="subtitle">Gestiona los ponentes y presentadores del evento</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateSpeakerModal()"
+        [disabled]="loading()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Speaker
+      </button>
+
+      <button
+        mat-icon-button
+        (click)="loadSpeakers()"
+        matTooltip="Actualizar lista"
+        [disabled]="loading()"
+      >
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Reusable Table -->
+  <app-reusable-table
+    [data]="speakers()"
+    [columns]="tableColumns"
+    [config]="tableConfig"
+    [loading]="loading()"
+    [error]="error()"
+    [actions]="tableActions"
+    [trackByFn]="trackBySpeakerId"
+    emptyMessage="No hay speakers registrados para este evento"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)"
+  >
+    <!-- Custom Cell Template -->
+    <ng-template #cellTemplate let-value let-item="item" let-column="column">
+      @switch (column.key) {
+        @case ("photoUrl") {
+          <div class="photo-cell">
+            @if (item.photoUrl) {
+              <img
+                [src]="item.photoUrl"
+                [alt]="item.name"
+                class="speaker-photo"
+              />
+            } @else {
+              <div class="no-photo">
+                <mat-icon>person</mat-icon>
+              </div>
+            }
+          </div>
+        }
+        @case ("presentation") {
+          <div class="presentation-cell">
+            <span class="presentation-title">
+              {{ item.presentation }}
+            </span>
+          </div>
+        }
+        @case ("specialty") {
+          <div class="specialty-cell">
+            <mat-chip class="specialty-chip">
+              {{ item.specialty }}
+            </mat-chip>
+          </div>
+        }
+        @default {
+          <span>{{ value || "-" }}</span>
+        }
+      }
+    </ng-template>
+
+    <!-- Empty State Template -->
+    <ng-template #emptyTemplate>
+      <div class="custom-empty-state">
+        <mat-icon class="empty-icon">record_voice_over</mat-icon>
+        <h3>No hay speakers registrados</h3>
+        <p>Crea el primer speaker para el evento</p>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openCreateSpeakerModal()"
+          class="create-first-button"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Primer Speaker
+        </button>
+      </div>
+    </ng-template>
+  </app-reusable-table>
+
+  <!-- Summary Info -->
+  @if (!loading() && !error() && speakers().length > 0) {
+    <div class="summary-info">
+      <div class="summary-item">
+        <mat-icon>record_voice_over</mat-icon>
+        <span
+          >Total de speakers: <strong>{{ speakers().length }}</strong></span
+        >
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,56 @@
+// src/app/shared/components/modals/create-speaker-modal/create-speaker-modal.component.scss
+// Reutilizamos los estilos base de create-hotel-modal con algunas personalizaciones específicas
+
+@import "../create-hotel-modal/create-hotel-modal.component.scss";
+
+// Estilos específicos para speakers
+.photo-preview {
+  margin-top: 1rem;
+  text-align: center;
+
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--sanfer-primary);
+  }
+
+  .preview-image {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: var(--sanfer-border-radius);
+    box-shadow: var(--sanfer-shadow-md);
+    border: 2px solid var(--mat-sys-outline-variant);
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  p {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0 0;
+  }
+}
+
+// Ajustes responsivos específicos para speakers
+@media (max-width: 768px) {
+  .photo-preview {
+    .preview-image {
+      max-width: 150px;
+      max-height: 150px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .photo-preview {
+    .preview-image {
+      max-width: 120px;
+      max-height: 120px;
+    }
+  }
+}

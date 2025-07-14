@@ -1,0 +1,180 @@
+<div class="create-speaker-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">{{
+          isEditMode ? "edit" : "add_circle"
+        }}</mat-icon>
+        <h2>{{ isEditMode ? "Editar Speaker" : "Crear Nuevo Speaker" }}</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      {{
+        isEditMode
+          ? "Modifica la información del speaker"
+          : "Registra un nuevo ponente para el evento"
+      }}
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <form
+      [formGroup]="speakerForm"
+      (ngSubmit)="onSubmit()"
+      class="speaker-form"
+    >
+      <!-- Nombre del Speaker -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre Completo</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Ej. Dr. María González"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-hint align="end"
+            >{{ speakerForm.get("name")?.value?.length || 0 }}/100</mat-hint
+          >
+          <mat-error *ngIf="speakerForm.get('name')?.hasError('required')">
+            El nombre es obligatorio
+          </mat-error>
+          <mat-error *ngIf="speakerForm.get('name')?.hasError('minlength')">
+            El nombre debe tener al menos 2 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Presentación -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Título de la Presentación</mat-label>
+          <input
+            matInput
+            formControlName="presentation"
+            placeholder="Ej. El Futuro de la Inteligencia Artificial"
+            maxlength="200"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>slideshow</mat-icon>
+          <mat-hint align="end"
+            >{{
+              speakerForm.get("presentation")?.value?.length || 0
+            }}/200</mat-hint
+          >
+          <mat-error
+            *ngIf="speakerForm.get('presentation')?.hasError('required')"
+          >
+            El título de la presentación es obligatorio
+          </mat-error>
+          <mat-error
+            *ngIf="speakerForm.get('presentation')?.hasError('minlength')"
+          >
+            El título debe tener al menos 5 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Especialidad -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Especialidad</mat-label>
+          <input
+            matInput
+            formControlName="specialty"
+            placeholder="Ej. Inteligencia Artificial y Machine Learning"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>school</mat-icon>
+          <mat-hint align="end"
+            >{{
+              speakerForm.get("specialty")?.value?.length || 0
+            }}/100</mat-hint
+          >
+          <mat-error *ngIf="speakerForm.get('specialty')?.hasError('required')">
+            La especialidad es obligatoria
+          </mat-error>
+          <mat-error
+            *ngIf="speakerForm.get('specialty')?.hasError('minlength')"
+          >
+            La especialidad debe tener al menos 2 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- URL de la Foto -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>URL de la Foto (opcional)</mat-label>
+          <input
+            matInput
+            formControlName="photoUrl"
+            placeholder="https://ejemplo.com/foto-speaker.jpg"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>photo_camera</mat-icon>
+          <mat-error *ngIf="speakerForm.get('photoUrl')?.hasError('pattern')">
+            Debe ser una URL válida (http:// o https://)
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Vista previa de la foto -->
+      <div class="form-section" *ngIf="getPhotoUrl()">
+        <div class="photo-preview">
+          <h4>Vista previa:</h4>
+          <img
+            [src]="getPhotoUrl()"
+            alt="Preview"
+            class="preview-image"
+            (error)="onImageError($event)"
+          />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSubmit()"
+        [disabled]="speakerForm.invalid || loading()"
+      >
+        <mat-icon *ngIf="loading()">
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-icon>
+        <mat-icon *ngIf="!loading()">{{
+          isEditMode ? "save" : "add"
+        }}</mat-icon>
+        {{ isEditMode ? "Guardar Cambios" : "Crear Speaker" }}
+      </button>
+    </div>
+  </div>
+</div>

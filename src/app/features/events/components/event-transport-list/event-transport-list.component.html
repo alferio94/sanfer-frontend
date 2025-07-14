@@ -1,0 +1,148 @@
+<!-- src/app/features/events/components/event-transport-list/event-transport-list.component.html -->
+<div class="list-container">
+  <!-- Header with actions -->
+  <div class="list-header">
+    <div class="header-info">
+      <h3>Transportes del Evento</h3>
+      <p class="subtitle">
+        Gestiona las opciones de transporte para los participantes
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateTransportModal()"
+        [disabled]="loading()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Transporte
+      </button>
+
+      <button
+        mat-icon-button
+        (click)="loadTransports()"
+        matTooltip="Actualizar lista"
+        [disabled]="loading()"
+      >
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Reusable Table -->
+  <app-reusable-table
+    [data]="sortedTransports()"
+    [columns]="tableColumns"
+    [config]="tableConfig"
+    [loading]="loading()"
+    [error]="error()"
+    [actions]="tableActions"
+    [trackByFn]="trackByTransportId"
+    emptyMessage="No hay transportes registrados para este evento"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)"
+  >
+    <!-- Custom Cell Template -->
+    <ng-template #cellTemplate let-value let-item="item" let-column="column">
+      @switch (column.key) {
+        @case ("type") {
+          <div class="transport-type-cell">
+            <mat-icon class="transport-icon">
+              {{ getTransportIcon(item.type) }}
+            </mat-icon>
+          </div>
+        }
+        @case ("departureTime") {
+          <div class="departure-time-cell">
+            <mat-icon class="cell-icon">schedule</mat-icon>
+            <span>{{ formatDepartureTime(item.departureTime) }}</span>
+          </div>
+        }
+        @case ("details") {
+          <div class="details-cell">
+            <span class="details-text">
+              {{ item.details }}
+            </span>
+          </div>
+        }
+        @case ("groups") {
+          <div class="groups-cell">
+            @if (item.groups && item.groups.length > 0) {
+              <div class="groups-chips">
+                @for (group of item.groups; track group.id) {
+                  <mat-chip
+                    class="group-chip"
+                    [style.background-color]="group.color"
+                  >
+                    {{ group.name }}
+                  </mat-chip>
+                }
+              </div>
+            } @else {
+              <span class="all-participants">
+                <mat-icon>public</mat-icon>
+                Todos
+              </span>
+            }
+          </div>
+        }
+        @case ("mapUrl") {
+          @if (item.mapUrl) {
+            <a
+              [href]="item.mapUrl"
+              target="_blank"
+              class="map-link"
+              matTooltip="Abrir mapa"
+              (click)="$event.stopPropagation()"
+            >
+              <mat-icon>map</mat-icon>
+            </a>
+          } @else {
+            <span class="no-map">-</span>
+          }
+        }
+        @default {
+          <span>{{ value || "-" }}</span>
+        }
+      }
+    </ng-template>
+
+    <!-- Empty State Template -->
+    <ng-template #emptyTemplate>
+      <div class="custom-empty-state">
+        <mat-icon class="empty-icon">directions</mat-icon>
+        <h3>No hay transportes registrados</h3>
+        <p>
+          Crea el primer transporte para facilitar el desplazamiento de los
+          participantes
+        </p>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openCreateTransportModal()"
+          class="create-first-button"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Primer Transporte
+        </button>
+      </div>
+    </ng-template>
+  </app-reusable-table>
+
+  <!-- Summary Info -->
+  @if (!loading() && !error() && transports().length > 0) {
+    <div class="summary-info">
+      <div class="summary-item">
+        <mat-icon>directions</mat-icon>
+        <span
+          >Total de transportes:
+          <strong>{{ transports().length }}</strong></span
+        >
+      </div>
+    </div>
+  }
+</div>
