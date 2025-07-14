@@ -109,10 +109,6 @@
             </ng-template>
 
             <div class="tab-content">
-              <!-- <app-event-users-list -->
-              <!--   [eventId]="eventId!" -->
-              <!--   *ngIf="eventId" -->
-              <!-- ></app-event-users-list> -->
               <app-event-users-list [eventId]="eventId!" />
             </div>
           </mat-tab>
@@ -128,11 +124,20 @@
             </ng-template>
 
             <div class="tab-content">
-              <!-- <app-event-agenda-list -->
-              <!--   [eventId]="eventId!" -->
-              <!--   *ngIf="eventId" -->
-              <!-- ></app-event-agenda-list> -->
               <app-event-agenda-list [eventId]="eventId!" />
+            </div>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">hotel</mat-icon>
+              <span>Hoteles</span>
+              <mat-chip class="tab-badge" *ngIf="eventStats().hotels > 0">
+                {{ eventStats().hotels }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <app-event-hotel-list [eventId]="eventId!" />
             </div>
           </mat-tab>
         </mat-tab-group>

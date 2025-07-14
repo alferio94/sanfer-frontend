@@ -14,9 +14,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 // Models & Services
 import { AppEvent } from '@core/models';
 import { EventsService } from '@core/services/events.service';
-import { GroupsService } from '@core/services/groups.service';
-import { AgendaService } from '@core/services/agenda.service';
-import { UsersService } from '@core/services/users.service';
 import { ModalService } from '@core/services/modal.service';
 
 // Components (we'll create these)
@@ -24,6 +21,7 @@ import { EventOverviewComponent } from '../../components/event-overview/event-ov
 import { EventGroupListComponent } from '../../components/event-group-list/event-group-list.component';
 import { EventAgendaListComponent } from '../../components/event-agenda-list/event-agenda-list.component';
 import { EventUsersListComponent } from '../../components/event-users-list/event-users-list.component';
+import { EventHotelListComponent } from '../../components/event-hotel-list/event-hotel-list.component';
 @Component({
   selector: 'app-event-details',
   imports: [
@@ -40,6 +38,7 @@ import { EventUsersListComponent } from '../../components/event-users-list/event
     EventGroupListComponent,
     EventAgendaListComponent,
     EventUsersListComponent,
+    EventHotelListComponent,
   ],
   templateUrl: './event-details.component.html',
   styleUrl: './event-details.component.scss',
@@ -48,9 +47,6 @@ export class EventDetailsComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private eventsService = inject(EventsService);
-  private groupsService = inject(GroupsService);
-  private agendaService = inject(AgendaService);
-  private usersService = inject(UsersService);
   private modalService = inject(ModalService);
   private snackBar = inject(MatSnackBar);
 
@@ -80,12 +76,13 @@ export class EventDetailsComponent {
 
   readonly eventStats = computed(() => {
     const currentEvent = this.event();
-    if (!currentEvent) return { users: 0, groups: 0, activities: 0 };
+    if (!currentEvent) return { users: 0, groups: 0, activities: 0, hotels: 0 };
 
     return {
       users: currentEvent.users?.length || 0,
       groups: currentEvent.groups?.length || 0,
       activities: currentEvent.agendas?.length || 0,
+      hotels: currentEvent.hotels?.length || 0,
     };
   });
 

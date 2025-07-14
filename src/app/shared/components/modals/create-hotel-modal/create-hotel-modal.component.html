@@ -1,0 +1,145 @@
+<!-- Modal para crear/editar hoteles -->
+<div class="create-hotel-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">{{
+          isEditMode ? "edit" : "add_circle"
+        }}</mat-icon>
+        <h2>{{ isEditMode ? "Editar Hotel" : "Crear Nuevo Hotel" }}</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      {{
+        isEditMode
+          ? "Modifica la información del hotel"
+          : "Registra un nuevo hotel para los participantes del evento"
+      }}
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <form [formGroup]="hotelForm" (ngSubmit)="onSubmit()" class="hotel-form">
+      <!-- Nombre del Hotel -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del Hotel</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Ej. Hotel Grand Plaza"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>hotel</mat-icon>
+          <mat-hint align="end"
+            >{{ hotelForm.get("name")?.value?.length || 0 }}/100</mat-hint
+          >
+          <mat-error *ngIf="hotelForm.get('name')?.hasError('required')">
+            El nombre del hotel es obligatorio
+          </mat-error>
+          <mat-error *ngIf="hotelForm.get('name')?.hasError('minlength')">
+            El nombre debe tener al menos 2 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Dirección -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Dirección Completa</mat-label>
+          <input
+            matInput
+            formControlName="address"
+            placeholder="Ej. Av. Principal 123, Ciudad, País"
+            maxlength="200"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>location_on</mat-icon>
+          <mat-hint align="end"
+            >{{ hotelForm.get("address")?.value?.length || 0 }}/200</mat-hint
+          >
+          <mat-error *ngIf="hotelForm.get('address')?.hasError('required')">
+            La dirección es obligatoria
+          </mat-error>
+          <mat-error *ngIf="hotelForm.get('address')?.hasError('minlength')">
+            La dirección debe tener al menos 5 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Teléfono (opcional)</mat-label>
+          <input
+            matInput
+            formControlName="phone"
+            placeholder="Ej. +52 55 1234 5678"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>phone</mat-icon>
+          <mat-error *ngIf="hotelForm.get('phone')?.hasError('pattern')">
+            Formato de teléfono inválido
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Enlace de Mapa -->
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Enlace de Mapa (opcional)</mat-label>
+          <input
+            matInput
+            formControlName="mapUrl"
+            placeholder="Enlace de Google Maps"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>map</mat-icon>
+          <mat-error *ngIf="hotelForm.get('mapUrl')?.hasError('pattern')">
+            Debe ser un enlace web válido (http:// o https://)
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSubmit()"
+        [disabled]="hotelForm.invalid || loading"
+      >
+        <mat-icon *ngIf="loading">
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-icon>
+        <mat-icon *ngIf="!loading">{{ isEditMode ? "save" : "add" }}</mat-icon>
+        {{ isEditMode ? "Guardar Cambios" : "Crear Hotel" }}
+      </button>
+    </div>
+  </div>
+</div>

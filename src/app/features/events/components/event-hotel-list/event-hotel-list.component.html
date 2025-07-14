@@ -1,0 +1,108 @@
+<!-- src/app/features/events/components/event-hotels-list/event-hotels-list.component.html -->
+<div class="list-container">
+  <!-- Header with actions -->
+  <div class="list-header">
+    <div class="header-info">
+      <h3>Hoteles del Evento</h3>
+      <p class="subtitle">Administra los hoteles para los participantes</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateHotelModal()"
+        [disabled]="loading()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Hotel
+      </button>
+
+      <button
+        mat-icon-button
+        (click)="loadHotels()"
+        matTooltip="Actualizar lista"
+        [disabled]="loading()"
+      >
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Reusable Table -->
+  <app-reusable-table
+    [data]="hotels()"
+    [columns]="tableColumns"
+    [config]="tableConfig"
+    [loading]="loading()"
+    [error]="error()"
+    [actions]="tableActions"
+    [trackByFn]="trackByHotelId"
+    emptyMessage="No hay hoteles registrados para este evento"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)"
+  >
+    <!-- Custom Cell Template -->
+    <ng-template #cellTemplate let-value let-item="item" let-column="column">
+      @switch (column.key) {
+        @case ("mapUrl") {
+          @if (item.mapUrl) {
+            <a
+              [href]="item.mapUrl"
+              target="_blank"
+              class="map-link"
+              matTooltip="Abrir mapa"
+            >
+              <mat-icon>map</mat-icon>
+              Ver Mapa
+            </a>
+          } @else {
+            <span class="no-map">Sin mapa</span>
+          }
+        }
+        @case ("photoUrl") {
+          @if (item.photoUrl) {
+            <img [src]="item.photoUrl" alt="Hotel" class="hotel-thumbnail" />
+          } @else {
+            <span class="no-photo">Sin foto</span>
+          }
+        }
+        @default {
+          <span>{{ value || "-" }}</span>
+        }
+      }
+    </ng-template>
+
+    <!-- Empty State Template -->
+    <ng-template #emptyTemplate>
+      <div class="custom-empty-state">
+        <mat-icon class="empty-icon">hotel</mat-icon>
+        <h3>No hay hoteles registrados</h3>
+        <p>Crea el primer hotel para los participantes del evento</p>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openCreateHotelModal()"
+          class="create-first-button"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Primer Hotel
+        </button>
+      </div>
+    </ng-template>
+  </app-reusable-table>
+
+  <!-- Summary Info -->
+  @if (!loading() && !error() && hotels().length > 0) {
+    <div class="summary-info">
+      <div class="summary-item">
+        <mat-icon>hotel</mat-icon>
+        <span
+          >Total de hoteles: <strong>{{ hotels().length }}</strong></span
+        >
+      </div>
+    </div>
+  }
+</div>

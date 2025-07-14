@@ -1,0 +1,50 @@
+@use "../list-styles/list-style.scss";
+// Estilos específicos para la lista de hoteles
+.map-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--sanfer-primary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+
+  .mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--sanfer-primary);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.no-map {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.hotel-thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--sanfer-border-radius-sm);
+  box-shadow: var(--sanfer-shadow-sm);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.no-photo {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
