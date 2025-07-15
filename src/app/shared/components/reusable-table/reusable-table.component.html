@@ -33,6 +33,30 @@
   <!-- Table Content -->
   @else {
     <div class="table-wrapper">
+      <!-- Filter Section -->
+      @if (config.showFilter) {
+        <div class="filter-section">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>{{ config.filterPlaceholder }}</mat-label>
+            <input
+              matInput
+              [(ngModel)]="filterValue"
+              (ngModelChange)="onFilterChange($event)"
+            />
+            <mat-icon matSuffix>search</mat-icon>
+            @if (filterValue) {
+              <button
+                mat-icon-button
+                matSuffix
+                (click)="onFilterChange('')"
+                matTooltip="Limpiar filtro"
+              >
+                <mat-icon>clear</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+        </div>
+      }
       <!-- Bulk Actions Bar -->
       @if (
         showSelection && selectedItems.length > 0 && bulkActions.length > 0

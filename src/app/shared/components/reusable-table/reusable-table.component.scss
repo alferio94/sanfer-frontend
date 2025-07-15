@@ -113,6 +113,63 @@
 }
 
 // =====================================
+// FILTER SECTION
+// =====================================
+.filter-section {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface);
+
+  .filter-field {
+    width: 100%;
+    max-width: 400px;
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      background: var(--mat-sys-surface-container);
+      border-radius: var(--sanfer-border-radius);
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background: transparent;
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    input {
+      color: var(--mat-sys-on-surface);
+      
+      &::placeholder {
+        color: var(--mat-sys-on-surface-variant);
+        opacity: 0.7;
+      }
+    }
+
+    button[matSuffix] {
+      color: var(--mat-sys-on-surface-variant);
+      margin-right: 8px;
+      
+      &:hover {
+        background: rgba(var(--mat-sys-on-surface-rgb), 0.08);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+    
+    .filter-field {
+      max-width: 100%;
+    }
+  }
+}
+
+// =====================================
 // TABLE CONTAINER
 // =====================================
 .table-container {

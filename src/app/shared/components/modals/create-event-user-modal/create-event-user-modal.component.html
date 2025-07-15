@@ -1,0 +1,204 @@
+<!-- src/app/shared/components/modals/create-event-user-modal/create-event-user-modal.component.html -->
+<div class="create-event-user-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">person_add</mat-icon>
+        <h2>Crear Usuario para Evento</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      Crea un nuevo usuario y asígnalo al evento con los grupos correspondientes
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="event-user-form">
+      <!-- Información del Usuario -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>person</mat-icon>
+          Información del Usuario
+        </h3>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre completo</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Ej. Juan Pérez García"
+            maxlength="100"
+            autocomplete="off"
+            [disabled]="loading()"
+          />
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-hint align="end">{{ nameControl?.value?.length || 0 }}/100</mat-hint>
+          <mat-error *ngIf="nameControl?.hasError('required')">
+            El nombre es obligatorio
+          </mat-error>
+          <mat-error *ngIf="nameControl?.hasError('minlength')">
+            El nombre debe tener al menos 2 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            placeholder="Ej. juan.perez@empresa.com"
+            autocomplete="off"
+            [disabled]="loading()"
+          />
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-hint>Se usará para acceder a la aplicación móvil</mat-hint>
+          <mat-error *ngIf="emailControl?.hasError('required')">
+            El email es obligatorio
+          </mat-error>
+          <mat-error *ngIf="emailControl?.hasError('email')">
+            Ingrese un email válido
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Asignación de Grupos -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>groups</mat-icon>
+          Asignación de Grupos
+        </h3>
+
+        @if (availableGroups().length === 0) {
+          <div class="no-groups">
+            <mat-icon>info</mat-icon>
+            <span>No hay grupos disponibles en este evento</span>
+          </div>
+        } @else {
+          <div class="groups-section">
+            <p class="section-description">
+              Selecciona los grupos a los que pertenecerá el usuario. Si no seleccionas ningún grupo, 
+              el usuario solo será asignado al evento.
+            </p>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Grupos disponibles</mat-label>
+              <mat-select
+                multiple
+                formControlName="groups"
+                (selectionChange)="onGroupSelectionChange($event.value)"
+                [disabled]="loading()"
+              >
+                @for (group of availableGroups(); track group.id) {
+                  <mat-option [value]="group.name">
+                    <div class="group-option">
+                      <div
+                        class="group-color"
+                        [style.background-color]="group.color"
+                      ></div>
+                      <span class="group-name">{{ group.name }}</span>
+                      <span class="group-participants">
+                        ({{ group.assignments?.length || 0 }} participantes)
+                      </span>
+                    </div>
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>group_add</mat-icon>
+              <mat-hint>
+                Puedes seleccionar múltiples grupos usando Ctrl/Cmd + clic
+              </mat-hint>
+            </mat-form-field>
+
+            <!-- Grupos Seleccionados -->
+            @if (selectedGroups().length > 0) {
+              <div class="selected-groups">
+                <h4>Grupos seleccionados:</h4>
+                <div class="groups-chips">
+                  <mat-chip-set>
+                    @for (groupName of selectedGroups(); track groupName) {
+                      <mat-chip
+                        [removable]="!loading()"
+                        (removed)="removeGroup(groupName)"
+                      >
+                        {{ groupName }}
+                        <mat-icon matChipRemove *ngIf="!loading()">cancel</mat-icon>
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                </div>
+              </div>
+            }
+
+            <!-- Resumen de Selección -->
+            <div class="selection-summary">
+              <mat-icon>info</mat-icon>
+              <span>
+                @if (selectedGroups().length === 0) {
+                  El usuario será asignado al evento sin grupos específicos
+                } @else {
+                  El usuario será asignado a {{ selectedGroups().length }} grupo(s)
+                }
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Información Adicional -->
+      <div class="form-section">
+        <div class="info-card">
+          <mat-icon>info</mat-icon>
+          <div class="info-content">
+            <h4>Información importante:</h4>
+            <ul>
+              <li>El usuario recibirá la contraseña predeterminada: <strong>Sanfer2025</strong></li>
+              <li>Si el email ya existe, el usuario será asignado al evento actual</li>
+              <li>Los grupos seleccionados determinarán qué actividades puede ver el usuario</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+        [disabled]="loading()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSubmit()"
+        [disabled]="form.invalid || loading()"
+      >
+        <mat-icon *ngIf="loading()">
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-icon>
+        <mat-icon *ngIf="!loading()">person_add</mat-icon>
+        {{ loading() ? 'Creando Usuario...' : 'Crear Usuario' }}
+      </button>
+    </div>
+  </div>
+</div>

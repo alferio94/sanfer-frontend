@@ -19,6 +19,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 export interface TableColumn<T = any> {
   key: string;
   label: string;
@@ -35,6 +38,8 @@ export interface TableConfig {
   showFirstLastButtons?: boolean;
   sortable?: boolean;
   stickyHeader?: boolean;
+  showFilter?: boolean;
+  filterPlaceholder?: string;
 }
 
 export interface TableAction<T = any> {
@@ -58,6 +63,9 @@ export interface TableAction<T = any> {
     MatButtonModule,
     MatCheckboxModule,
     MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
   ],
   templateUrl: './reusable-table.component.html',
   styleUrl: './reusable-table.component.scss',
@@ -91,8 +99,10 @@ export class ReusableTableComponent<T = any> implements OnInit, OnChanges {
   // Internal state
   displayedColumns: string[] = [];
   sortedData: T[] = [];
+  filteredData: T[] = [];
   paginatedData: T[] = [];
   selectedItems: T[] = [];
+  filterValue = '';
 
   // Pagination
   pageIndex = 0;
@@ -107,6 +117,8 @@ export class ReusableTableComponent<T = any> implements OnInit, OnChanges {
     showFirstLastButtons: true,
     sortable: true,
     stickyHeader: false,
+    showFilter: false,
+    filterPlaceholder: 'Buscar...',
   };
 
   ngOnInit(): void {
@@ -149,20 +161,37 @@ export class ReusableTableComponent<T = any> implements OnInit, OnChanges {
   }
 
   private processData(): void {
-    this.totalItems = this.data.length;
     this.sortedData = [...this.data];
-    this.updatePaginatedData();
+    this.applyFilter();
   }
 
   private updatePaginatedData(): void {
     if (!this.config.showPagination) {
-      this.paginatedData = this.sortedData;
+      this.paginatedData = this.filteredData;
       return;
     }
 
     const startIndex = this.pageIndex * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    this.paginatedData = this.sortedData.slice(startIndex, endIndex);
+    this.paginatedData = this.filteredData.slice(startIndex, endIndex);
+  }
+
+  private applyFilter(): void {
+    if (!this.filterValue || this.filterValue.trim() === '') {
+      this.filteredData = [...this.sortedData];
+    } else {
+      const filterValue = this.filterValue.toLowerCase().trim();
+      this.filteredData = this.sortedData.filter(item => 
+        this.columns.some(column => {
+          const value = this.getNestedProperty(item, column.key);
+          return value && value.toString().toLowerCase().includes(filterValue);
+        })
+      );
+    }
+    
+    this.totalItems = this.filteredData.length;
+    this.pageIndex = 0; // Reset to first page after filtering
+    this.updatePaginatedData();
   }
 
   // Event handlers
@@ -173,9 +202,13 @@ export class ReusableTableComponent<T = any> implements OnInit, OnChanges {
       this.sortedData = this.sortData(sort);
     }
 
-    this.pageIndex = 0; // Reset to first page after sorting
-    this.updatePaginatedData();
+    this.applyFilter(); // Re-apply filter after sorting
     this.sortChange.emit(sort);
+  }
+
+  onFilterChange(filterValue: string): void {
+    this.filterValue = filterValue;
+    this.applyFilter();
   }
 
   onPageChange(event: PageEvent): void {

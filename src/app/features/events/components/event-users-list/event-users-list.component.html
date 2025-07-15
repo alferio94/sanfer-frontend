@@ -11,11 +11,21 @@
         mat-raised-button
         color="primary"
         [disabled]="loading()"
-        (click)="openBulkUsersUploadModal()"
+        (click)="openCreateUserModal()"
         class="create-button"
       >
-        <mat-icon>add</mat-icon>
+        <mat-icon>person_add</mat-icon>
         Crear Usuario
+      </button>
+
+      <button
+        mat-button
+        [disabled]="loading()"
+        (click)="openBulkUsersUploadModal()"
+        class="bulk-button"
+      >
+        <mat-icon>upload</mat-icon>
+        Carga Masiva
       </button>
 
       <button
@@ -61,7 +71,7 @@
             } @else {
               <span class="all-participants">
                 <mat-icon>public</mat-icon>
-                Todos
+                Sin grupos asignados
               </span>
             }
           </div>
@@ -76,9 +86,14 @@
         <mat-icon class="empty-icon">people</mat-icon>
         <h3>No hay usuarios asignados</h3>
         <p>Carga usuarios al evento</p>
-        <button mat-raised-button color="primary" class="create-first-button">
-          <mat-icon>add</mat-icon>
-          Cargar Usuarios
+        <button 
+          mat-raised-button 
+          color="primary" 
+          class="create-first-button"
+          (click)="openCreateUserModal()"
+        >
+          <mat-icon>person_add</mat-icon>
+          Crear Usuario
         </button>
       </div>
     </ng-template>

@@ -18,6 +18,10 @@ import {
 } from '@shared/components/reusable-table/reusable-table.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { BulkUsersModalComponent } from '@shared/components/modals/bulk-users-modal/bulk-users-modal.component';
+import { CreateEventUserModalComponent } from '@shared/components/modals/create-event-user-modal/create-event-user-modal.component';
+import { ConfirmDeleteUserDialogComponent } from '@shared/components/dialogs/confirm-delete-user-dialog/confirm-delete-user-dialog.component';
+import { EventsService } from '@core/services/events.service';
+import { MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-event-users-list',
@@ -35,6 +39,7 @@ export class EventUsersListComponent implements OnInit {
   @Input({ required: true }) eventId!: string;
 
   private readonly usersService = inject(UsersService);
+  private readonly eventsService = inject(EventsService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -73,18 +78,19 @@ export class EventUsersListComponent implements OnInit {
     showFirstLastButtons: true,
     sortable: true,
     stickyHeader: false,
+    showFilter: true,
   };
 
   readonly tableActions: TableAction<EventUser>[] = [
-    {
-      icon: 'edit',
-      label: 'Editar grupo',
-      color: 'primary',
-      handler: (user) => this.onEditUser(user),
-    },
+    // {
+    //   icon: 'edit',
+    //   label: 'Editar grupo',
+    //   color: 'primary',
+    //   handler: (user) => this.onEditUser(user),
+    // },
     {
       icon: 'delete',
-      label: 'Eliminar grupo',
+      label: 'Eliminar usuario',
       color: 'warn',
       handler: (user) => this.onDeleteUser(user),
     },
@@ -129,7 +135,73 @@ export class EventUsersListComponent implements OnInit {
 
   onEditUser(user: EventUser): void {}
 
-  onDeleteUser(user: EventUser): void {}
+  onDeleteUser(user: EventUser): void {
+    const dialogRef = this.dialog.open(ConfirmDeleteUserDialogComponent, {
+      width: '400px',
+      data: {
+        userName: user.name,
+        userEmail: user.email,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        this.deleteUser(user);
+      }
+    });
+  }
+
+  private deleteUser(user: EventUser): void {
+    this.loading.set(true);
+
+    this.eventsService.removeUserFromEvent(this.eventId, user.id).subscribe({
+      next: () => {
+        this.loadUsers();
+        this.showMessage(
+          `Usuario ${user.name} eliminado del evento exitosamente`,
+          'success',
+        );
+      },
+      error: (error) => {
+        console.error('Error removing user from event:', error);
+        this.loading.set(false);
+
+        let errorMessage = 'Error al eliminar el usuario del evento';
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.status === 404) {
+          errorMessage = 'Usuario no encontrado en este evento';
+        }
+
+        this.showMessage(errorMessage, 'error');
+      },
+    });
+  }
+
+  openCreateUserModal(): void {
+    const dialogConfig: MatDialogConfig = {
+      width: '600px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      data: { eventId: this.eventId },
+      disableClose: true,
+    };
+
+    const dialogRef = this.dialog.open(
+      CreateEventUserModalComponent,
+      dialogConfig,
+    );
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.action === 'created') {
+        this.loadUsers();
+        this.showMessage(
+          `Usuario ${result.user.name} creado y asignado al evento exitosamente`,
+          'success',
+        );
+      }
+    });
+  }
 
   getGroupsNames(groups: EventGroup[]) {
     return groups.map((group) => group.name).join(', ');

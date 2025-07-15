@@ -3,6 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, of, BehaviorSubject, map } from 'rxjs';
 import { AppEvent } from '../models/event.interface';
+import { EventGroup } from '../models/group.interface';
 import { CreateEventDto, UpdateEventDto } from '../dtos';
 import { environment } from '../../../environments/environment';
 
@@ -251,5 +252,41 @@ export class EventsService {
   isEventCompleted(event: AppEvent): boolean {
     const now = new Date();
     return new Date(event.endDate) < now;
+  }
+
+  // Obtener grupos de un evento
+  getGroupsByEvent(eventId: string): Observable<EventGroup[]> {
+    return this.http
+      .get<EventGroup[]>(`${environment.apiUrl}/event-group/event/${eventId}`)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading event groups:', error);
+          return of([]);
+        })
+      );
+  }
+
+  // Crear usuario para evento
+  createEventUser(eventId: string, userData: { name: string; email: string; groups: string[] }): Observable<any> {
+    return this.http
+      .post(`${environment.apiUrl}/event/${eventId}/user`, userData)
+      .pipe(
+        catchError((error) => {
+          console.error('Error creating event user:', error);
+          throw error;
+        })
+      );
+  }
+
+  // Eliminar usuario de evento
+  removeUserFromEvent(eventId: string, userId: string): Observable<any> {
+    return this.http
+      .delete(`${environment.apiUrl}/event/${eventId}/user/${userId}`)
+      .pipe(
+        catchError((error) => {
+          console.error('Error removing user from event:', error);
+          throw error;
+        })
+      );
   }
 }
