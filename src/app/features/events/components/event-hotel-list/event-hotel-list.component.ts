@@ -210,13 +210,9 @@ export class EventHotelListComponent implements OnInit {
   // Table event handlers
   onSortChange(sort: Sort): void {}
 
-  onPageChange(event: PageEvent): void {
-    console.log('Page changed:', event);
-  }
+  onPageChange(event: PageEvent): void {}
 
-  onRowClick(item: Hotel): void {
-    console.log('Row clicked:', item);
-  }
+  onRowClick(item: Hotel): void {}
 
   // Track by function para mejor performance
   trackByHotelId(index: number, hotel: Hotel): string {

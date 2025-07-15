@@ -196,17 +196,14 @@ export class EventGroupListComponent {
 
   // Table event handlers
   onSortChange(sort: Sort): void {
-    console.log('Sort changed:', sort);
     // Aquí puedes implementar lógica adicional si necesitas
   }
 
   onPageChange(event: PageEvent): void {
-    console.log('Page changed:', event);
     // Aquí puedes implementar lógica adicional si necesitas
   }
 
   onRowClick(group: EventGroup): void {
-    console.log('Row clicked:', group);
     // Podrías abrir un modal de detalles o navegar a otra página
   }
 

@@ -248,17 +248,11 @@ export class EventAgendaListComponent implements OnInit {
   }
 
   // Table event handlers
-  onSortChange(sort: Sort): void {
-    console.log('Sort changed:', sort);
-  }
+  onSortChange(sort: Sort): void {}
 
-  onPageChange(event: PageEvent): void {
-    console.log('Page changed:', event);
-  }
+  onPageChange(event: PageEvent): void {}
 
-  onRowClick(item: EventAgenda): void {
-    console.log('Row clicked:', item);
-  }
+  onRowClick(item: EventAgenda): void {}
 
   // Helper methods for table display
   formatDate(date: Date): string {

@@ -274,17 +274,11 @@ export class EventTransportListComponent implements OnInit {
   }
 
   // Table event handlers
-  onSortChange(sort: Sort): void {
-    console.log('Sort changed:', sort);
-  }
+  onSortChange(sort: Sort): void {}
 
-  onPageChange(event: PageEvent): void {
-    console.log('Page changed:', event);
-  }
+  onPageChange(event: PageEvent): void {}
 
-  onRowClick(item: Transport): void {
-    console.log('Row clicked:', item);
-  }
+  onRowClick(item: Transport): void {}
 
   // Track by function para mejor performance
   trackByTransportId(index: number, transport: Transport): string {

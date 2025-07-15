@@ -6,19 +6,19 @@ import { tap, catchError, finalize } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 import { SecureStorageService } from './secure-storage.service';
-import { 
-  Usuario, 
-  LoginRequest, 
-  LoginResponse, 
-  RegisterRequest, 
+import {
+  Usuario,
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
   RegisterResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
-  LogoutRequest 
+  LogoutRequest,
 } from '../models/auth.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly apiUrl = environment.apiUrl || 'http://localhost:3000/api';
@@ -46,9 +46,9 @@ export class AuthService {
     try {
       // Limpiar datos corruptos antes de intentar leer
       this.validateAndCleanStorage();
-      
+
       const token = this.storage.getSecureItem('accessToken');
-      
+
       if (token) {
         // Solo tenemos token, necesitamos obtener los datos del usuario
         this.fetchUserData();
@@ -64,8 +64,8 @@ export class AuthService {
    */
   private validateAndCleanStorage(): void {
     const keys = ['accessToken', 'refreshToken', 'rememberMe', 'returnUrl'];
-    
-    keys.forEach(key => {
+
+    keys.forEach((key) => {
       try {
         this.storage.getSecureItem(key);
       } catch (error) {
@@ -87,21 +87,26 @@ export class AuthService {
   /**
    * Inicia sesión con email y contraseña
    */
-  login(email: string, password: string, rememberMe: boolean = false): Observable<LoginResponse> {
+  login(
+    email: string,
+    password: string,
+    rememberMe: boolean = false,
+  ): Observable<LoginResponse> {
     this.loading.set(true);
 
     const loginData: LoginRequest = { email, password };
 
-    return this.http.post<LoginResponse>(`${this.apiUrl}/usuarios/login`, loginData)
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/usuarios/login`, loginData)
       .pipe(
         tap((response: LoginResponse) => {
           this.handleLoginSuccess(response, rememberMe);
         }),
-        catchError(error => {
+        catchError((error) => {
           this.loading.set(false);
           return this.handleAuthError(error, 'Error al iniciar sesión');
         }),
-        finalize(() => this.loading.set(false))
+        finalize(() => this.loading.set(false)),
       );
   }
 
@@ -111,19 +116,23 @@ export class AuthService {
   register(userData: RegisterRequest): Observable<RegisterResponse> {
     this.loading.set(true);
 
-    return this.http.post<RegisterResponse>(`${this.apiUrl}/usuarios/register`, userData)
+    return this.http
+      .post<RegisterResponse>(`${this.apiUrl}/usuarios/register`, userData)
       .pipe(
-        catchError(error => {
+        catchError((error) => {
           return this.handleAuthError(error, 'Error al registrar usuario');
         }),
-        finalize(() => this.loading.set(false))
+        finalize(() => this.loading.set(false)),
       );
   }
 
   /**
    * Maneja el éxito del login
    */
-  private handleLoginSuccess(response: LoginResponse, rememberMe: boolean): void {
+  private handleLoginSuccess(
+    response: LoginResponse,
+    rememberMe: boolean,
+  ): void {
     const { accessToken, refreshToken, usuario } = response;
 
     // Solo almacenar tokens, no los datos del usuario
@@ -145,31 +154,39 @@ export class AuthService {
    */
   refreshToken(): Observable<RefreshTokenResponse> {
     const refreshToken = this.storage.getSecureItem('refreshToken');
-    
+
     if (!refreshToken) {
       return throwError(() => new Error('No refresh token available'));
     }
 
     const refreshData: RefreshTokenRequest = { refreshToken };
 
-    return this.http.post<RefreshTokenResponse>(`${this.apiUrl}/usuarios/refresh`, refreshData)
+    return this.http
+      .post<RefreshTokenResponse>(
+        `${this.apiUrl}/usuarios/refresh`,
+        refreshData,
+      )
       .pipe(
         tap((response: RefreshTokenResponse) => {
-          const rememberMe = this.storage.getSecureItem('rememberMe') === 'true';
+          const rememberMe =
+            this.storage.getSecureItem('rememberMe') === 'true';
           this.handleTokenRefresh(response, rememberMe);
         }),
-        catchError(error => {
+        catchError((error) => {
           console.error('Token refresh failed:', error);
           this.logout();
           return throwError(() => error);
-        })
+        }),
       );
   }
 
   /**
    * Maneja la renovación exitosa del token
    */
-  private handleTokenRefresh(response: RefreshTokenResponse, rememberMe: boolean): void {
+  private handleTokenRefresh(
+    response: RefreshTokenResponse,
+    rememberMe: boolean,
+  ): void {
     const { accessToken, refreshToken } = response;
     this.storage.setSecureItem('accessToken', accessToken, rememberMe);
     this.storage.setSecureItem('refreshToken', refreshToken, rememberMe);
@@ -184,10 +201,9 @@ export class AuthService {
     // Notificar al backend sobre el logout (fire and forget)
     if (refreshToken) {
       const logoutData: LogoutRequest = { refreshToken };
-      this.http.post(`${this.apiUrl}/usuarios/logout`, logoutData)
-        .subscribe({
-          error: (error) => console.error('Logout API error:', error)
-        });
+      this.http.post(`${this.apiUrl}/usuarios/logout`, logoutData).subscribe({
+        error: (error) => console.error('Logout API error:', error),
+      });
     }
 
     this.clearSession();
@@ -216,30 +232,26 @@ export class AuthService {
    */
   private fetchUserData(): void {
     const token = this.storage.getSecureItem('accessToken');
-    
+
     if (!token) {
       console.warn('No access token found, clearing session');
       this.clearSession();
       return;
     }
-    
+
     this.loading.set(true);
-    
-    console.log('Fetching user data with token:', token.substring(0, 20) + '...');
-    
-    this.http.get<Usuario>(`${this.apiUrl}/usuarios/me`)
+
+    this.http
+      .get<Usuario>(`${this.apiUrl}/usuarios/me`)
       .pipe(
         tap((user: Usuario) => {
-          console.log('User data fetched successfully:', user);
           this.setAuthenticatedState(user);
         }),
-        catchError(error => {
-          console.error('Error fetching user data:', error);
-          console.error('Request headers would include:', { Authorization: `Bearer ${token.substring(0, 20)}...` });
+        catchError((error) => {
           this.clearSession();
           return throwError(() => error);
         }),
-        finalize(() => this.loading.set(false))
+        finalize(() => this.loading.set(false)),
       )
       .subscribe();
   }
@@ -268,7 +280,10 @@ export class AuthService {
   /**
    * Maneja errores de autenticación
    */
-  private handleAuthError(error: HttpErrorResponse, defaultMessage: string): Observable<never> {
+  private handleAuthError(
+    error: HttpErrorResponse,
+    defaultMessage: string,
+  ): Observable<never> {
     let errorMessage = defaultMessage;
 
     if (error.error?.message) {
@@ -285,3 +300,4 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 }
+

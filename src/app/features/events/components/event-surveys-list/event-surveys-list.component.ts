@@ -56,10 +56,10 @@ export class EventSurveysListComponent implements OnInit {
 
   // Computed
   readonly entrySurveys = computed(() =>
-    this.surveys().filter((survey) => survey.type === 'entry')
+    this.surveys().filter((survey) => survey.type === 'entry'),
   );
   readonly exitSurveys = computed(() =>
-    this.surveys().filter((survey) => survey.type === 'exit')
+    this.surveys().filter((survey) => survey.type === 'exit'),
   );
 
   // Use surveys directly since we handle formatting in the template
@@ -208,7 +208,6 @@ export class EventSurveysListComponent implements OnInit {
 
   onViewSurvey(survey: Survey): void {
     // TODO: Implement survey view modal or navigation
-    console.log('View survey:', survey);
     this.showMessage('Funcionalidad de vista detallada próximamente');
   }
 
@@ -219,7 +218,7 @@ export class EventSurveysListComponent implements OnInit {
         if (metrics) {
           console.log('Survey metrics:', metrics);
           this.showMessage(
-            `Métricas de "${survey.title}": ${metrics.totalResponses} respuestas de ${metrics.totalQuestions} preguntas`
+            `Métricas de "${survey.title}": ${metrics.totalResponses} respuestas de ${metrics.totalQuestions} preguntas`,
           );
         }
       },
@@ -279,7 +278,7 @@ export class EventSurveysListComponent implements OnInit {
   onDeleteSurvey(survey: Survey): void {
     if (
       confirm(
-        `¿Estás seguro de que deseas eliminar la encuesta "${survey.title}"? Esta acción eliminará también todas las respuestas asociadas.`
+        `¿Estás seguro de que deseas eliminar la encuesta "${survey.title}"? Esta acción eliminará también todas las respuestas asociadas.`,
       )
     ) {
       this.deleteSurvey(survey.id);
@@ -302,13 +301,9 @@ export class EventSurveysListComponent implements OnInit {
   }
 
   // Table event handlers
-  onSortChange(sort: Sort): void {
-    console.log('Sort changed:', sort);
-  }
+  onSortChange(sort: Sort): void {}
 
-  onPageChange(event: PageEvent): void {
-    console.log('Page changed:', event);
-  }
+  onPageChange(event: PageEvent): void {}
 
   onRowClick(item: any): void {
     const originalSurvey = this.getOriginalSurvey(item.id);
@@ -319,7 +314,7 @@ export class EventSurveysListComponent implements OnInit {
 
   // Helper method to get original survey from processed data
   private getOriginalSurvey(surveyId: string): Survey | null {
-    return this.surveys().find(survey => survey.id === surveyId) || null;
+    return this.surveys().find((survey) => survey.id === surveyId) || null;
   }
 
   // Helper methods for template
@@ -350,7 +345,7 @@ export class EventSurveysListComponent implements OnInit {
 
   private showMessage(
     message: string,
-    type: 'success' | 'error' = 'success'
+    type: 'success' | 'error' = 'success',
   ): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 4000,
@@ -358,3 +353,4 @@ export class EventSurveysListComponent implements OnInit {
     });
   }
 }
+

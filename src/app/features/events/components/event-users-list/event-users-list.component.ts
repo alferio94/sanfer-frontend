@@ -127,13 +127,9 @@ export class EventUsersListComponent implements OnInit {
     });
   }
 
-  onEditUser(user: EventUser): void {
-    console.log('Edit user:', user);
-  }
+  onEditUser(user: EventUser): void {}
 
-  onDeleteUser(user: EventUser): void {
-    console.log('Delete user:', user);
-  }
+  onDeleteUser(user: EventUser): void {}
 
   getGroupsNames(groups: EventGroup[]) {
     return groups.map((group) => group.name).join(', ');

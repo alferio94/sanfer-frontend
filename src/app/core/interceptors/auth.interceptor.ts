@@ -24,17 +24,9 @@ export const authInterceptor: HttpInterceptorFn = (
   // Obtener el token de acceso directamente del storage
   const accessToken = storageService.getSecureItem('accessToken');
 
-  console.log('🔍 Interceptor - URL:', request.url);
-  console.log(
-    '🔍 Interceptor - Access Token:',
-    accessToken ? `${accessToken.substring(0, 20)}...` : 'No token',
-  );
-  console.log('🔍 Interceptor - Should add token:', shouldAddToken(request));
-
   // Agregar token a requests que lo requieren
   if (accessToken && shouldAddToken(request)) {
     request = addTokenToRequest(request, accessToken);
-    console.log('✅ Interceptor - Token added to request');
   } else {
     console.log('❌ Interceptor - Token NOT added to request');
   }
@@ -94,14 +86,15 @@ function handle401Error(
   storageService: SecureStorageService,
 ): Observable<HttpEvent<any>> {
   // En caso de 401, limpiar tokens y redirigir
-  console.warn('🔐 Auth token invalid, clearing storage and redirecting to login');
-  
+  console.warn(
+    '🔐 Auth token invalid, clearing storage and redirecting to login',
+  );
+
   // Limpiar tokens
   storageService.clearAll();
-  
+
   // Redirigir a login
   window.location.href = '/login';
-  
+
   return throwError(() => new Error('Authentication required'));
 }
-
