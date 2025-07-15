@@ -22,6 +22,7 @@ import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 // Services
 import { ThemeService } from '../../../core/services/theme.service';
 import { MatDivider } from '@angular/material/divider';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -45,6 +46,7 @@ export class HeaderComponent {
 
   private router = inject(Router);
   readonly themeService = inject(ThemeService);
+  readonly authService = inject(AuthService);
 
   // Computed classes para header y logo
   headerClasses = computed(() => {

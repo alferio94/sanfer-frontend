@@ -57,50 +57,25 @@ export class SidebarComponent {
         },
       ],
     },
-    {
-      label: 'Participantes',
-      icon: 'people',
-      route: '',
-      children: [
-        {
-          label: 'Usuarios',
-          icon: 'person',
-          route: '/users',
-          disabled: true, // Hasta que implementemos la selección de evento
-        },
-        {
-          label: 'Grupos',
-          icon: 'groups',
-          route: '/groups',
-          disabled: true, // Hasta que implementemos la selección de evento
-        },
-      ],
-    },
-    {
-      label: 'Programación',
-      icon: 'schedule',
-      route: '',
-      children: [
-        {
-          label: 'Agenda',
-          icon: 'calendar_today',
-          route: '/agenda',
-          disabled: true,
-        },
-        {
-          label: 'Actividades',
-          icon: 'event_available',
-          route: '/agenda/activities',
-          disabled: true,
-        },
-      ],
-    },
-    {
-      label: 'Configuración',
-      icon: 'settings',
-      route: '/settings',
-      disabled: true,
-    },
+    // {
+    //   label: 'Participantes',
+    //   icon: 'people',
+    //   route: '',
+    //   children: [
+    //     {
+    //       label: 'Usuarios',
+    //       icon: 'person',
+    //       route: '/users',
+    //       disabled: true, // Hasta que implementemos la selección de evento
+    //     },
+    //     {
+    //       label: 'Grupos',
+    //       icon: 'groups',
+    //       route: '/groups',
+    //       disabled: true, // Hasta que implementemos la selección de evento
+    //     },
+    //   ],
+    // },
   ];
 
   onItemClick(item: MenuItem): void {
