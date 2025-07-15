@@ -16,11 +16,15 @@ import {
   provideHttpClient,
   withFetch,
   withInterceptors,
+  HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+// Auth interceptor
+import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,6 +43,13 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(), // Usar fetch API en lugar de XMLHttpRequest
     ),
+    
+    // Auth interceptor
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
 
     // Animations
     provideAnimationsAsync(),

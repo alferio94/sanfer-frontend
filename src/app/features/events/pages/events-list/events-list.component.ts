@@ -112,7 +112,7 @@ export class EventsListComponent {
         if (event) {
           this.showMessage('Evento creado exitosamente');
           // Opcional: navegar al detalle del evento
-          // this.router.navigate(['/events', event.id]);
+          // this.router.navigate(['/dashboard', event.id]);
         } else {
           this.showMessage('Error al crear el evento', 'error');
         }
@@ -125,7 +125,7 @@ export class EventsListComponent {
   }
 
   onEventClick(event: AppEvent): void {
-    this.router.navigate(['/events', event.id]);
+    this.router.navigate(['/dashboard', event.id]);
   }
 
   onEventEdit(event: AppEvent): void {

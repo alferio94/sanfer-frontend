@@ -1,0 +1,125 @@
+<!-- Login Container -->
+<div class="login-container">
+  <div class="login-wrapper">
+    
+    <!-- Login Card -->
+    <mat-card class="login-card">
+      
+      <!-- Header -->
+      <mat-card-header class="login-header">
+        <div class="header-content">
+          <div class="logo-section">
+            <mat-icon class="logo-icon">admin_panel_settings</mat-icon>
+            <div class="logo-text">
+              <h1>Sanfer Admin</h1>
+              <p>Panel de Administración</p>
+            </div>
+          </div>
+        </div>
+        
+        <mat-card-subtitle class="login-subtitle">
+          Inicia sesión para continuar
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <mat-card-content class="form-content">
+          
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Correo Electrónico</mat-label>
+            <input 
+              matInput 
+              formControlName="email" 
+              type="email"
+              placeholder="admin@sanfer.com"
+              autocomplete="email"
+              [class.error]="hasFieldError('email')"
+            >
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="hasFieldError('email')">
+              {{ getFieldError('email') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Contraseña</mat-label>
+            <input 
+              matInput 
+              formControlName="password" 
+              [type]="hidePassword ? 'password' : 'text'"
+              placeholder="Tu contraseña"
+              autocomplete="current-password"
+              [class.error]="hasFieldError('password')"
+            >
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="'Mostrar contraseña'"
+              [attr.aria-pressed]="!hidePassword"
+              tabindex="-1"
+            >
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="hasFieldError('password')">
+              {{ getFieldError('password') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Remember Me -->
+          <div class="remember-me-section">
+            <mat-checkbox formControlName="rememberMe" class="remember-checkbox">
+              <span class="remember-text">Recordar mi sesión</span>
+              <mat-icon 
+                class="info-icon" 
+                matTooltip="Mantener la sesión activa en este dispositivo"
+                matTooltipPosition="right"
+              >
+                info_outline
+              </mat-icon>
+            </mat-checkbox>
+          </div>
+
+        </mat-card-content>
+
+        <!-- Login Actions -->
+        <mat-card-actions class="form-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            class="login-button"
+            [disabled]="loginForm.invalid || authService.loading()"
+          >
+            @if (authService.loading()) {
+              <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+              <span>Iniciando...</span>
+            } @else {
+              <ng-container>
+                <mat-icon>login</mat-icon>
+                <span>Iniciar Sesión</span>
+              </ng-container>
+            }
+          </button>
+        </mat-card-actions>
+      </form>
+
+    </mat-card>
+
+    <!-- Footer Info -->
+    <div class="login-footer">
+      <p class="footer-text">
+        <mat-icon class="footer-icon">security</mat-icon>
+        Acceso seguro con autenticación JWT
+      </p>
+      <p class="footer-version">
+        Sanfer Event Management v1.0
+      </p>
+    </div>
+
+  </div>
+</div>

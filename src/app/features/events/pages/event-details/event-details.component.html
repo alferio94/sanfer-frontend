@@ -153,6 +153,20 @@
               <app-event-speakers-list [eventId]="eventId!" />
             </div>
           </mat-tab>
+
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">poll</mat-icon>
+              <span>Encuestas</span>
+              <mat-chip class="tab-badge" *ngIf="eventStats().surveys > 0">
+                {{ eventStats().surveys }}
+              </mat-chip>
+            </ng-template>
+
+            <div class="tab-content">
+              <app-event-surveys-list [eventId]="eventId!" />
+            </div>
+          </mat-tab>
           <mat-tab>
             <ng-template mat-tab-label>
               <mat-icon class="tab-icon">directions</mat-icon>

@@ -15,3 +15,75 @@ body {
   right: 1rem;
   z-index: 1000;
 }
+
+/* =====================================
+   SNACKBAR STYLES FOR AUTHENTICATION
+   ===================================== */
+
+/* Success snackbar */
+.success-snackbar {
+  --mdc-snackbar-container-color: var(--sanfer-success);
+  --mdc-snackbar-supporting-text-color: white;
+  --mat-snack-bar-button-color: white;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: var(--sanfer-success) !important;
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* Error snackbar */
+.error-snackbar {
+  --mdc-snackbar-container-color: var(--sanfer-danger);
+  --mdc-snackbar-supporting-text-color: white;
+  --mat-snack-bar-button-color: white;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: var(--sanfer-danger) !important;
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* Warning snackbar */
+.warning-snackbar {
+  --mdc-snackbar-container-color: var(--sanfer-warning);
+  --mdc-snackbar-supporting-text-color: white;
+  --mat-snack-bar-button-color: white;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: var(--sanfer-warning) !important;
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* Info snackbar */
+.info-snackbar {
+  --mdc-snackbar-container-color: var(--sanfer-primary);
+  --mdc-snackbar-supporting-text-color: white;
+  --mat-snack-bar-button-color: white;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: var(--sanfer-primary) !important;
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+    font-weight: 500 !important;
+  }
+}

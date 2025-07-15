@@ -1,0 +1,282 @@
+<div class="create-survey-modal">
+  <!-- MODAL HEADER -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">{{ isEditMode ? 'edit' : 'poll' }}</mat-icon>
+        <h2>{{ isEditMode ? 'Editar Encuesta' : 'Crear Nueva Encuesta' }}</h2>
+      </div>
+      <button 
+        mat-icon-button 
+        class="close-button" 
+        (click)="onCancel()" 
+        [disabled]="loading()"
+        matTooltip="Cerrar modal"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      {{ isEditMode ? 'Modifica la información de la encuesta y sus preguntas' : 'Crea una encuesta personalizada con diferentes tipos de preguntas para recopilar retroalimentación de los participantes' }}
+    </p>
+  </div>
+
+  <!-- MODAL BODY -->
+  <div class="modal-body">
+  <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Información básica de la encuesta -->
+    <div class="survey-basic-info">
+      <h3>Información Básica</h3>
+      
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Título de la Encuesta</mat-label>
+        <input matInput formControlName="title" placeholder="Ej: Evaluación de Entrada del Evento">
+        <mat-icon matSuffix>title</mat-icon>
+        <mat-error *ngFor="let error of titleErrors">{{ error }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripción</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Describe el propósito de esta encuesta y la información que quieres recopilar..."
+          rows="3"
+        ></textarea>
+        <mat-icon matSuffix>description</mat-icon>
+        <mat-error *ngFor="let error of descriptionErrors">{{ error }}</mat-error>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de Encuesta</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let type of surveyTypes" [value]="type.value">
+              <div class="survey-type-option">
+                <strong>{{ type.label }}</strong>
+                <small>{{ type.description }}</small>
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>category</mat-icon>
+        </mat-form-field>
+
+        <div class="checkbox-container">
+          <mat-checkbox formControlName="isActive">
+            <span>Encuesta activa</span>
+            <mat-icon matTooltip="Si está marcado, la encuesta estará disponible para los participantes">
+              info_outline
+            </mat-icon>
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de preguntas -->
+    <div class="survey-questions">
+      <div class="questions-header">
+        <h3>
+          <mat-icon>help_outline</mat-icon>
+          Preguntas ({{ questionsCount }})
+        </h3>
+        <button
+          type="button"
+          mat-raised-button
+          color="primary"
+          (click)="addQuestion()"
+          [disabled]="loading()"
+        >
+          <mat-icon>add</mat-icon>
+          Agregar Pregunta
+        </button>
+      </div>
+
+      @if (questions.length === 0) {
+        <div class="no-questions">
+          <mat-icon>quiz</mat-icon>
+          <p>No hay preguntas agregadas aún.</p>
+          <small>Usa el botón "Agregar Pregunta" para comenzar.</small>
+        </div>
+      }
+
+      <!-- Lista de preguntas con drag & drop -->
+      <div
+        cdkDropList
+        class="questions-list"
+        (cdkDropListDropped)="onQuestionDrop($event)"
+      >
+        @for (question of questions.controls; track $index; let i = $index) {
+          <div class="question-item" cdkDrag>
+            <div class="drag-handle" cdkDragHandle>
+              <mat-icon>drag_indicator</mat-icon>
+            </div>
+
+            <mat-expansion-panel class="question-panel" [expanded]="i === questions.length - 1">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <div class="question-title">
+                    <mat-icon>{{ getQuestionTypeIcon(question.get('questionType')?.value) }}</mat-icon>
+                    <span>
+                      Pregunta {{ i + 1 }}: 
+                      {{ question.get('questionText')?.value || 'Nueva pregunta' }}
+                    </span>
+                  </div>
+                </mat-panel-title>
+                <mat-panel-description>
+                  <mat-chip [class]="'type-' + question.get('questionType')?.value">
+                    {{ getQuestionTypeLabel(question.get('questionType')?.value) }}
+                  </mat-chip>
+                  @if (question.get('isRequired')?.value) {
+                    <mat-chip color="warn">Requerida</mat-chip>
+                  }
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="question-content" [formGroup]="getQuestionFormGroup(i)">
+                <!-- Texto de la pregunta -->
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Texto de la Pregunta</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="questionText"
+                    placeholder="Escribe aquí tu pregunta..."
+                    rows="2"
+                  ></textarea>
+                </mat-form-field>
+
+                <!-- Configuración de la pregunta -->
+                <div class="question-config">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Tipo de Pregunta</mat-label>
+                    <mat-select
+                      formControlName="questionType"
+                      (selectionChange)="onQuestionTypeChange(i, $event.value)"
+                    >
+                      <mat-option *ngFor="let type of questionTypes" [value]="type.value">
+                        <div class="question-type-option">
+                          <mat-icon>{{ type.icon }}</mat-icon>
+                          <span>{{ type.label }}</span>
+                        </div>
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <div class="question-settings">
+                    <mat-checkbox formControlName="isRequired">
+                      Pregunta requerida
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+                <!-- Opciones para preguntas de opción múltiple -->
+                @if (isQuestionTypeMultipleChoice(i)) {
+                  <div class="question-options">
+                    <div class="options-header">
+                      <h4>Opciones de Respuesta</h4>
+                      <button
+                        type="button"
+                        mat-button
+                        color="primary"
+                        (click)="addOption(i)"
+                      >
+                        <mat-icon>add</mat-icon>
+                        Agregar Opción
+                      </button>
+                    </div>
+
+                    <div formArrayName="options" class="options-list">
+                      @for (option of getQuestionOptions(i).controls; track $index; let j = $index) {
+                        <div class="option-item">
+                          <mat-form-field appearance="outline" class="option-input">
+                            <mat-label>Opción {{ j + 1 }}</mat-label>
+                            <input matInput [formControlName]="j" placeholder="Texto de la opción">
+                          </mat-form-field>
+                          <button
+                            type="button"
+                            mat-icon-button
+                            color="warn"
+                            (click)="removeOption(i, j)"
+                            [disabled]="getQuestionOptions(i).length <= 2"
+                            matTooltip="Eliminar opción"
+                          >
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </div>
+                      }
+                    </div>
+
+                    @if (!hasMinimumOptions(i)) {
+                      <mat-error>Las preguntas de opción múltiple deben tener al menos 2 opciones</mat-error>
+                    }
+                  </div>
+                }
+
+                <!-- Errores de la pregunta -->
+                @if (getQuestionErrors(i).length > 0) {
+                  <div class="question-errors">
+                    <mat-error *ngFor="let error of getQuestionErrors(i)">{{ error }}</mat-error>
+                  </div>
+                }
+
+                <!-- Acciones de la pregunta -->
+                <div class="question-actions">
+                  <button
+                    type="button"
+                    mat-button
+                    color="accent"
+                    (click)="duplicateQuestion(i)"
+                    matTooltip="Duplicar pregunta"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                    Duplicar
+                  </button>
+                  <button
+                    type="button"
+                    mat-button
+                    color="warn"
+                    (click)="removeQuestion(i)"
+                    matTooltip="Eliminar pregunta"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </div>
+        }
+      </div>
+    </div>
+  </form>
+  </div>
+
+  <!-- MODAL FOOTER -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button 
+        mat-button 
+        class="cancel-button" 
+        (click)="onCancel()" 
+        [disabled]="loading()"
+      >
+        Cancelar
+      </button>
+      
+      <button
+        mat-raised-button
+        color="primary"
+        class="save-button"
+        (click)="onSubmit()"
+        [disabled]="surveyForm.invalid || loading()"
+      >
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+        }
+        {{ isEditMode ? 'Actualizar Encuesta' : 'Crear Encuesta' }}
+      </button>
+    </div>
+  </div>
+</div>

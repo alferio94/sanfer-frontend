@@ -1,7 +1,7 @@
 // src/app/shared/components/modals/create-transport-modal/create-transport-modal.component.scss
 // Reutilizamos los estilos base de create-agenda-modal con algunas personalizaciones específicas
 
-@import "../create-agenda-modal/create-agenda-modal.component.scss";
+@use "../create-agenda-modal/create-agenda-modal.component.scss";
 
 // Estilos específicos para transportes
 .transport-option {

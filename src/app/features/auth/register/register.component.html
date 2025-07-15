@@ -1,0 +1,220 @@
+<!-- Register Form -->
+<div class="register-container">
+  <div class="register-header">
+    <h3>Crear Nueva Cuenta</h3>
+    <p>Complete la información para registrar un nuevo administrador</p>
+  </div>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+    
+    <!-- Personal Information Section -->
+    <div class="form-section">
+      <h4 class="section-title">
+        <mat-icon>person</mat-icon>
+        Información Personal
+      </h4>
+
+      <div class="form-row">
+        <!-- Name Field -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Nombre</mat-label>
+          <input 
+            matInput 
+            formControlName="nombre" 
+            type="text"
+            placeholder="Juan"
+            autocomplete="given-name"
+            [class.error]="hasFieldError('nombre')"
+          >
+          <mat-icon matSuffix>account_circle</mat-icon>
+          <mat-error *ngIf="hasFieldError('nombre')">
+            {{ getFieldError('nombre') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Last Name Field -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Apellido</mat-label>
+          <input 
+            matInput 
+            formControlName="apellido" 
+            type="text"
+            placeholder="Pérez"
+            autocomplete="family-name"
+            [class.error]="hasFieldError('apellido')"
+          >
+          <mat-icon matSuffix>account_circle</mat-icon>
+          <mat-error *ngIf="hasFieldError('apellido')">
+            {{ getFieldError('apellido') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Email Field -->
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Correo Electrónico</mat-label>
+        <input 
+          matInput 
+          formControlName="email" 
+          type="email"
+          placeholder="juan.perez@sanfer.com"
+          autocomplete="email"
+          [class.error]="hasFieldError('email')"
+        >
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="hasFieldError('email')">
+          {{ getFieldError('email') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Security Section -->
+    <div class="form-section">
+      <h4 class="section-title">
+        <mat-icon>security</mat-icon>
+        Seguridad
+      </h4>
+
+      <!-- Password Field -->
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Contraseña</mat-label>
+        <input 
+          matInput 
+          formControlName="password" 
+          [type]="hidePassword ? 'password' : 'text'"
+          placeholder="Contraseña segura"
+          autocomplete="new-password"
+          [class.error]="hasFieldError('password')"
+        >
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="'Mostrar contraseña'"
+          [attr.aria-pressed]="!hidePassword"
+          tabindex="-1"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="hasFieldError('password')">
+          {{ getFieldError('password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Confirm Password Field -->
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Confirmar Contraseña</mat-label>
+        <input 
+          matInput 
+          formControlName="confirmPassword" 
+          [type]="hideConfirmPassword ? 'password' : 'text'"
+          placeholder="Confirme su contraseña"
+          autocomplete="new-password"
+          [class.error]="hasFieldError('confirmPassword')"
+        >
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="toggleConfirmPasswordVisibility()"
+          [attr.aria-label]="'Mostrar confirmación'"
+          [attr.aria-pressed]="!hideConfirmPassword"
+          tabindex="-1"
+        >
+          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="hasFieldError('confirmPassword')">
+          {{ getFieldError('confirmPassword') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password Requirements -->
+      <div class="password-requirements">
+        <p class="requirements-title">La contraseña debe contener:</p>
+        <ul class="requirements-list">
+          <li [class.valid]="hasNumber()">
+            <mat-icon>{{ hasNumber() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            Al menos un número
+          </li>
+          <li [class.valid]="hasUpperCase()">
+            <mat-icon>{{ hasUpperCase() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            Al menos una mayúscula
+          </li>
+          <li [class.valid]="hasLowerCase()">
+            <mat-icon>{{ hasLowerCase() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            Al menos una minúscula
+          </li>
+          <li [class.valid]="hasSpecialChar()">
+            <mat-icon>{{ hasSpecialChar() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            Al menos un carácter especial
+          </li>
+          <li [class.valid]="hasMinLength()">
+            <mat-icon>{{ hasMinLength() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            Mínimo 8 caracteres
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Role Section -->
+    <div class="form-section">
+      <h4 class="section-title">
+        <mat-icon>admin_panel_settings</mat-icon>
+        Rol del Usuario
+      </h4>
+
+      <!-- Role Selection -->
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="rol">
+          <mat-option *ngFor="let role of availableRoles" [value]="role.value">
+            <div class="role-option">
+              <div class="role-info">
+                <strong>{{ role.label }}</strong>
+                <small>{{ role.description }}</small>
+              </div>
+            </div>
+          </mat-option>
+        </mat-select>
+        <mat-icon matSuffix>manage_accounts</mat-icon>
+        <mat-error *ngIf="hasFieldError('rol')">
+          {{ getFieldError('rol') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button 
+        mat-button 
+        type="button" 
+        class="cancel-button"
+        (click)="onCancel()"
+        [disabled]="authService.loading()"
+      >
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit"
+        class="register-button"
+        [disabled]="registerForm.invalid || authService.loading()"
+      >
+        @if (authService.loading()) {
+          <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+          <span>Registrando...</span>
+        } @else {
+          <ng-container>
+            <mat-icon>person_add</mat-icon>
+            <span>Crear Cuenta</span>
+          </ng-container>
+        }
+      </button>
+    </div>
+
+  </form>
+</div>

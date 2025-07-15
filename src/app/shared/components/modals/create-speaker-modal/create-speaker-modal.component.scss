@@ -1,7 +1,7 @@
 // src/app/shared/components/modals/create-speaker-modal/create-speaker-modal.component.scss
 // Reutilizamos los estilos base de create-hotel-modal con algunas personalizaciones específicas
 
-@import "../create-hotel-modal/create-hotel-modal.component.scss";
+@use "../create-hotel-modal/create-hotel-modal.component.scss";
 
 // Estilos específicos para speakers
 .photo-preview {

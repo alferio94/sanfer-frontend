@@ -3,6 +3,7 @@ import { EventUserAssignment } from './event-user-assigment.interface';
 import { EventGroup } from './group.interface';
 import { Hotel } from './hotel.interface';
 import { Speaker } from './speaker.interface';
+import { Survey } from './survey.interface';
 import { Transport } from './transport.interface';
 
 export interface AppEvent {
@@ -24,5 +25,6 @@ export interface AppEvent {
   agendas?: EventAgenda[];
   hotels?: Hotel[];
   speakers?: Speaker[]; // Array of speaker IDs
+  surveys?: Survey[];
   transports?: Transport[];
 }

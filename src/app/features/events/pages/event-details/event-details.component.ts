@@ -23,6 +23,7 @@ import { EventAgendaListComponent } from '../../components/event-agenda-list/eve
 import { EventUsersListComponent } from '../../components/event-users-list/event-users-list.component';
 import { EventHotelListComponent } from '../../components/event-hotel-list/event-hotel-list.component';
 import { EventSpeakersListComponent } from '../../components/event-speakers-list/event-speakers-list.component';
+import { EventSurveysListComponent } from '../../components/event-surveys-list/event-surveys-list.component';
 import { EventTransportListComponent } from '../../components/event-transport-list/event-transport-list.component';
 @Component({
   selector: 'app-event-details',
@@ -42,6 +43,7 @@ import { EventTransportListComponent } from '../../components/event-transport-li
     EventUsersListComponent,
     EventHotelListComponent,
     EventSpeakersListComponent,
+    EventSurveysListComponent,
     EventTransportListComponent,
   ],
   templateUrl: './event-details.component.html',
@@ -87,6 +89,7 @@ export class EventDetailsComponent {
         activities: 0,
         hotels: 0,
         speakers: 0,
+        surveys: 0,
         transports: 0,
       };
 
@@ -96,6 +99,7 @@ export class EventDetailsComponent {
       activities: currentEvent.agendas?.length || 0,
       hotels: currentEvent.hotels?.length || 0,
       speakers: currentEvent.speakers?.length || 0,
+      surveys: currentEvent.surveys?.length || 0,
       transports: currentEvent.transports?.length || 0,
     };
   });
@@ -187,7 +191,7 @@ export class EventDetailsComponent {
       next: (success) => {
         if (success) {
           this.showMessage('Evento eliminado correctamente');
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         } else {
           this.showMessage('Error al eliminar el evento', 'error');
         }
@@ -200,7 +204,7 @@ export class EventDetailsComponent {
   }
 
   goBack(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/dashboard']);
   }
 
   private showMessage(

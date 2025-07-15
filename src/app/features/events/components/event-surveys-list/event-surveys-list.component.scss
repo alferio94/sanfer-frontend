@@ -1,0 +1,58 @@
+@use "../list-styles/list-style.scss";
+
+// Estilos específicos para chips de tipo de encuesta
+.type-entry {
+  background-color: var(--sanfer-accent) !important;
+  color: white !important;
+
+  mat-icon {
+    color: white !important;
+  }
+}
+
+.type-exit {
+  background-color: var(--sanfer-warning) !important;
+  color: white !important;
+
+  mat-icon {
+    color: white !important;
+  }
+}
+
+// Estilos para chips de estado
+.status-active {
+  background-color: var(--sanfer-success) !important;
+  color: white !important;
+
+  mat-icon {
+    color: white !important;
+  }
+}
+
+.status-inactive {
+  background-color: var(--mat-sys-surface-variant) !important;
+  color: var(--mat-sys-on-surface-variant) !important;
+
+  mat-icon {
+    color: var(--mat-sys-on-surface-variant) !important;
+  }
+}
+
+// Contador de preguntas siguiendo el patrón establecido
+.questions-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+
+  .cell-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--sanfer-primary);
+  }
+
+  span {
+    font-weight: 500;
+  }
+}

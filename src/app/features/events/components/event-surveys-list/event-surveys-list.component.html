@@ -1,0 +1,121 @@
+<!-- src/app/features/events/components/event-surveys-list/event-surveys-list.component.html -->
+<div class="list-container">
+  <!-- Header with actions -->
+  <div class="list-header">
+    <div class="header-info">
+      <h3>Encuestas del Evento</h3>
+      <p class="subtitle">Gestiona las encuestas de entrada y salida</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateSurveyModal()"
+        [disabled]="loading()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Encuesta
+      </button>
+
+      <button
+        mat-icon-button
+        (click)="loadSurveys()"
+        matTooltip="Actualizar encuestas"
+        [disabled]="loading()"
+      >
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Reusable Table -->
+  <app-reusable-table
+    [data]="processedSurveys()"
+    [columns]="tableColumns"
+    [config]="tableConfig"
+    [loading]="loading()"
+    [error]="error()"
+    [actions]="tableActions"
+    [trackByFn]="trackBySurveyId"
+    emptyMessage="No hay encuestas creadas para este evento"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)"
+  >
+    <!-- Custom Cell Template -->
+    <ng-template #cellTemplate let-value let-item="item" let-column="column">
+      @switch (column.key) {
+        @case ("type") {
+          <mat-chip [class]="getSurveyTypeClass(item.type)">
+            <mat-icon matChipAvatar>
+              {{ item.type === 'entry' ? 'login' : 'logout' }}
+            </mat-icon>
+            {{ getSurveyTypeLabel(item.type) }}
+          </mat-chip>
+        }
+        @case ("isActive") {
+          <mat-chip [class]="getStatusClass(item.isActive)">
+            <mat-icon matChipAvatar>
+              {{ item.isActive ? 'check_circle' : 'pause_circle' }}
+            </mat-icon>
+            {{ getStatusLabel(item.isActive) }}
+          </mat-chip>
+        }
+        @case ("questions") {
+          <div class="questions-count">
+            <mat-icon>help_outline</mat-icon>
+            <span>{{ getQuestionsCount(item) }}</span>
+          </div>
+        }
+        @default {
+          <span>{{ value || "-" }}</span>
+        }
+      }
+    </ng-template>
+
+    <!-- Empty State Template -->
+    <ng-template #emptyTemplate>
+      <div class="custom-empty-state">
+        <mat-icon class="empty-icon">poll</mat-icon>
+        <h3>No hay encuestas creadas</h3>
+        <p>
+          Crea la primera encuesta para recopilar retroalimentación valiosa 
+          de los participantes del evento.
+        </p>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openCreateSurveyModal()"
+          class="create-first-button"
+        >
+          <mat-icon>add</mat-icon>
+          Crear Primera Encuesta
+        </button>
+      </div>
+    </ng-template>
+  </app-reusable-table>
+
+  <!-- Summary Info -->
+  @if (!loading() && !error() && surveys().length > 0) {
+    <div class="summary-info">
+      <div class="summary-item">
+        <mat-icon>poll</mat-icon>
+        <span>Total de encuestas: <strong>{{ surveys().length }}</strong></span>
+      </div>
+      @if (entrySurveys().length > 0) {
+        <div class="summary-item">
+          <mat-icon>login</mat-icon>
+          <span>Entrada: <strong>{{ entrySurveys().length }}</strong></span>
+        </div>
+      }
+      @if (exitSurveys().length > 0) {
+        <div class="summary-item">
+          <mat-icon>logout</mat-icon>
+          <span>Salida: <strong>{{ exitSurveys().length }}</strong></span>
+        </div>
+      }
+    </div>
+  }
+</div>
