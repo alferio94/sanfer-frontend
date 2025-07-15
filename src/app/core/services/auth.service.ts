@@ -48,11 +48,10 @@ export class AuthService {
       this.validateAndCleanStorage();
       
       const token = this.storage.getSecureItem('accessToken');
-      const userData = this.storage.getSecureItem('userData');
-
-      if (token && userData) {
-        const user = JSON.parse(userData);
-        this.setAuthenticatedState(user);
+      
+      if (token) {
+        // Solo tenemos token, necesitamos obtener los datos del usuario
+        this.fetchUserData();
       }
     } catch (error) {
       console.error('Error initializing auth:', error);
@@ -64,7 +63,7 @@ export class AuthService {
    * Valida y limpia datos corruptos del storage
    */
   private validateAndCleanStorage(): void {
-    const keys = ['accessToken', 'refreshToken', 'userData', 'rememberMe', 'returnUrl'];
+    const keys = ['accessToken', 'refreshToken', 'rememberMe', 'returnUrl'];
     
     keys.forEach(key => {
       try {
@@ -127,12 +126,12 @@ export class AuthService {
   private handleLoginSuccess(response: LoginResponse, rememberMe: boolean): void {
     const { accessToken, refreshToken, usuario } = response;
 
-    // Almacenar tokens y datos del usuario
+    // Solo almacenar tokens, no los datos del usuario
     this.storage.setSecureItem('accessToken', accessToken, rememberMe);
     this.storage.setSecureItem('refreshToken', refreshToken, rememberMe);
-    this.storage.setSecureItem('userData', JSON.stringify(usuario), rememberMe);
     this.storage.setSecureItem('rememberMe', rememberMe.toString(), rememberMe);
 
+    // Datos del usuario solo en signals (estado reactivo)
     this.setAuthenticatedState(usuario);
 
     // Redirigir a la URL previa o al dashboard
@@ -210,6 +209,39 @@ export class AuthService {
    */
   getAccessToken(): string | null {
     return this.storage.getSecureItem('accessToken');
+  }
+
+  /**
+   * Obtiene los datos del usuario actual desde el servidor
+   */
+  private fetchUserData(): void {
+    const token = this.storage.getSecureItem('accessToken');
+    
+    if (!token) {
+      console.warn('No access token found, clearing session');
+      this.clearSession();
+      return;
+    }
+    
+    this.loading.set(true);
+    
+    console.log('Fetching user data with token:', token.substring(0, 20) + '...');
+    
+    this.http.get<Usuario>(`${this.apiUrl}/usuarios/me`)
+      .pipe(
+        tap((user: Usuario) => {
+          console.log('User data fetched successfully:', user);
+          this.setAuthenticatedState(user);
+        }),
+        catchError(error => {
+          console.error('Error fetching user data:', error);
+          console.error('Request headers would include:', { Authorization: `Bearer ${token.substring(0, 20)}...` });
+          this.clearSession();
+          return throwError(() => error);
+        }),
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe();
   }
 
   /**

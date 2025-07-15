@@ -1,53 +1,50 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SecureStorageService {
-  private readonly ENCRYPTION_KEY = 'sanfer_admin_key_v1';
-
   /**
-   * Almacena un valor de forma segura
+   * Almacena un valor
    * @param key Clave del item
    * @param value Valor a almacenar
    * @param remember Si true, usa localStorage (persistente), sino sessionStorage
    */
   setSecureItem(key: string, value: string, remember: boolean = false): void {
     try {
-      const encrypted = this.encrypt(value);
       const storage = remember ? localStorage : sessionStorage;
-      storage.setItem(this.getStorageKey(key), encrypted);
+      storage.setItem(this.getStorageKey(key), value);
     } catch (error) {
-      console.error('Error storing secure item:', error);
+      console.error('Error storing item:', error);
     }
   }
 
   /**
-   * Recupera un valor almacenado de forma segura
+   * Recupera un valor almacenado
    * @param key Clave del item
-   * @returns Valor desencriptado o null si no existe
+   * @returns Valor almacenado o null si no existe
    */
   getSecureItem(key: string): string | null {
     try {
       const storageKey = this.getStorageKey(key);
-      
-      // Intentar primero sessionStorage, luego localStorage
-      let encrypted = sessionStorage.getItem(storageKey) || localStorage.getItem(storageKey);
-      
-      if (!encrypted) {
+
+      // Buscar en localStorage primero (para persistencia), luego sessionStorage
+      const value = localStorage.getItem(storageKey) || sessionStorage.getItem(storageKey);
+
+      if (!value) {
         return null;
       }
 
-      // Intentar desencriptar, si falla, limpiar el item corrupto
-      try {
-        return this.decrypt(encrypted);
-      } catch (decryptError) {
-        console.warn(`Failed to decrypt stored item '${key}', removing corrupted data:`, decryptError);
+      // Validar que sea un JWT válido solo si es accessToken
+      if (key === 'accessToken' && !this.isValidJWT(value)) {
+        console.warn(`Invalid JWT token '${key}', removing corrupted data`);
         this.removeItem(key);
         return null;
       }
+
+      return value;
     } catch (error) {
-      console.error('Error retrieving secure item:', error);
+      console.error('Error retrieving item:', error);
       return null;
     }
   }
@@ -58,11 +55,14 @@ export class SecureStorageService {
    */
   removeItem(key: string): void {
     try {
+      console.warn(`🗑️ SecureStorage - Removing item: ${key}`);
+      console.trace('Stack trace for removeItem call');
+      
       const storageKey = this.getStorageKey(key);
       sessionStorage.removeItem(storageKey);
       localStorage.removeItem(storageKey);
     } catch (error) {
-      console.error('Error removing secure item:', error);
+      console.error('Error removing item:', error);
     }
   }
 
@@ -71,17 +71,19 @@ export class SecureStorageService {
    */
   clearAll(): void {
     try {
+      console.warn('🧹 SecureStorage - Clearing ALL items');
+      console.trace('Stack trace for clearAll call');
+      
       const keysToRemove = [
         'accessToken',
-        'refreshToken', 
-        'userData',
+        'refreshToken',
         'rememberMe',
-        'returnUrl'
+        'returnUrl',
       ];
 
-      keysToRemove.forEach(key => this.removeItem(key));
+      keysToRemove.forEach((key) => this.removeItem(key));
     } catch (error) {
-      console.error('Error clearing secure storage:', error);
+      console.error('Error clearing storage:', error);
     }
   }
 
@@ -104,49 +106,38 @@ export class SecureStorageService {
   }
 
   /**
-   * Encripta un texto usando Base64 + rotación simple
-   * @param text Texto a encriptar
-   * @returns Texto encriptado
+   * Valida si un string es un JWT válido
+   * @param token Token a validar
+   * @returns true si es válido, false si no
    */
-  private encrypt(text: string): string {
+  private isValidJWT(token: string): boolean {
     try {
-      // Convertir a Base64 y aplicar rotación Caesar simple
-      const base64 = btoa(text);
-      return this.caesarCipher(base64, 13);
-    } catch (error) {
-      console.error('Encryption error:', error);
-      return text; // Fallback sin encriptar
-    }
-  }
+      // Un JWT debe tener 3 partes separadas por puntos
+      const parts = token.split('.');
 
-  /**
-   * Desencripta un texto
-   * @param encrypted Texto encriptado
-   * @returns Texto original
-   */
-  private decrypt(encrypted: string): string {
-    // Revertir rotación Caesar y decodificar Base64
-    const base64 = this.caesarCipher(encrypted, -13);
-    return atob(base64);
-  }
-
-  /**
-   * Aplica cifrado Caesar simple
-   * @param text Texto a cifrar
-   * @param shift Desplazamiento
-   * @returns Texto cifrado
-   */
-  private caesarCipher(text: string, shift: number): string {
-    return text.split('').map(char => {
-      const code = char.charCodeAt(0);
-      
-      // Solo aplicar a caracteres alfanuméricos y algunos símbolos
-      if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122) || 
-          (code >= 48 && code <= 57) || [43, 47, 61].includes(code)) {
-        return String.fromCharCode(((code - 32 + shift + 95) % 95) + 32);
+      if (parts.length !== 3) {
+        return false;
       }
-      
-      return char;
-    }).join('');
+
+      // Verificar que cada parte sea base64 válido
+      for (const part of parts) {
+        if (!part || part.length === 0) {
+          return false;
+        }
+
+        // Agregar padding si es necesario
+        const paddedPart = part + '='.repeat((4 - (part.length % 4)) % 4);
+
+        try {
+          atob(paddedPart.replace(/-/g, '+').replace(/_/g, '/'));
+        } catch {
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }

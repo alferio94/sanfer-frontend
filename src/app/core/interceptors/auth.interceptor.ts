@@ -1,106 +1,107 @@
-import { Injectable, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import {
   HttpRequest,
-  HttpHandler,
+  HttpHandlerFn,
   HttpEvent,
-  HttpInterceptor,
-  HttpErrorResponse
+  HttpErrorResponse,
+  HttpInterceptorFn,
 } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { filter, take, switchMap, catchError } from 'rxjs/operators';
 
-import { AuthService } from '../services/auth.service';
+import { SecureStorageService } from '../services/secure-storage.service';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  private authService = inject(AuthService);
-  
-  private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+// Estado global para el refresh token
+let isRefreshing = false;
+let refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Obtener el token de acceso
-    const accessToken = this.authService.getAccessToken();
+export const authInterceptor: HttpInterceptorFn = (
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> => {
+  const storageService = inject(SecureStorageService);
 
-    // Agregar token a requests que lo requieren
-    if (accessToken && this.shouldAddToken(request)) {
-      request = this.addTokenToRequest(request, accessToken);
-    }
+  // Obtener el token de acceso directamente del storage
+  const accessToken = storageService.getSecureItem('accessToken');
 
-    return next.handle(request).pipe(
-      catchError(error => {
-        // Manejar errores 401 (Unauthorized)
-        if (error instanceof HttpErrorResponse && error.status === 401) {
-          return this.handle401Error(request, next);
-        }
+  console.log('🔍 Interceptor - URL:', request.url);
+  console.log(
+    '🔍 Interceptor - Access Token:',
+    accessToken ? `${accessToken.substring(0, 20)}...` : 'No token',
+  );
+  console.log('🔍 Interceptor - Should add token:', shouldAddToken(request));
 
-        return throwError(() => error);
-      })
-    );
+  // Agregar token a requests que lo requieren
+  if (accessToken && shouldAddToken(request)) {
+    request = addTokenToRequest(request, accessToken);
+    console.log('✅ Interceptor - Token added to request');
+  } else {
+    console.log('❌ Interceptor - Token NOT added to request');
   }
 
-  /**
-   * Determina si se debe agregar el token al request
-   */
-  private shouldAddToken(request: HttpRequest<any>): boolean {
-    // No agregar token a endpoints públicos
-    const publicEndpoints = [
-      '/usuarios/login',
-      '/usuarios/register',
-      '/usuarios/refresh'
-    ];
-
-    return !publicEndpoints.some(endpoint => request.url.includes(endpoint));
-  }
-
-  /**
-   * Agrega el token de autorización al request
-   */
-  private addTokenToRequest(request: HttpRequest<any>, token: string): HttpRequest<any> {
-    return request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
+  return next(request).pipe(
+    catchError((error) => {
+      // Manejar errores 401 (Unauthorized)
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        return handle401Error(request, next, storageService);
       }
-    });
-  }
 
-  /**
-   * Maneja errores 401 intentando renovar el token
-   */
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Si ya estamos renovando el token, esperar
-    if (this.isRefreshing) {
-      return this.refreshTokenSubject.pipe(
-        filter(token => token !== null),
-        take(1),
-        switchMap((token: string) => {
-          return next.handle(this.addTokenToRequest(request, token));
-        })
-      );
-    }
+      return throwError(() => error);
+    }),
+  );
+};
 
-    // Iniciar proceso de renovación
-    this.isRefreshing = true;
-    this.refreshTokenSubject.next(null);
+/**
+ * Determina si se debe agregar el token al request
+ */
+function shouldAddToken(request: HttpRequest<any>): boolean {
+  // No agregar token a endpoints públicos
+  const publicEndpoints = [
+    '/usuarios/login',
+    '/usuarios/register',
+    '/usuarios/refresh',
+  ];
 
-    return this.authService.refreshToken().pipe(
-      switchMap((response) => {
-        this.isRefreshing = false;
-        const newToken = this.authService.getAccessToken();
-        this.refreshTokenSubject.next(newToken);
+  // Verificar si es un endpoint público
+  const isPublicEndpoint = publicEndpoints.some((endpoint) =>
+    request.url.includes(endpoint),
+  );
 
-        // Rehacer el request original con el nuevo token
-        return next.handle(this.addTokenToRequest(request, newToken!));
-      }),
-      catchError((error) => {
-        this.isRefreshing = false;
-        this.refreshTokenSubject.next(null);
-
-        // Si la renovación falla, hacer logout
-        this.authService.logout(false);
-        
-        return throwError(() => error);
-      })
-    );
-  }
+  // Solo agregar token si NO es un endpoint público
+  return !isPublicEndpoint;
 }
+
+/**
+ * Agrega el token de autorización al request
+ */
+function addTokenToRequest(
+  request: HttpRequest<any>,
+  token: string,
+): HttpRequest<any> {
+  return request.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+/**
+ * Maneja errores 401 limpiando tokens y redirigiendo
+ */
+function handle401Error(
+  request: HttpRequest<any>,
+  next: HttpHandlerFn,
+  storageService: SecureStorageService,
+): Observable<HttpEvent<any>> {
+  // En caso de 401, limpiar tokens y redirigir
+  console.warn('🔐 Auth token invalid, clearing storage and redirecting to login');
+  
+  // Limpiar tokens
+  storageService.clearAll();
+  
+  // Redirigir a login
+  window.location.href = '/login';
+  
+  return throwError(() => new Error('Authentication required'));
+}
+
