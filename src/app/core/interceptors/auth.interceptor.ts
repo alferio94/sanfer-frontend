@@ -94,7 +94,7 @@ function handle401Error(
   storageService.clearAll();
 
   // Redirigir a login
-  window.location.href = '/login';
+  // window.location.href = '/login';
 
   return throwError(() => new Error('Authentication required'));
 }

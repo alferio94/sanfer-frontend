@@ -45,6 +45,8 @@ import { CreateAgendaModalComponent } from '@shared/components/modals/create-age
 })
 export class EventAgendaListComponent implements OnInit {
   @Input({ required: true }) eventId!: string;
+  @Input() eventStartDate?: Date;
+  @Input() eventEndDate?: Date;
 
   private agendaService = inject(AgendaService);
   private eventsService = inject(EventsService);
@@ -160,7 +162,12 @@ export class EventAgendaListComponent implements OnInit {
   openCreateAgendaModal(): void {
     const dialogRef = this.dialog.open(CreateAgendaModalComponent, {
       width: '600px',
-      data: { eventId: this.eventId, mode: 'create' },
+      data: { 
+        eventId: this.eventId, 
+        mode: 'create',
+        eventStartDate: this.eventStartDate,
+        eventEndDate: this.eventEndDate
+      },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -189,7 +196,13 @@ export class EventAgendaListComponent implements OnInit {
   onEditAgendaItem(item: EventAgenda): void {
     const dialogRef = this.dialog.open(CreateAgendaModalComponent, {
       width: '600px',
-      data: { eventId: this.eventId, mode: 'edit', agendaItem: item },
+      data: { 
+        eventId: this.eventId, 
+        mode: 'edit', 
+        agendaItem: item,
+        eventStartDate: this.eventStartDate,
+        eventEndDate: this.eventEndDate
+      },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

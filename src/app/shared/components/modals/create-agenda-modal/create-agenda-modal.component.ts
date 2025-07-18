@@ -23,6 +23,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 
+// Shared Components
+import { RichTextEditorComponent } from '@shared/components/rich-text-editor/rich-text-editor.component';
+
 // Models & Services
 import { EventAgenda } from '@core/models/agenda.interface';
 import { EventGroup } from '@core/models/group.interface';
@@ -33,6 +36,8 @@ interface CreateAgendaModalData {
   eventId: string;
   mode: 'create' | 'edit';
   agendaItem?: EventAgenda;
+  eventStartDate?: Date;
+  eventEndDate?: Date;
 }
 
 interface CreateAgendaModalResult {
@@ -55,6 +60,7 @@ interface CreateAgendaModalResult {
     MatTooltipModule,
     MatSlideToggleModule,
     MatDividerModule,
+    RichTextEditorComponent,
   ],
   templateUrl: './create-agenda-modal.component.html',
   styleUrl: './create-agenda-modal.component.scss',
@@ -64,9 +70,26 @@ export class CreateAgendaModalComponent implements OnInit {
   loading = signal(false);
   loadingGroups = signal(false);
 
+  // Rich text editor configuration
+  richTextConfig = {
+    placeholder: 'Describe los detalles de la actividad, agenda, objetivos...',
+    maxLength: 500,
+    height: '150px',
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['link'],
+      ['clean']
+    ]
+  };
+
   // Groups
   readonly availableGroups = signal<EventGroup[]>([]);
   readonly selectedGroups = signal<Set<string>>(new Set());
+
+  // Date validation properties
+  readonly minDate = signal<Date | null>(null);
+  readonly maxDate = signal<Date | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -81,6 +104,7 @@ export class CreateAgendaModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setupDateLimits();
     this.loadGroups();
 
     if (this.isEditMode && this.data.agendaItem) {
@@ -91,6 +115,16 @@ export class CreateAgendaModalComponent implements OnInit {
   // Getters
   get isEditMode(): boolean {
     return this.data.mode === 'edit';
+  }
+
+  private setupDateLimits(): void {
+    if (this.data.eventStartDate) {
+      this.minDate.set(new Date(this.data.eventStartDate));
+    }
+    
+    if (this.data.eventEndDate) {
+      this.maxDate.set(new Date(this.data.eventEndDate));
+    }
   }
 
   private createForm(): FormGroup {
@@ -105,7 +139,7 @@ export class CreateAgendaModalComponent implements OnInit {
         endTime: ['', Validators.required],
       },
       {
-        validators: [this.dateTimeRangeValidator()],
+        validators: [this.dateTimeRangeValidator(), this.eventDateRangeValidator()],
       },
     );
   }
@@ -186,6 +220,41 @@ export class CreateAgendaModalComponent implements OnInit {
       }
 
       return null;
+    };
+  }
+
+  private eventDateRangeValidator() {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const formGroup = control as FormGroup;
+      const startDate = formGroup.get('startDate')?.value;
+      const endDate = formGroup.get('endDate')?.value;
+
+      if (!startDate || !endDate) return null;
+
+      const agendaStart = new Date(startDate);
+      const agendaEnd = new Date(endDate);
+      const eventStart = this.minDate();
+      const eventEnd = this.maxDate();
+
+      const errors: ValidationErrors = {};
+
+      // Validar que la fecha de inicio esté dentro del rango del evento
+      if (eventStart && agendaStart < eventStart) {
+        errors['agendaStartBeforeEvent'] = {
+          agendaDate: agendaStart,
+          eventStartDate: eventStart
+        };
+      }
+
+      // Validar que la fecha de fin esté dentro del rango del evento
+      if (eventEnd && agendaEnd > eventEnd) {
+        errors['agendaEndAfterEvent'] = {
+          agendaDate: agendaEnd,
+          eventEndDate: eventEnd
+        };
+      }
+
+      return Object.keys(errors).length > 0 ? errors : null;
     };
   }
 

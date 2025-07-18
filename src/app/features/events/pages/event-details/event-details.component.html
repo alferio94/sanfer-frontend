@@ -124,7 +124,11 @@
             </ng-template>
 
             <div class="tab-content">
-              <app-event-agenda-list [eventId]="eventId!" />
+              <app-event-agenda-list 
+                [eventId]="eventId!" 
+                [eventStartDate]="event()?.startDate"
+                [eventEndDate]="event()?.endDate"
+              />
             </div>
           </mat-tab>
           <mat-tab>

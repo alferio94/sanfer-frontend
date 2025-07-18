@@ -21,6 +21,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { QuillModule } from 'ngx-quill';
 
 // Auth interceptor
 import { authInterceptor } from './core/interceptors/auth.interceptor';
@@ -52,6 +53,9 @@ export const appConfig: ApplicationConfig = {
 
     // Material Date components
     importProvidersFrom(MatNativeDateModule, MatDatepickerModule),
+
+    // Quill editor
+    importProvidersFrom(QuillModule.forRoot()),
 
     // Common providers
     DatePipe,

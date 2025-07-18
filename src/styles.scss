@@ -1,5 +1,46 @@
 @use "styles/themes/sanfer-theme.scss";
 
+/* Importar estilos de Quill */
+@import "quill/dist/quill.snow.css";
+
+/* Estilos globales para Quill */
+.ql-toolbar {
+  border: none !important;
+}
+
+.ql-container {
+  border: none !important;
+}
+
+/* Asegurar que los iconos de Quill se vean correctamente */
+.ql-toolbar .ql-formats {
+  margin-right: 15px;
+}
+
+.ql-toolbar .ql-formats:last-child {
+  margin-right: 0;
+}
+
+/* Iconos específicos para tema oscuro */
+html.dark-theme .ql-toolbar button:hover,
+html.dark-theme .ql-toolbar button:focus,
+html.dark-theme .ql-toolbar button.ql-active,
+html.dark-theme .ql-toolbar .ql-picker-label:hover,
+html.dark-theme .ql-toolbar .ql-picker-label.ql-active,
+html.dark-theme .ql-toolbar .ql-picker-item:hover,
+html.dark-theme .ql-toolbar .ql-picker-item.ql-selected {
+  color: var(--sanfer-primary) !important;
+}
+
+/* Fix global para tooltips de Quill */
+.ql-tooltip.ql-editing {
+  left: 0 !important;
+}
+
+.ql-tooltip {
+  left: 0 !important;
+}
+
 /* Estilos globales de la aplicación */
 html,
 body {

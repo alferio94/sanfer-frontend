@@ -784,7 +784,7 @@ if (response.status === 401) {
     // Retry original request
   } else {
     // Redirect to login
-    window.location.href = "/login";
+    //   window.location.href = "/login";
   }
 }
 

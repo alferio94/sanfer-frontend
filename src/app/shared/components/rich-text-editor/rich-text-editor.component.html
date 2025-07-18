@@ -1,0 +1,64 @@
+<div class="rich-text-editor-wrapper">
+  <!-- Label personalizado (opcional) -->
+  <div class="editor-label" *ngIf="label">
+    <mat-icon class="label-icon">edit</mat-icon>
+    <span class="label-text">{{ label }}</span>
+    <span class="required-indicator" *ngIf="required">*</span>
+  </div>
+
+  <!-- Editor Quill -->
+  <div 
+    class="editor-container"
+    [class.focused]="isFocused()"
+    [class.error]="!isValid() && isDirty()"
+    [class.disabled]="isDisabled()"
+    [class.over-limit]="isOverLimit"
+  >
+    <quill-editor
+      [modules]="quillModules"
+      [placeholder]="placeholderText"
+      [readOnly]="config.readonly || isDisabled()"
+      [styles]="editorStyle"
+      (onContentChanged)="onContentChanged($event)"
+      (onSelectionChanged)="onSelectionChanged($event)"
+      (onEditorCreated)="onEditorCreated($event)"
+      (onFocus)="onFocus()"
+      (onBlur)="onBlur()"
+      class="sanfer-quill-editor"
+    ></quill-editor>
+
+    <!-- Contador de caracteres -->
+    <div class="editor-footer" *ngIf="showCounter || !isValid()">
+      <div class="error-messages" *ngIf="!isValid() && isDirty()">
+        <div class="error-message" *ngIf="required && textLength() === 0">
+          <mat-icon>error</mat-icon>
+          <span>Este campo es obligatorio</span>
+        </div>
+        <div class="error-message" *ngIf="config.minLength && textLength() < config.minLength">
+          <mat-icon>error</mat-icon>
+          <span>Mínimo {{ config.minLength }} caracteres</span>
+        </div>
+        <div class="error-message" *ngIf="isOverLimit">
+          <mat-icon>error</mat-icon>
+          <span>Máximo {{ config.maxLength }} caracteres</span>
+        </div>
+      </div>
+
+      <div class="character-counter" *ngIf="showCounter">
+        <span 
+          class="counter-text"
+          [class.over-limit]="isOverLimit"
+          matTooltip="Caracteres utilizados"
+        >
+          {{ counterText }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de ayuda (opcional) -->
+  <div class="editor-hint" *ngIf="config.placeholder && !isFocused() && textLength() === 0">
+    <mat-icon>info</mat-icon>
+    <span>{{ config.placeholder }}</span>
+  </div>
+</div>
