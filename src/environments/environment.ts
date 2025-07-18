@@ -6,6 +6,7 @@ export const environment = {
   defaultEventBanner: '/assets/images/events/default-banner.jpg',
   defaultUserPassword: 'Sanfer2025',
   supportEmail: 'support@sanfer.com.mx',
+  extra: null,
   // Configuraciones adicionales
   pagination: {
     defaultPageSize: 10,
