@@ -54,7 +54,7 @@ export class ModalService {
         .then((m) => {
           const dialogRef: MatDialogRef<any, CreateEventModalResult> =
             this.dialog.open(m.CreateEventModalComponent, {
-              width: '600px',
+              width: '800px',
               maxWidth: '90vw',
               maxHeight: '90vh',
               data: data,

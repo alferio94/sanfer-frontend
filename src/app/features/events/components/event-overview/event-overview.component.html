@@ -28,6 +28,24 @@
       }}</mat-icon>
       {{ eventStatus.label }}
     </div>
+
+    <!-- Add Banner Button -->
+    <button 
+      mat-icon-button
+      class="add-banner-button"
+      (click)="onAddBanner()"
+      [disabled]="uploadingBanner()"
+      matTooltip="Agregar Banner del Evento"
+      matTooltipPosition="left"
+    >
+      @if (uploadingBanner()) {
+        <mat-icon>hourglass_empty</mat-icon>
+      } @else if (hasBanner()) {
+        <mat-icon>edit</mat-icon>
+      } @else {
+        <mat-icon>add_photo_alternate</mat-icon>
+      }
+    </button>
   </div>
 
   <!-- Event Information -->
@@ -58,9 +76,9 @@
       <!-- Campus Info -->
       @if (event.campus) {
         <div class="detail-card">
-          <mat-icon class="detail-icon">location_on</mat-icon>
+          <mat-icon class="detail-icon">location_city</mat-icon>
           <div class="detail-content">
-            <h4>Ubicación</h4>
+            <h4>Campus/Sede</h4>
             <p>{{ event.campus }}</p>
             @if (event.campusPhone) {
               <p class="phone">
@@ -88,19 +106,19 @@
         <div class="detail-card">
           <mat-icon class="detail-icon">lightbulb</mat-icon>
           <div class="detail-content">
-            <h4>Consejos</h4>
-            <p>{{ event.tips }}</p>
+            <h4>Tips/Consejos</h4>
+            <div class="rich-content" [innerHTML]="event.tips"></div>
           </div>
         </div>
       }
 
       <!-- Extra Info -->
       @if (event.extra) {
-        <div class="detail-card">
-          <mat-icon class="detail-icon">info</mat-icon>
+        <div class="detail-card full-width">
+          <mat-icon class="detail-icon">description</mat-icon>
           <div class="detail-content">
-            <h4>Información Adicional</h4>
-            <p>{{ event.extra }}</p>
+            <h4>Información Extra</h4>
+            <div class="rich-content" [innerHTML]="event.extra"></div>
           </div>
         </div>
       }

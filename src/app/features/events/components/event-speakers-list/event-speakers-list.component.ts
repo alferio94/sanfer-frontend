@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { PageEvent } from '@angular/material/paginator';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Reusable Table
 import {
@@ -30,6 +31,12 @@ import { SpeakersService } from '@core/services/speakers.service';
 import { CreateSpeakerDto } from '@core/dtos/index';
 import { CreateSpeakerModalComponent } from '@shared/components/modals/create-speaker-modal/create-speaker-modal.component';
 
+// Image Cropper
+import { ImageUtilsService } from '@shared/services/image-utils.service';
+import { IMAGE_CROPPER_PRESETS } from '@shared/components/image-cropper-modal';
+import { FirebaseStorageService } from '@shared/services/firebase-storage.service';
+import { ImageViewModalComponent } from '@shared/components/modals/image-view-modal/image-view-modal.component';
+
 @Component({
   selector: 'app-event-speakers-list',
   imports: [
@@ -37,6 +44,7 @@ import { CreateSpeakerModalComponent } from '@shared/components/modals/create-sp
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    MatTooltipModule,
     ReusableTableComponent,
   ],
   templateUrl: './event-speakers-list.component.html',
@@ -46,8 +54,10 @@ export class EventSpeakersListComponent implements OnInit {
   @Input({ required: true }) eventId!: string;
 
   private speakersService = inject(SpeakersService);
+  private firebaseStorage = inject(FirebaseStorageService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private imageUtilsService = inject(ImageUtilsService);
 
   // Signals
   readonly speakers = signal<Speaker[]>([]);
@@ -94,6 +104,12 @@ export class EventSpeakersListComponent implements OnInit {
   };
 
   readonly tableActions: TableAction<Speaker>[] = [
+    {
+      icon: 'add_photo_alternate',
+      label: 'Agregar foto',
+      color: 'accent',
+      handler: (speaker) => this.onAddSpeakerPhoto(speaker),
+    },
     {
       icon: 'edit',
       label: 'Editar speaker',
@@ -219,6 +235,76 @@ export class EventSpeakersListComponent implements OnInit {
   onPageChange(event: PageEvent): void {}
 
   onRowClick(item: Speaker): void {}
+
+  // Image handling
+  async onAddSpeakerPhoto(speaker: Speaker): Promise<void> {
+    try {
+      const result = await this.imageUtilsService.openImageCropper(
+        IMAGE_CROPPER_PRESETS.PROFILE_SQUARE
+      ).toPromise();
+      
+      if (result && result.blob) {
+        // Subir imagen recortada a Firebase Storage
+        const uploadResult = await this.firebaseStorage.uploadFile(
+          result.blob,
+          'speakers',
+          speaker.id,
+          'jpg'
+        ).toPromise();
+        
+        if (uploadResult) {
+          // Log del download URL
+          console.log('Speaker image uploaded successfully. Download URL:', uploadResult.downloadURL);
+          
+          // Actualizar speaker con la nueva URL
+          await this.updateSpeakerPhoto(speaker.id, uploadResult.downloadURL);
+          
+          this.showMessage('Foto del speaker actualizada exitosamente');
+        }
+      }
+    } catch (error) {
+      console.error('Error adding speaker photo:', error);
+      this.showMessage('Error al agregar la foto', 'error');
+    }
+  }
+
+  private async updateSpeakerPhoto(speakerId: string, photoUrl: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.speakersService.updateSpeaker(speakerId, { photoUrl }).subscribe({
+        next: (updatedSpeaker) => {
+          if (updatedSpeaker) {
+            this.loadSpeakers(); // Reload to show updated photo
+            resolve();
+          } else {
+            reject(new Error('No updated speaker returned'));
+          }
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
+    });
+  }
+
+  // Ver imagen del speaker
+  onViewSpeakerImage(speaker: Speaker): void {
+    if (!speaker.photoUrl) {
+      this.showMessage('Este speaker no tiene imagen', 'error');
+      return;
+    }
+
+    // Crear modal para mostrar la imagen
+    const dialogRef = this.dialog.open(ImageViewModalComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      data: {
+        imageUrl: speaker.photoUrl,
+        title: `Foto de ${speaker.name}`,
+        altText: speaker.name
+      }
+    });
+  }
 
   // Track by function para mejor performance
   trackBySpeakerId(index: number, speaker: Speaker): string {

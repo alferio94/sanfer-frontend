@@ -5,8 +5,8 @@
 // =====================================
 .create-event-modal {
   width: 100%;
-  max-width: 600px;
-  min-height: 400px;
+  max-width: 800px;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
   background: var(--mat-sys-surface);
@@ -425,5 +425,43 @@
   .mat-mdc-form-field-prefix .mat-icon,
   .mat-mdc-form-field-suffix .mat-icon {
     color: var(--sanfer-primary);
+  }
+}
+
+// =====================================
+// RICH TEXT EDITOR SECTION
+// =====================================
+.rich-text-section {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .rich-text-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    font-size: 0.95rem;
+
+    mat-icon {
+      font-size: 1.1rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  app-rich-text-editor {
+    min-height: 200px;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: var(--sanfer-border-radius-sm);
+    background: var(--mat-sys-surface);
+    transition: border-color 0.2s ease;
+
+    &:focus-within {
+      border-color: var(--sanfer-primary);
+    }
   }
 }

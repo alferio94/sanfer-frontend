@@ -15,10 +15,16 @@
   object-fit: cover;
   box-shadow: var(--sanfer-shadow-sm);
   border: 2px solid var(--mat-sys-outline-variant);
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
 
-  &:hover {
-    transform: scale(1.1);
+  &.clickable {
+    cursor: pointer;
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: var(--sanfer-shadow-md);
+      border-color: var(--sanfer-primary);
+    }
   }
 }
 
@@ -63,6 +69,7 @@
     border: 1px solid rgba(var(--sanfer-accent-rgb), 0.3);
   }
 }
+
 
 // Responsive design
 @media (max-width: 768px) {

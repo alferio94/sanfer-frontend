@@ -1,0 +1,148 @@
+<!-- src/app/shared/components/image-cropper-modal/image-cropper-modal.component.html -->
+
+<input
+  #upload
+  type="file"
+  accept="image/*"
+  (change)="fileChangeEvent($event)"
+  style="display: none"
+/>
+<div class="image-cropper-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">crop</mat-icon>
+        <div class="title-text">
+          <h2>{{ config.title }}</h2>
+          <p class="subtitle">{{ config.subtitle }}</p>
+        </div>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <!-- Error State -->
+    @if (error()) {
+      <div class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <h3>Error</h3>
+        <p>{{ error() }}</p>
+        <button mat-button (click)="onCancel()">Cerrar</button>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (loading() && !error()) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando imagen...</p>
+      </div>
+    }
+
+    <!-- Cropper Content -->
+    @if (!error() && !loading()) {
+      <!-- Drag & Drop Area (when no file selected) -->
+      @if (!isSet) {
+        <div class="drop-zone-container">
+          <div class="drop-zone" (click)="openFileInput()">
+            <mat-icon class="drop-icon">cloud_upload</mat-icon>
+            <p>Haz clic para seleccionar un archivo</p>
+            <button mat-raised-button color="primary" class="select-button">
+              <mat-icon>add_photo_alternate</mat-icon>
+              Seleccionar Imagen
+            </button>
+            <div class="file-info">
+              <small>Formatos soportados: JPG, PNG, WebP, GIF</small>
+              <small>Tamaño máximo: 10MB</small>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Cropper (when file is selected) -->
+      @if (isSet) {
+        <div class="cropper-container">
+          <!-- Image Info -->
+          @if (selectedFile) {
+            <div class="image-info">
+              <div class="info-item">
+                <span class="label">Archivo:</span>
+                <span class="value">{{ selectedFile.name }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Tamaño:</span>
+                <span class="value">{{
+                  getFileSizeText(selectedFile.size)
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Formato:</span>
+                <span class="value">{{ getAspectRatioText() }}</span>
+              </div>
+            </div>
+          }
+
+          <!-- Cropper -->
+          <div class="cropper-section">
+            <div class="cropper-wrapper">
+              <image-cropper
+                [imageChangedEvent]="imageChangedEvent"
+                [maintainAspectRatio]="config.maintainAspectRatio"
+                [aspectRatio]="config.aspectRatio"
+                [output]="'base64'"
+                (imageCropped)="onImageCropped($event)"
+                (imageLoaded)="onImageLoaded($event)"
+                (cropperReady)="onCropperReady()"
+                (loadImageFailed)="onImageLoadFailed()"
+              ></image-cropper>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+        [disabled]="processing()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="crop-button"
+        (click)="onCrop()"
+        [disabled]="!croppedImage || processing()"
+      >
+        @if (processing()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Procesando...</span>
+        } @else {
+          <ng-container>
+            <mat-icon>crop</mat-icon>
+            <span>Recortar y Usar</span>
+          </ng-container>
+        }
+      </button>
+    </div>
+  </div>
+</div>

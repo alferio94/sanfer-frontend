@@ -157,6 +157,76 @@
         </div>
       </div>
 
+      <!-- Información Adicional (Campos Opcionales) -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>info</mat-icon>
+          Información Adicional (Opcional)
+        </h3>
+
+        <!-- Campus -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Campus/Sede</mat-label>
+          <input
+            matInput
+            formControlName="campus"
+            placeholder="Ej. Campus Silicon Valley, Centro de Convenciones"
+            maxlength="200"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>location_city</mat-icon>
+          <mat-hint align="end">{{ eventForm.get("campus")?.value?.length || 0 }}/200</mat-hint>
+        </mat-form-field>
+
+        <!-- Campus Phone -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Teléfono del Campus</mat-label>
+          <input
+            matInput
+            formControlName="campusPhone"
+            placeholder="Ej. +1-555-CAMPUS-01"
+            maxlength="50"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>phone</mat-icon>
+          <mat-hint align="end">{{ eventForm.get("campusPhone")?.value?.length || 0 }}/50</mat-hint>
+        </mat-form-field>
+
+        <!-- Campus Map -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mapa del Campus</mat-label>
+          <input
+            matInput
+            formControlName="campusMap"
+            placeholder="Ej. https://maps.google.com/campus-location"
+            maxlength="500"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>map</mat-icon>
+          <mat-hint align="end">{{ eventForm.get("campusMap")?.value?.length || 0 }}/500</mat-hint>
+        </mat-form-field>
+
+        <!-- Tips (Rich Text Editor) -->
+        <div class="rich-text-section">
+          <app-rich-text-editor
+            formControlName="tips"
+            label="Tips/Consejos (opcional)"
+            [config]="tipsRichTextConfig"
+            appearance="outline"
+          ></app-rich-text-editor>
+        </div>
+
+        <!-- Extra (Rich Text Editor) -->
+        <div class="rich-text-section">
+          <app-rich-text-editor
+            formControlName="extra"
+            label="Información Extra (opcional)"
+            [config]="richTextConfig"
+            appearance="outline"
+          ></app-rich-text-editor>
+        </div>
+      </div>
+
       <!-- Preview de las fechas -->
       <div class="form-section" *ngIf="getStartDateTime() && getEndDateTime()">
         <div class="datetime-preview">

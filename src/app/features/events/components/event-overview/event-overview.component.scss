@@ -102,6 +102,53 @@
 }
 
 // =====================================
+// ADD BANNER BUTTON
+// =====================================
+.add-banner-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: rgba(var(--sanfer-primary-rgb), 0.9);
+  color: white;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--sanfer-shadow-sm);
+  transition: all 0.2s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--sanfer-primary-rgb), 1);
+    transform: scale(1.05);
+    box-shadow: var(--sanfer-shadow-md);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  mat-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    width: 44px;
+    height: 44px;
+    bottom: 16px;
+    right: 16px;
+
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+// =====================================
 // EVENT INFO
 // =====================================
 .event-info {
@@ -209,6 +256,10 @@
   border-radius: var(--sanfer-border-radius);
   border-left: 4px solid var(--sanfer-primary);
 
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
   .detail-icon {
     font-size: 1.5rem;
     width: 1.5rem;
@@ -225,6 +276,52 @@
       font-size: 1rem;
       font-weight: 600;
       color: var(--sanfer-primary);
+    }
+
+    .rich-content {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--mat-sys-on-surface);
+
+      // Rich text content styling
+      p {
+        margin: 0 0 0.75rem 0;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      ul, ol {
+        margin: 0 0 0.75rem 1.5rem;
+        padding: 0;
+
+        li {
+          margin-bottom: 0.25rem;
+        }
+      }
+
+      strong {
+        font-weight: 600;
+        color: var(--mat-sys-on-surface);
+      }
+
+      em {
+        font-style: italic;
+      }
+
+      u {
+        text-decoration: underline;
+      }
+
+      a {
+        color: var(--sanfer-primary);
+        text-decoration: none;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
 
     p {

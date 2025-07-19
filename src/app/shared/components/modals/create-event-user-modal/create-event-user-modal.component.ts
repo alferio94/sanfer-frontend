@@ -71,15 +71,18 @@ export class CreateEventUserModalComponent implements OnInit {
 
   private loadEventGroups(): void {
     this.loading.set(true);
+    this.form.disable();
     this.eventsService.getGroupsByEvent(this.data.eventId).subscribe({
       next: (groups) => {
         this.availableGroups.set(groups);
         this.loading.set(false);
+        this.form.enable();
       },
       error: (error) => {
         console.error('Error loading event groups:', error);
         this.showMessage('Error al cargar los grupos del evento', 'error');
         this.loading.set(false);
+        this.form.enable();
       }
     });
   }
@@ -99,6 +102,7 @@ export class CreateEventUserModalComponent implements OnInit {
   onSubmit(): void {
     if (this.form.valid) {
       this.loading.set(true);
+      this.form.disable();
       
       const formValue = this.form.value;
       const requestData: CreateEventUserRequest = {
@@ -120,6 +124,7 @@ export class CreateEventUserModalComponent implements OnInit {
         error: (error) => {
           console.error('Error creating event user:', error);
           this.loading.set(false);
+          this.form.enable();
           
           let errorMessage = 'Error al crear el usuario';
           if (error.error?.message) {

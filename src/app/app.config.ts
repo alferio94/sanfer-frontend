@@ -19,12 +19,13 @@ import {
 } from '@angular/common/http';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { QuillModule } from 'ngx-quill';
 
 // Auth interceptor
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -48,9 +49,6 @@ export const appConfig: ApplicationConfig = {
     // Animations
     provideAnimationsAsync(),
 
-    // Client Hydration (para SSR si lo usas después)
-    provideClientHydration(),
-
     // Material Date components
     importProvidersFrom(MatNativeDateModule, MatDatepickerModule),
 
@@ -59,5 +57,16 @@ export const appConfig: ApplicationConfig = {
 
     // Common providers
     DatePipe,
+    provideFirebaseApp(() =>
+      initializeApp({
+        projectId: 'sanfer-f31e7',
+        appId: '1:446383178170:web:c2f4e0fce2889d1c261d83',
+        storageBucket: 'sanfer-f31e7.firebasestorage.app',
+        apiKey: 'AIzaSyC36eEOOh0BgWzPAnaBhHDbPTO1QODngGQ',
+        authDomain: 'sanfer-f31e7.firebaseapp.com',
+        messagingSenderId: '446383178170',
+      }),
+    ),
+    provideStorage(() => getStorage()),
   ],
 };

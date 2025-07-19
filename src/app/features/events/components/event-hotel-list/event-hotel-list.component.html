@@ -64,9 +64,18 @@
         }
         @case ("photoUrl") {
           @if (item.photoUrl) {
-            <img [src]="item.photoUrl" alt="Hotel" class="hotel-thumbnail" />
+            <button
+              mat-button
+              color="primary"
+              (click)="onViewHotelImage(item)"
+              matTooltip="Ver imagen del hotel"
+              class="view-image-btn"
+            >
+              <mat-icon>image</mat-icon>
+              Ver Imagen
+            </button>
           } @else {
-            <span class="no-photo">Sin foto</span>
+            <span class="no-photo">Sin imagen</span>
           }
         }
         @default {

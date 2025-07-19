@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { PageEvent } from '@angular/material/paginator';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Reusable Table
 import {
@@ -28,6 +29,12 @@ import { Hotel } from '@core/models/hotel.interface';
 import { HotelsService } from '@core/services/hotel.service';
 import { CreateHotelDto } from '@core/dtos/create-hotel.dto';
 import { CreateHotelModalComponent } from '@shared/components/modals/create-hotel-modal/create-hotel-modal.component';
+import { ImageViewModalComponent } from '@shared/components/modals/image-view-modal/image-view-modal.component';
+
+// Image Cropper
+import { ImageUtilsService } from '@shared/services/image-utils.service';
+import { IMAGE_CROPPER_PRESETS } from '@shared/components/image-cropper-modal';
+import { FirebaseStorageService } from '@shared/services/firebase-storage.service';
 
 @Component({
   selector: 'app-event-hotel-list',
@@ -36,6 +43,7 @@ import { CreateHotelModalComponent } from '@shared/components/modals/create-hote
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    MatTooltipModule,
     ReusableTableComponent,
   ],
   templateUrl: './event-hotel-list.component.html',
@@ -45,8 +53,10 @@ export class EventHotelListComponent implements OnInit {
   @Input({ required: true }) eventId!: string;
 
   private hotelsService = inject(HotelsService);
+  private firebaseStorage = inject(FirebaseStorageService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private imageUtilsService = inject(ImageUtilsService);
 
   // Signals
   readonly hotels = signal<Hotel[]>([]);
@@ -74,6 +84,12 @@ export class EventHotelListComponent implements OnInit {
       type: 'text',
     },
     {
+      key: 'photoUrl',
+      label: 'Ver Imagen',
+      sortable: false,
+      type: 'custom',
+    },
+    {
       key: 'mapUrl',
       label: 'Mapa',
       sortable: false,
@@ -91,6 +107,12 @@ export class EventHotelListComponent implements OnInit {
   };
 
   readonly tableActions: TableAction<Hotel>[] = [
+    {
+      icon: 'add_photo_alternate',
+      label: 'Agregar imagen',
+      color: 'accent',
+      handler: (hotel) => this.onAddHotelImage(hotel),
+    },
     {
       icon: 'edit',
       label: 'Editar hotel',
@@ -214,9 +236,79 @@ export class EventHotelListComponent implements OnInit {
 
   onRowClick(item: Hotel): void {}
 
+  // Image handling
+  async onAddHotelImage(hotel: Hotel): Promise<void> {
+    try {
+      const result = await this.imageUtilsService.openImageCropper(
+        IMAGE_CROPPER_PRESETS.BANNER
+      ).toPromise();
+      
+      if (result && result.blob) {
+        // Subir imagen recortada a Firebase Storage
+        const uploadResult = await this.firebaseStorage.uploadFile(
+          result.blob,
+          'hoteles',
+          hotel.id,
+          'jpg'
+        ).toPromise();
+        
+        if (uploadResult) {
+          // Log del download URL
+          console.log('Hotel image uploaded successfully. Download URL:', uploadResult.downloadURL);
+          
+          // Actualizar hotel con la nueva URL
+          await this.updateHotelImage(hotel.id, uploadResult.downloadURL);
+          
+          this.showMessage('Imagen del hotel actualizada exitosamente');
+        }
+      }
+    } catch (error) {
+      console.error('Error adding hotel image:', error);
+      this.showMessage('Error al agregar la imagen', 'error');
+    }
+  }
+
+  private async updateHotelImage(hotelId: string, photoUrl: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.hotelsService.updateHotel(hotelId, { photoUrl }).subscribe({
+        next: (updatedHotel) => {
+          if (updatedHotel) {
+            this.loadHotels(); // Reload to show updated image
+            resolve();
+          } else {
+            reject(new Error('No updated hotel returned'));
+          }
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
+    });
+  }
+
   // Track by function para mejor performance
   trackByHotelId(index: number, hotel: Hotel): string {
     return hotel.id;
+  }
+
+  // Ver imagen del hotel
+  onViewHotelImage(hotel: Hotel): void {
+    if (!hotel.photoUrl) {
+      this.showMessage('Este hotel no tiene imagen', 'error');
+      return;
+    }
+
+    // Crear modal para mostrar la imagen
+    const dialogRef = this.dialog.open(ImageViewModalComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      data: {
+        imageUrl: hotel.photoUrl,
+        title: `Imagen de ${hotel.name}`,
+        altText: hotel.name
+      }
+    });
   }
 
   private showMessage(

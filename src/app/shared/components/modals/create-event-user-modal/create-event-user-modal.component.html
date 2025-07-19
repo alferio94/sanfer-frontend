@@ -39,7 +39,6 @@
             placeholder="Ej. Juan Pérez García"
             maxlength="100"
             autocomplete="off"
-            [disabled]="loading()"
           />
           <mat-icon matPrefix>badge</mat-icon>
           <mat-hint align="end">{{ nameControl?.value?.length || 0 }}/100</mat-hint>
@@ -59,7 +58,6 @@
             formControlName="email"
             placeholder="Ej. juan.perez@empresa.com"
             autocomplete="off"
-            [disabled]="loading()"
           />
           <mat-icon matPrefix>email</mat-icon>
           <mat-hint>Se usará para acceder a la aplicación móvil</mat-hint>
@@ -97,7 +95,6 @@
                 multiple
                 formControlName="groups"
                 (selectionChange)="onGroupSelectionChange($event.value)"
-                [disabled]="loading()"
               >
                 @for (group of availableGroups(); track group.id) {
                   <mat-option [value]="group.name">

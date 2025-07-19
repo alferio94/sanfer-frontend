@@ -53,7 +53,9 @@
               <img
                 [src]="item.photoUrl"
                 [alt]="item.name"
-                class="speaker-photo"
+                class="speaker-photo clickable"
+                (click)="onViewSpeakerImage(item)"
+                matTooltip="Click para ver imagen completa"
               />
             } @else {
               <div class="no-photo">

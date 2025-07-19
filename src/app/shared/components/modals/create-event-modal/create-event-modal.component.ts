@@ -21,6 +21,9 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+// Rich Text Editor
+import { RichTextEditorComponent } from '@shared/components/rich-text-editor/rich-text-editor.component';
+
 // Models
 import { AppEvent } from '@core/models';
 import { CreateEventDto } from '@core/dtos';
@@ -48,6 +51,7 @@ interface CreateEventModalResult {
     MatTimepickerModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    RichTextEditorComponent,
   ],
   templateUrl: './create-event-modal.component.html',
   styleUrl: './create-event-modal.component.scss',
@@ -55,6 +59,31 @@ interface CreateEventModalResult {
 export class CreateEventModalComponent implements OnInit {
   eventForm: FormGroup;
   loading = signal(false);
+
+  // Rich text editor configurations
+  tipsRichTextConfig = {
+    placeholder: 'Ej. Bring your laptop, business cards, and be ready to network!',
+    maxLength: 1000,
+    height: '150px',
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['link'],
+      ['clean']
+    ]
+  };
+
+  richTextConfig = {
+    placeholder: 'Información adicional sobre el evento (formato enriquecido)...',
+    maxLength: 1000,
+    height: '200px',
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['link'],
+      ['clean']
+    ]
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -125,6 +154,12 @@ export class CreateEventModalComponent implements OnInit {
         startTime: ['', Validators.required],
         endDate: ['', Validators.required],
         endTime: ['', Validators.required],
+        // Campos opcionales
+        campus: [''],
+        campusPhone: [''],
+        campusMap: [''],
+        tips: [''],
+        extra: [''],
       },
       {
         validators: [this.dateTimeRangeValidator()],
@@ -149,6 +184,12 @@ export class CreateEventModalComponent implements OnInit {
       startTime: startTime,
       endDate: endDate,
       endTime: endTime,
+      // Campos opcionales
+      campus: event.campus || '',
+      campusPhone: event.campusPhone || '',
+      campusMap: event.campusMap || '',
+      tips: event.tips || '',
+      extra: event.extra || '',
     });
   }
 
@@ -234,6 +275,12 @@ export class CreateEventModalComponent implements OnInit {
         name: this.eventForm.get('name')?.value.trim(),
         startDate: start,
         endDate: end,
+        // Campos opcionales
+        campus: this.eventForm.get('campus')?.value?.trim() || undefined,
+        campusPhone: this.eventForm.get('campusPhone')?.value?.trim() || undefined,
+        campusMap: this.eventForm.get('campusMap')?.value?.trim() || undefined,
+        tips: this.eventForm.get('tips')?.value?.trim() || undefined,
+        extra: this.eventForm.get('extra')?.value?.trim() || undefined,
       };
 
       // Simular delay de API
@@ -257,6 +304,7 @@ export class CreateEventModalComponent implements OnInit {
     };
     this.dialogRef.close(result);
   }
+
 
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach((field) => {
