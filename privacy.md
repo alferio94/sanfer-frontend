@@ -1,3 +1,5 @@
+#HTML
+
 <div class="info-container">
   <div class="content">
     <h1>Política de Privacidad de Sanfer Eventos</h1>
@@ -99,6 +101,39 @@
     <p>
       <strong>{{ "daniel@computer-developers.com" }}</strong>
     </p>
+
   </div>
 </div>
 
+#CSS
+
+.info-container {
+font-family: "Inter", sans-serif;
+opacity: 1;
+background-image: radial-gradient(#e52a3c 0.9px, #e9e9e9 0.9px);
+background-size: 18px 18px;
+width: 100%;
+height: 100vh;
+align-items: center;
+display: flex;
+}
+
+.content {
+background-color: #ffffff;
+padding: 2em;
+width: 70%;
+}
+h1 {
+color: #e52a3c;
+}
+
+@media screen and (max-width: 600px) {
+.content {
+width: 90%;
+}
+.info-container {
+height: 100vh;
+width: 100%;
+padding: 0 !important;
+}
+}
