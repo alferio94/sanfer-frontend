@@ -76,6 +76,11 @@ export class SidebarComponent {
     //     },
     //   ],
     // },
+    {
+      label: 'Política de Privacidad',
+      icon: 'privacy_tip',
+      route: '/privacy-policy',
+    },
   ];
 
   onItemClick(item: MenuItem): void {
