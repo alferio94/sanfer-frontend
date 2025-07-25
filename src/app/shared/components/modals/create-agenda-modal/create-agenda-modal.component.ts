@@ -227,18 +227,38 @@ export class CreateAgendaModalComponent implements OnInit {
     return (control: AbstractControl): ValidationErrors | null => {
       const formGroup = control as FormGroup;
       const startDate = formGroup.get('startDate')?.value;
+      const startTime = formGroup.get('startTime')?.value;
       const endDate = formGroup.get('endDate')?.value;
+      const endTime = formGroup.get('endTime')?.value;
 
-      if (!startDate || !endDate) return null;
+      if (!startDate || !startTime || !endDate || !endTime) return null;
 
+      // Crear fechas completas con hora para la agenda
       const agendaStart = new Date(startDate);
       const agendaEnd = new Date(endDate);
+
+      // Configurar las horas de inicio
+      if (startTime instanceof Date) {
+        agendaStart.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+      } else if (typeof startTime === 'string') {
+        const [startHours, startMinutes] = startTime.split(':').map(Number);
+        agendaStart.setHours(startHours, startMinutes, 0, 0);
+      }
+
+      // Configurar las horas de fin
+      if (endTime instanceof Date) {
+        agendaEnd.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
+      } else if (typeof endTime === 'string') {
+        const [endHours, endMinutes] = endTime.split(':').map(Number);
+        agendaEnd.setHours(endHours, endMinutes, 0, 0);
+      }
+
       const eventStart = this.minDate();
       const eventEnd = this.maxDate();
 
       const errors: ValidationErrors = {};
 
-      // Validar que la fecha de inicio esté dentro del rango del evento
+      // Validar que la fecha y hora de inicio esté dentro del rango del evento
       if (eventStart && agendaStart < eventStart) {
         errors['agendaStartBeforeEvent'] = {
           agendaDate: agendaStart,
@@ -246,7 +266,7 @@ export class CreateAgendaModalComponent implements OnInit {
         };
       }
 
-      // Validar que la fecha de fin esté dentro del rango del evento
+      // Validar que la fecha y hora de fin esté dentro del rango del evento
       if (eventEnd && agendaEnd > eventEnd) {
         errors['agendaEndAfterEvent'] = {
           agendaDate: agendaEnd,
