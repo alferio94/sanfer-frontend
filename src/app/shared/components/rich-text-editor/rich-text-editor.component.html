@@ -19,6 +19,7 @@
       [placeholder]="placeholderText"
       [readOnly]="config.readonly || isDisabled()"
       [styles]="editorStyle"
+      [ngModel]="value()"
       (onContentChanged)="onContentChanged($event)"
       (onSelectionChanged)="onSelectionChanged($event)"
       (onEditorCreated)="onEditorCreated($event)"

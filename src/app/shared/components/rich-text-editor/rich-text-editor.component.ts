@@ -16,6 +16,7 @@ import {
   Validator,
   AbstractControl,
   ValidationErrors,
+  FormsModule,
 } from '@angular/forms';
 import { QuillModule } from 'ngx-quill';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,6 +37,7 @@ export interface RichTextEditorConfig {
   selector: 'app-rich-text-editor',
   imports: [
     CommonModule,
+    FormsModule,
     QuillModule,
     MatFormFieldModule,
     MatIconModule,
