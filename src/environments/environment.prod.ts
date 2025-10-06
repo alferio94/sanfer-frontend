@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://sanfer-backend-production.up.railway.app/api', // Cambiar por tu URL de producción
-  appName: 'Sanfer Event Management',
+  apiUrl: 'sanfer-backend-qa.up.railway.app', // Cambiar por tu URL de producción
+  appName: 'Demo APP',
   version: '1.0.0',
   defaultEventBanner: '/assets/images/events/default-banner.jpg',
   defaultUserPassword: 'Sanfer2025',

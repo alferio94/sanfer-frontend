@@ -33,13 +33,13 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   // Ruta de política de privacidad (pública)
-  {
-    path: 'privacy-policy',
-    loadComponent: () =>
-      import('./features/privacy/pages/privacy-policy/privacy-policy.component').then(
-        (m) => m.PrivacyPolicyComponent,
-      ),
-  },
+  // {
+  //   path: 'privacy-policy',
+  //   loadComponent: () =>
+  //     import('./features/privacy/pages/privacy-policy/privacy-policy.component').then(
+  //       (m) => m.PrivacyPolicyComponent,
+  //     ),
+  // },
   // Ruta por defecto
   {
     path: '',
