@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'sanfer-backend-qa.up.railway.app', // Cambiar por tu URL de producción
+  apiUrl: 'https://sanfer-backend-qa.up.railway.app', // Cambiar por tu URL de producción
   appName: 'Demo APP',
   version: '1.0.0',
   defaultEventBanner: '/assets/images/events/default-banner.jpg',
