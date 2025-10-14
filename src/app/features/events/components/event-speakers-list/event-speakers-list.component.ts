@@ -101,6 +101,7 @@ export class EventSpeakersListComponent implements OnInit {
     showFirstLastButtons: true,
     sortable: true,
     stickyHeader: false,
+    showFilter: true,
   };
 
   readonly tableActions: TableAction<Speaker>[] = [
@@ -239,26 +240,26 @@ export class EventSpeakersListComponent implements OnInit {
   // Image handling
   async onAddSpeakerPhoto(speaker: Speaker): Promise<void> {
     try {
-      const result = await this.imageUtilsService.openImageCropper(
-        IMAGE_CROPPER_PRESETS.PROFILE_SQUARE
-      ).toPromise();
-      
+      const result = await this.imageUtilsService
+        .openImageCropper(IMAGE_CROPPER_PRESETS.PROFILE_SQUARE)
+        .toPromise();
+
       if (result && result.blob) {
         // Subir imagen recortada a Firebase Storage
-        const uploadResult = await this.firebaseStorage.uploadFile(
-          result.blob,
-          'speakers',
-          speaker.id,
-          'jpg'
-        ).toPromise();
-        
+        const uploadResult = await this.firebaseStorage
+          .uploadFile(result.blob, 'speakers', speaker.id, 'jpg')
+          .toPromise();
+
         if (uploadResult) {
           // Log del download URL
-          console.log('Speaker image uploaded successfully. Download URL:', uploadResult.downloadURL);
-          
+          console.log(
+            'Speaker image uploaded successfully. Download URL:',
+            uploadResult.downloadURL,
+          );
+
           // Actualizar speaker con la nueva URL
           await this.updateSpeakerPhoto(speaker.id, uploadResult.downloadURL);
-          
+
           this.showMessage('Foto del speaker actualizada exitosamente');
         }
       }
@@ -268,7 +269,10 @@ export class EventSpeakersListComponent implements OnInit {
     }
   }
 
-  private async updateSpeakerPhoto(speakerId: string, photoUrl: string): Promise<void> {
+  private async updateSpeakerPhoto(
+    speakerId: string,
+    photoUrl: string,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       this.speakersService.updateSpeaker(speakerId, { photoUrl }).subscribe({
         next: (updatedSpeaker) => {
@@ -301,8 +305,8 @@ export class EventSpeakersListComponent implements OnInit {
       data: {
         imageUrl: speaker.photoUrl,
         title: `Foto de ${speaker.name}`,
-        altText: speaker.name
-      }
+        altText: speaker.name,
+      },
     });
   }
 

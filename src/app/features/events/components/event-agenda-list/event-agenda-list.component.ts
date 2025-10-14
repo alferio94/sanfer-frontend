@@ -120,6 +120,7 @@ export class EventAgendaListComponent implements OnInit {
     showFirstLastButtons: true,
     sortable: true,
     stickyHeader: false,
+    showFilter: true,
   };
 
   readonly tableActions: TableAction<EventAgenda>[] = [
@@ -162,11 +163,11 @@ export class EventAgendaListComponent implements OnInit {
   openCreateAgendaModal(): void {
     const dialogRef = this.dialog.open(CreateAgendaModalComponent, {
       width: '600px',
-      data: { 
-        eventId: this.eventId, 
+      data: {
+        eventId: this.eventId,
         mode: 'create',
         eventStartDate: this.eventStartDate,
-        eventEndDate: this.eventEndDate
+        eventEndDate: this.eventEndDate,
       },
     });
 
@@ -196,12 +197,12 @@ export class EventAgendaListComponent implements OnInit {
   onEditAgendaItem(item: EventAgenda): void {
     const dialogRef = this.dialog.open(CreateAgendaModalComponent, {
       width: '600px',
-      data: { 
-        eventId: this.eventId, 
-        mode: 'edit', 
+      data: {
+        eventId: this.eventId,
+        mode: 'edit',
         agendaItem: item,
         eventStartDate: this.eventStartDate,
-        eventEndDate: this.eventEndDate
+        eventEndDate: this.eventEndDate,
       },
     });
 
