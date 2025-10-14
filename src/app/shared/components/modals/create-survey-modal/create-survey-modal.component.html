@@ -153,6 +153,12 @@
                       formControlName="questionType"
                       (selectionChange)="onQuestionTypeChange(i, $event.value)"
                     >
+                      <mat-select-trigger>
+                        <div class="question-type-option">
+                          <mat-icon>{{ getQuestionTypeIcon(question.get('questionType')?.value) }}</mat-icon>
+                          <span>{{ getQuestionTypeLabel(question.get('questionType')?.value) }}</span>
+                        </div>
+                      </mat-select-trigger>
                       <mat-option *ngFor="let type of questionTypes" [value]="type.value">
                         <div class="question-type-option">
                           <mat-icon>{{ type.icon }}</mat-icon>
