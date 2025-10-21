@@ -20,8 +20,11 @@
 - [x] ✅ Sistema de autenticación JWT para usuarios de eventos (mobile app)
 - [x] ✅ Endpoint para obtener eventos por usuario
 - [x] ✅ Sistema de configuración de menú de app móvil
-- [ ] 🔄 Crear Código de vestimenta
-- [ ] 🔄 Obtener Agenda Mobile optimizada
+- [x] ✅ Corrección crítica de bug de autenticación (normalización de emails)
+- [x] ✅ Guards de autenticación aplicados a endpoints móviles
+- [x] ✅ Sistema de refresh tokens separado para usuarios de eventos
+- [x] 🔄 Crear Código de vestimenta
+- [x] ✅ Obtener Agenda Mobile optimizada
 
 # Tech Stack
 
@@ -77,6 +80,72 @@ http://localhost:3000/api
 - [❓ Survey Questions](#-survey-questions)
 - [📝 Survey Responses](#-survey-responses)
 - [🔧 Error Handling](#-error-handling)
+
+---
+
+## 🔐 Authentication Requirements Summary
+
+The API has three types of endpoints based on authentication requirements:
+
+### 🔓 Public Endpoints (No Authentication Required)
+
+- **Event Management**: `GET /event`, `POST /event`, `GET /event/{id}`, `PUT /event/{id}`, `DELETE /event/{id}`
+- **Event Assignments**: `POST /event/assignment/{eventId}`, `GET /event/{eventId}/assignments/{userId}`
+- **User Creation**: `POST /event-user`, `GET /event-user`, `GET /event-user/{eventId}`
+- **Groups**: All `/event-group/*` endpoints
+- **Speakers**: All `/speaker/*` endpoints (except protected ones)
+- **Hotels**: All `/hotel/*` endpoints (except protected ones)
+- **Surveys**: All `/survey/*` and `/survey-question/*` endpoints (admin usage)
+- **Survey Responses**: `GET /survey-response/*` (admin analytics)
+
+### 🔒 Admin Authentication Required (`Authorization: Bearer <admin_jwt>`)
+
+- **Admin User Management**: All `/usuarios/*` endpoints
+- **App Menu Management**: `POST /app-menu`, `PUT /app-menu/event/{eventId}`, `DELETE /app-menu/event/{eventId}`
+
+### 📱 Event User Authentication Required (`Authorization: Bearer <event_user_jwt>`)
+
+- **User Events**: `GET /event/user/{userId}`
+- **User Profile**: `GET /event-user/profile`
+- **Mobile Optimized Endpoints**:
+  - `GET /event-agenda/{eventId}` and `GET /event-agenda/{eventId}/group/{groupId}`
+  - `GET /event-transport/event/{eventId}`
+  - `GET /speaker/event/{eventId}`
+  - `GET /hotel/event/{eventId}`
+  - `GET /survey/event/{eventId}` and `GET /survey/{surveyId}/with-questions`
+  - `POST /survey-response/submit` and `GET /survey-response/check/{surveyId}/{userId}`
+  - `GET /app-menu/event/{eventId}`
+
+### 🔑 Token Types
+
+**Admin JWT Token** (for dashboard/admin usage):
+
+- **Duration**: 15 minutes
+- **Refresh**: 7 days
+- **Payload**: `{ sub: userId, email: email, rol: "admin" }`
+- **Used by**: Dashboard, admin operations
+
+**Event User JWT Token** (for mobile app):
+
+- **Duration**: 7 days
+- **Refresh**: 30 days
+- **Payload**: `{ sub: userId, email: email, type: "event-user" }`
+- **Used by**: Mobile app, participant endpoints
+
+### Common Issues and Solutions
+
+**401 Unauthorized Error on Admin Dashboard:**
+
+- Ensure you're using the correct admin JWT token
+- Check token expiration (admin tokens expire in 15 minutes)
+- Verify the endpoint doesn't require event user authentication
+- Most event management endpoints (`/event/*`) are public and don't require authentication
+
+**401 Unauthorized Error on Mobile App:**
+
+- Ensure you're using event user JWT token (not admin token)
+- Check that `payload.type === "event-user"` in the token
+- Verify token hasn't expired (7 day duration)
 
 ---
 
@@ -784,7 +853,7 @@ if (response.status === 401) {
     // Retry original request
   } else {
     // Redirect to login
-    //   window.location.href = "/login";
+    window.location.href = "/login";
   }
 }
 
@@ -905,6 +974,66 @@ Cierra sesión invalidando el refresh token.
 }
 ```
 
+### Get Event User Profile
+
+**GET** `/event-user/profile` 🔒
+
+**🔒 Requires Event User Authentication**
+
+Obtiene los datos completos del usuario autenticado basándose en el token JWT. Este endpoint es esencial para la persistencia de sesión en la aplicación móvil.
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response:**
+
+```json
+{
+  "user": {
+    "id": "990fc833-262f-85h8-eb5a-88aa99884444",
+    "name": "Alice Johnson",
+    "email": "alice@techcorp.com"
+  }
+}
+```
+
+**Key Features:**
+
+- **Session persistence**: Permite recuperar información del usuario al reiniciar la app
+- **Secure**: Requiere token JWT válido para acceder
+- **Complete user data**: Retorna id, name y email del usuario
+- **Password excluded**: Por seguridad, no incluye el password en la respuesta
+
+**Mobile App Usage:**
+
+```javascript
+// Recuperar perfil del usuario al iniciar la app
+const getUserProfile = async () => {
+  const token = await SecureStore.getItemAsync("accessToken");
+
+  const response = await fetch("/event-user/profile", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const { user } = await response.json();
+    // Usar datos del usuario para UI
+    setUserName(user.name);
+    setUserEmail(user.email);
+    setUserId(user.id);
+  } else if (response.status === 401) {
+    // Token expirado, redirigir a login
+    navigation.navigate("Login");
+  }
+};
+```
+
 ### Protected Mobile Endpoints
 
 Los siguientes endpoints requieren autenticación de usuario de evento:
@@ -922,6 +1051,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **🔒 Requires Event User Authentication**
 
 Obtiene todos los eventos asignados al usuario autenticado.
+
+#### Get Event User Profile
+
+**GET** `/event-user/profile` 🔒
+
+**🔒 Requires Event User Authentication**
+
+Obtiene los datos completos del usuario autenticado para persistencia de sesión.
 
 ### Mobile App Authentication Flow
 
@@ -1199,11 +1336,113 @@ Returns all agenda items across all events, ordered by start time.
 
 ### Get Agenda by Event
 
-**GET** `/event-agenda/{eventId}`
+**GET** `/event-agenda/{eventId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /event-agenda/550e8400-e29b-41d4-a716-446655440000`
 
 Returns chronologically ordered agenda for a specific event.
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### Get Agenda by Event and Group (Mobile Optimized)
+
+**GET** `/event-agenda/{eventId}/group/{groupId}` 🔒
+
+**🔒 Requires Event User Authentication**
+
+**📱 Mobile App Optimized Endpoint**
+
+Gets agenda items for a specific event and group, formatted for React Native Calendar's Agenda component.
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Example:** `GET /event-agenda/550e8400-e29b-41d4-a716-446655440000/group/660f9500-f30c-52e5-b827-557766551111`
+
+**Response Format:**
+
+```json
+{
+  "2025-07-15": [
+    {
+      "name": "Opening Keynote: The Future of AI",
+      "description": "Industry-leading experts discuss breakthrough AI technologies and their impact on business transformation.",
+      "location": "Main Auditorium - Level 1",
+      "startDate": "2025-07-15T09:00:00.000Z",
+      "endDate": "2025-07-15T10:30:00.000Z",
+      "height": 50
+    },
+    {
+      "name": "AI Workshop",
+      "description": "Hands-on AI implementation workshop",
+      "location": "Workshop Room 1",
+      "startDate": "2025-07-15T14:00:00.000Z",
+      "endDate": "2025-07-15T16:00:00.000Z",
+      "height": 50
+    }
+  ],
+  "2025-07-16": [
+    {
+      "name": "Tech Panel Discussion",
+      "description": "Industry leaders discuss emerging technologies",
+      "location": "Panel Room",
+      "startDate": "2025-07-16T10:00:00.000Z",
+      "endDate": "2025-07-16T11:30:00.000Z",
+      "height": 50
+    }
+  ],
+  "2025-07-17": []
+}
+```
+
+**Key Features:**
+
+- **Date-based grouping**: Items are grouped by date in `YYYY-MM-DD` format
+- **React Native Calendar compatible**: Direct integration with Agenda component
+- **Group-specific filtering**: Shows only agenda items assigned to the specified group
+- **Complete item details**: Includes all necessary information for mobile display
+- **Empty dates support**: Days with no activities return empty arrays `[]`
+
+**Usage in React Native:**
+
+```javascript
+import { Agenda } from "react-native-calendars";
+
+const AgendaScreen = ({ eventId, groupId }) => {
+  const [agendaItems, setAgendaItems] = useState({});
+
+  useEffect(() => {
+    fetch(`/api/event-agenda/${eventId}/group/${groupId}`)
+      .then((response) => response.json())
+      .then((data) => setAgendaItems(data));
+  }, [eventId, groupId]);
+
+  return (
+    <Agenda
+      items={agendaItems}
+      renderItem={(item) => (
+        <View style={styles.agendaItem}>
+          <Text style={styles.itemTitle}>{item.name}</Text>
+          <Text style={styles.itemDescription}>{item.description}</Text>
+          <Text style={styles.itemLocation}>{item.location}</Text>
+          <Text style={styles.itemTime}>
+            {new Date(item.startDate).toLocaleTimeString()} -{new Date(item.endDate).toLocaleTimeString()}
+          </Text>
+        </View>
+      )}
+    />
+  );
+};
+```
 
 ### Get Agenda Item
 
@@ -1298,11 +1537,61 @@ Returns all transport options across all events, ordered by departure time.
 
 ### Get Transports by Event
 
-**GET** `/event-transport/event/{eventId}`
+**GET** `/event-transport/event/{eventId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /event-transport/event/550e8400-e29b-41d4-a716-446655440000`
 
 Returns chronologically ordered transport options for a specific event.
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### Get Transports by Group
+
+**GET** `/event-transport/group/{groupId}`
+
+**Example:** `GET /event-transport/group/660f9500-f30c-52e5-b827-557766551111`
+
+Returns all transport options associated with a specific group, ordered by departure time.
+
+**Response Example:**
+
+```json
+[
+  {
+    "id": "cc2he166-595i-b8k1-he8d-abcdef123456",
+    "name": "Autobús al Aeropuerto",
+    "details": "Servicio de traslado exclusivo desde el hotel hasta el Aeropuerto Internacional",
+    "mapUrl": "https://maps.google.com/route-to-airport",
+    "type": "bus",
+    "departureTime": "2025-07-17T14:00:00.000Z",
+    "event": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Tech Innovation Summit 2025"
+    },
+    "groups": [
+      {
+        "id": "660f9500-f30c-52e5-b827-557766551111",
+        "name": "VIP Speakers",
+        "color": "#FF6B35"
+      }
+    ]
+  }
+]
+```
+
+**Key Features:**
+
+- **Group-specific filtering**: Shows only transports assigned to the specified group
+- **Complete transport details**: Includes all necessary information (name, details, type, departure time)
+- **Event and group relations**: Returns associated event and all assigned groups
+- **Chronological ordering**: Results ordered by departure time (ASC)
+- **Group validation**: Validates that the group exists before querying transports
 
 ### Get Transport Details
 
@@ -1376,9 +1665,17 @@ Manage event speakers with their presentations and specializations.
 
 ### Get Speakers by Event
 
-**GET** `/speaker/event/{eventId}`
+**GET** `/speaker/event/{eventId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /speaker/event/550e8400-e29b-41d4-a716-446655440000`
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
 ### Get Speaker Details
 
@@ -1447,9 +1744,17 @@ Manage accommodation options for event attendees.
 
 ### Get Hotels by Event
 
-**GET** `/hotel/event/{eventId}`
+**GET** `/hotel/event/{eventId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /hotel/event/550e8400-e29b-41d4-a716-446655440000`
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
 ### Get Hotel Details
 
@@ -1531,9 +1836,17 @@ Crea una configuración de menú para un evento específico.
 
 ### Get App Menu Configuration
 
-**GET** `/app-menu/event/{eventId}`
+**GET** `/app-menu/event/{eventId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 Obtiene la configuración del menú para un evento. Si no existe, se crea automáticamente con todas las secciones habilitadas.
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
 **Response:**
 
@@ -1668,17 +1981,135 @@ userEvents.forEach((event) => {
 
 ---
 
-## 📊 Survey System
+## 📊 Survey System - Complete Guide
 
-Comprehensive survey system supporting entry and exit evaluations with multiple question types.
+Comprehensive survey system supporting entry and exit evaluations with multiple question types, group targeting, and real-time analytics.
 
-### Create Simple Survey
+### 🎯 Overview
+
+The survey system allows you to:
+
+- Create **entry** and **exit** surveys for events
+- Target surveys to specific **groups** (VIP, Speakers, Attendees, etc.)
+- Support **4 question types**: text, multiple choice, rating, boolean
+- Track **user responses** and prevent duplicates
+- Analyze **survey metrics** in real-time
+
+### 📋 Table of Contents
+
+- [Group Assignment](#group-assignment)
+- [Question Types](#question-types-reference)
+- [Creating Surveys](#creating-surveys)
+- [Managing Questions](#managing-survey-questions)
+- [Survey Responses](#survey-responses)
+- [Mobile App Integration](#mobile-app-survey-integration)
+- [Best Practices](#survey-best-practices)
+
+---
+
+### 🏷️ Group Assignment
+
+**NEW FEATURE**: Surveys can now be assigned to specific groups, just like agenda items. This allows you to:
+
+- Show different surveys to different participant groups
+- Target feedback collection to specific audiences
+- Segment survey analytics by group
+
+**Key Points:**
+
+- ✅ `groupIds` is **optional** - if not provided, survey is available to all event participants
+- ✅ Multiple groups can be assigned to a single survey
+- ✅ Groups must exist in the event before assignment
+- ✅ Group assignments can be updated anytime
+
+---
+
+### 🎯 Question Types Reference
+
+#### 1. Text Questions
+
+Free-form text input for detailed responses.
+
+```json
+{
+  "questionType": "text",
+  "questionText": "What are your expectations for this event?",
+  "isRequired": true
+}
+```
+
+**Answer format:** `"answerValue": "My detailed response here"`
+
+**Use cases:** Open-ended feedback, suggestions, comments
+
+---
+
+#### 2. Multiple Choice Questions
+
+Single selection from predefined options.
+
+```json
+{
+  "questionType": "multiple_choice",
+  "questionText": "What's your experience level?",
+  "isRequired": true,
+  "options": ["Beginner", "Intermediate", "Advanced", "Expert"]
+}
+```
+
+**Answer format:** `"selectedOption": "Intermediate"`
+
+**Use cases:** Role selection, preferences, categorical data
+
+**Important:** `options` array is **required** for multiple choice questions
+
+---
+
+#### 3. Rating Questions
+
+Numeric rating typically from 1-10.
+
+```json
+{
+  "questionType": "rating",
+  "questionText": "Rate your excitement level (1-10)",
+  "isRequired": false
+}
+```
+
+**Answer format:** `"ratingValue": 8`
+
+**Use cases:** Satisfaction scores, NPS, experience ratings
+
+---
+
+#### 4. Boolean Questions
+
+Yes/No or True/False questions.
+
+```json
+{
+  "questionType": "boolean",
+  "questionText": "Is this your first tech conference?",
+  "isRequired": true
+}
+```
+
+**Answer format:** `"booleanValue": true`
+
+**Use cases:** Binary choices, confirmations, simple facts
+
+---
+
+### 📝 Creating Surveys
+
+#### Create Simple Survey
 
 **POST** `/survey`
 
 Creates a survey without questions (questions added separately).
 
-**Request Example:**
+**Request Body:**
 
 ```json
 {
@@ -1686,11 +2117,48 @@ Creates a survey without questions (questions added separately).
   "description": "Initial evaluation to understand attendee expectations and background",
   "type": "entry",
   "isActive": true,
-  "eventId": "550e8400-e29b-41d4-a716-446655440000"
+  "eventId": "550e8400-e29b-41d4-a716-446655440000",
+  "groupIds": ["660f9500-f30c-52e5-b827-557766551111"]
 }
 ```
 
-### 🚀 Create Complete Survey
+**Field Descriptions:**
+
+| Field         | Type    | Required | Description                             |
+| ------------- | ------- | -------- | --------------------------------------- |
+| `title`       | string  | ✅ Yes   | Survey title (min 3 characters)         |
+| `description` | string  | ❌ No    | Detailed survey description             |
+| `type`        | enum    | ✅ Yes   | `"entry"` or `"exit"`                   |
+| `isActive`    | boolean | ❌ No    | Enable/disable survey (default: `true`) |
+| `eventId`     | UUID    | ✅ Yes   | Event ID this survey belongs to         |
+| `groupIds`    | UUID[]  | ❌ No    | Array of group IDs to target (optional) |
+
+**Response:**
+
+```json
+{
+  "id": "ff5kh499-8c8l-e1n4-kh1g-eeffff44aaaa",
+  "title": "Event Entry Assessment",
+  "description": "Initial evaluation to understand attendee expectations and background",
+  "type": "entry",
+  "isActive": true,
+  "event": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Tech Innovation Summit 2025"
+  },
+  "groups": [
+    {
+      "id": "660f9500-f30c-52e5-b827-557766551111",
+      "name": "VIP Speakers",
+      "color": "#FF6B35"
+    }
+  ]
+}
+```
+
+---
+
+#### 🚀 Create Complete Survey (Recommended)
 
 **POST** `/survey/with-questions`
 
@@ -1705,6 +2173,7 @@ Creates a survey without questions (questions added separately).
   "type": "entry",
   "isActive": true,
   "eventId": "550e8400-e29b-41d4-a716-446655440000",
+  "groupIds": ["660f9500-f30c-52e5-b827-557766551111", "770fa611-040d-63f6-c938-668877662222"],
   "questions": [
     {
       "questionText": "What are your primary learning objectives for this summit?",
@@ -1730,13 +2199,6 @@ Creates a survey without questions (questions added separately).
       "questionType": "boolean",
       "isRequired": true,
       "order": 4
-    },
-    {
-      "questionText": "Which topics interest you most?",
-      "questionType": "multiple_choice",
-      "isRequired": false,
-      "order": 5,
-      "options": ["Artificial Intelligence", "Blockchain Technology", "Cloud Computing", "Cybersecurity", "DevOps", "Mobile Development"]
     }
   ]
 }
@@ -1755,6 +2217,18 @@ Creates a survey without questions (questions added separately).
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "name": "Tech Innovation Summit 2025"
   },
+  "groups": [
+    {
+      "id": "660f9500-f30c-52e5-b827-557766551111",
+      "name": "VIP Speakers",
+      "color": "#FF6B35"
+    },
+    {
+      "id": "770fa611-040d-63f6-c938-668877662222",
+      "name": "Attendees",
+      "color": "#4ECDC4"
+    }
+  ],
   "questions": [
     {
       "id": "gg6li5aa-9d9m-f2o5-li2h-ffgggg55bbbb",
@@ -1771,42 +2245,129 @@ Creates a survey without questions (questions added separately).
       "isRequired": true,
       "order": 2,
       "options": ["Software Developer", "Product Manager", "Data Scientist", "Engineering Manager", "CTO/Technical Executive", "Student", "Other"]
+    },
+    {
+      "id": "ii8nk7cc-bfbo-h4q7-nk4j-hhiiii77dddd",
+      "questionText": "How would you rate your experience with AI/ML technologies? (1-10)",
+      "questionType": "rating",
+      "isRequired": false,
+      "order": 3,
+      "options": null
+    },
+    {
+      "id": "jj9ol8dd-cgcp-i5r8-ol5k-iijjjj88eeee",
+      "questionText": "Is this your first time attending a tech summit?",
+      "questionType": "boolean",
+      "isRequired": true,
+      "order": 4,
+      "options": null
     }
   ]
 }
 ```
 
-### Get All Surveys
+---
+
+### 🔍 Retrieving Surveys
+
+#### Get All Surveys
 
 **GET** `/survey`
 
-### Get Surveys by Event
+Returns all surveys across all events with their groups, questions, and event information.
 
-**GET** `/survey/event/{eventId}`
+---
+
+#### Get Surveys by Event
+
+**GET** `/survey/event/{eventId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /survey/event/550e8400-e29b-41d4-a716-446655440000`
 
-Returns both entry and exit surveys for the event.
+Returns both entry and exit surveys for the event, including assigned groups.
 
-### Get Survey Details
+**Headers Required:**
 
-**GET** `/survey/{surveyId}`
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
-Basic survey information without questions.
+**Response Example:**
 
-### Get Survey with Questions
+```json
+[
+  {
+    "id": "ff5kh499-8c8l-e1n4-kh1g-eeffff44aaaa",
+    "title": "Tech Summit Entry Survey",
+    "type": "entry",
+    "isActive": true,
+    "groups": [
+      {
+        "id": "660f9500-f30c-52e5-b827-557766551111",
+        "name": "VIP Speakers",
+        "color": "#FF6B35"
+      }
+    ],
+    "questions": [...]
+  },
+  {
+    "id": "gg6li5bb-9d9m-f2o5-li2h-ffgggg55cccc",
+    "title": "Tech Summit Exit Survey",
+    "type": "exit",
+    "isActive": true,
+    "groups": [],
+    "questions": [...]
+  }
+]
+```
 
-**GET** `/survey/{surveyId}/with-questions`
+**Note:** Empty `groups` array means survey is available to all event participants.
+
+---
+
+#### Get Survey Details
+
+**GET** `/survey/{surveyId}` 🔒
+
+**🔒 Requires Event User Authentication**
+
+Returns basic survey information including assigned groups, questions, and responses.
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+---
+
+#### Get Survey with Questions
+
+**GET** `/survey/{surveyId}/with-questions` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /survey/ff5kh499-8c8l-e1n4-kh1g-eeffff44aaaa/with-questions`
 
-Returns survey with all questions ordered by sequence.
+Returns survey with all questions ordered by sequence, including assigned groups.
 
-### Get Survey Metrics
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+---
+
+#### Get Survey Metrics
 
 **GET** `/survey/{surveyId}/metrics`
 
-**Example Response:**
+Returns survey analytics and statistics.
+
+**Response:**
 
 ```json
 {
@@ -1819,17 +2380,38 @@ Returns survey with all questions ordered by sequence.
 }
 ```
 
-### Update Simple Survey
+---
+
+### ✏️ Updating Surveys
+
+#### Update Simple Survey
 
 **PUT** `/survey/{surveyId}`
 
-Updates survey metadata only.
+Updates survey metadata only (not questions).
 
-### 🚀 Update Complete Survey
+**Request Example:**
+
+```json
+{
+  "title": "Updated Survey Title",
+  "description": "Updated description",
+  "isActive": false,
+  "groupIds": ["660f9500-f30c-52e5-b827-557766551111"]
+}
+```
+
+**All fields are optional**. Only provided fields will be updated.
+
+**Note:** To remove all group assignments, pass empty array: `"groupIds": []`
+
+---
+
+#### 🚀 Update Complete Survey (Recommended)
 
 **PUT** `/survey/{surveyId}/with-questions`
 
-**⭐ Recommended:** Intelligently manages survey and questions in one call.
+**⭐ Recommended:** Intelligently manages survey metadata, groups, and questions in one call.
 
 **Request Example:**
 
@@ -1837,6 +2419,7 @@ Updates survey metadata only.
 {
   "title": "Updated Tech Summit Entry Survey",
   "description": "Enhanced pre-event evaluation",
+  "groupIds": ["660f9500-f30c-52e5-b827-557766551111"],
   "questions": [
     {
       "id": "gg6li5aa-9d9m-f2o5-li2h-ffgggg55bbbb",
@@ -1858,23 +2441,30 @@ Updates survey metadata only.
 
 **Smart Update Logic:**
 
-- Questions with `id`: Updated
-- Questions without `id`: Created as new
-- Questions not included: Deleted
-
-### Delete Survey
-
-**DELETE** `/survey/{surveyId}`
-
-Cascades to delete all questions and responses.
+- ✅ Questions with `id`: **Updated**
+- ✅ Questions without `id`: **Created as new**
+- ✅ Questions not included in request: **Deleted**
+- ✅ Groups replaced with new `groupIds` array
 
 ---
 
-## ❓ Survey Questions
+### 🗑️ Delete Survey
 
-Individual question management (useful for fine-grained control).
+**DELETE** `/survey/{surveyId}`
 
-### Create Question
+Permanently deletes survey and **cascades** to delete:
+
+- All questions
+- All user responses
+- All question answers
+
+---
+
+### ❓ Managing Survey Questions
+
+Individual question management (useful for fine-grained control). For most cases, use the `/with-questions` endpoints instead.
+
+#### Create Question
 
 **POST** `/survey-question`
 
@@ -1891,31 +2481,49 @@ Individual question management (useful for fine-grained control).
 }
 ```
 
-### Get Questions by Survey
+---
+
+#### Get Questions by Survey
 
 **GET** `/survey-question/survey/{surveyId}`
 
-Returns questions ordered by sequence.
-
-### Update Question
-
-**PUT** `/survey-question/{questionId}`
-
-### Delete Question
-
-**DELETE** `/survey-question/{questionId}`
+Returns all questions for a survey, ordered by `order` field.
 
 ---
 
-## 📝 Survey Responses
+#### Update Question
+
+**PUT** `/survey-question/{questionId}`
+
+Updates a single question. All fields optional.
+
+---
+
+#### Delete Question
+
+**DELETE** `/survey-question/{questionId}`
+
+Deletes question and all associated answers.
+
+---
+
+### 📝 Survey Responses
 
 Handle survey submissions and retrieve response data for analytics.
 
-### 🚀 Submit Complete Survey Response
+#### 🚀 Submit Complete Survey Response
 
-**POST** `/survey-response/submit`
+**POST** `/survey-response/submit` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **⭐ Primary endpoint for mobile/web apps**
+
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
 **Request Example:**
 
@@ -1939,14 +2547,19 @@ Handle survey submissions and retrieve response data for analytics.
     {
       "questionId": "jj9ol8dd-cgcp-i5r8-ol5k-iijjjj88eeee",
       "booleanValue": false
-    },
-    {
-      "questionId": "kk0pm9ee-dhdq-j6s9-pm6l-jjkkkk99ffff",
-      "selectedOption": "Artificial Intelligence"
     }
   ]
 }
 ```
+
+**Answer Field Mapping by Question Type:**
+
+| Question Type     | Answer Field     | Example Value          |
+| ----------------- | ---------------- | ---------------------- |
+| `text`            | `answerValue`    | `"My response text"`   |
+| `multiple_choice` | `selectedOption` | `"Software Developer"` |
+| `rating`          | `ratingValue`    | `7`                    |
+| `boolean`         | `booleanValue`   | `true`                 |
 
 **Response:**
 
@@ -1976,26 +2589,54 @@ Handle survey submissions and retrieve response data for analytics.
         "questionText": "What are your primary learning objectives for this summit?",
         "questionType": "text"
       }
+    },
+    {
+      "id": "nn3sp2hh-gkgt-m9v2-sp9o-mmnnnn22iiii",
+      "answerValue": null,
+      "selectedOption": "Software Developer",
+      "ratingValue": null,
+      "booleanValue": null,
+      "question": {
+        "id": "hh7mj6bb-aean-g3p6-mj3i-gghhhh66cccc",
+        "questionText": "What is your current role in technology?",
+        "questionType": "multiple_choice"
+      }
     }
   ]
 }
 ```
 
-### Check if User Already Responded
+---
 
-**GET** `/survey-response/check/{surveyId}/{userId}`
+#### Check if User Already Responded
+
+**GET** `/survey-response/check/{surveyId}/{userId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /survey-response/check/ff5kh499-8c8l-e1n4-kh1g-eeffff44aaaa/990fc833-262f-85h8-eb5a-88aa99884444`
 
+**Headers Required:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
 **Response:** `true` or `false`
 
-### Get All Survey Responses
+**Use Case:** Check before showing survey to prevent duplicate submissions.
+
+---
+
+#### Get All Survey Responses
 
 **GET** `/survey-response`
 
 Admin endpoint to retrieve all responses across all surveys.
 
-### Get Responses by Survey
+---
+
+#### Get Responses by Survey
 
 **GET** `/survey-response/survey/{surveyId}`
 
@@ -2003,74 +2644,190 @@ Admin endpoint to retrieve all responses across all surveys.
 
 Analytics endpoint to get all responses for a specific survey.
 
-### Get Responses by User
+**Use Case:** Dashboard analytics, export to CSV/Excel, reporting.
 
-**GET** `/survey-response/user/{userId}`
+---
+
+#### Get Responses by User
+
+**GET** `/survey-response/user/{userId}` 🔒
+
+**🔒 Requires Event User Authentication**
 
 **Example:** `GET /survey-response/user/990fc833-262f-85h8-eb5a-88aa99884444`
 
 Retrieves all surveys a user has completed.
 
-### Get Response Details
+**Headers Required:**
 
-**GET** `/survey-response/{responseId}`
-
-Full response details with all answers.
-
-### Delete Response
-
-**DELETE** `/survey-response/{responseId}`
-
-Admin function to remove a response.
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
 ---
 
-## 🎯 Question Types Reference
+#### Get Response Details
 
-### 1. Text Questions
+**GET** `/survey-response/{responseId}`
 
-```json
-{
-  "questionType": "text",
-  "questionText": "Describe your goals for this event"
+Returns full response details with all answers and question information.
+
+---
+
+#### Delete Response
+
+**DELETE** `/survey-response/{responseId}`
+
+Admin function to remove a response and all associated answers.
+
+---
+
+### 📱 Mobile App Survey Integration
+
+#### Complete Survey Flow
+
+```javascript
+// 1. Get event surveys
+const surveysResponse = await fetch(`/api/survey/event/${eventId}`, {
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
+  },
+});
+const surveys = await surveysResponse.json();
+
+// 2. Filter surveys by user's groups (optional)
+const userGroups = ["660f9500-f30c-52e5-b827-557766551111"];
+const relevantSurveys = surveys.filter((survey) => {
+  // If survey has no groups, it's for everyone
+  if (survey.groups.length === 0) return true;
+
+  // Check if user is in any of the survey's groups
+  return survey.groups.some((group) => userGroups.includes(group.id));
+});
+
+// 3. Check if user already responded
+const checkResponse = await fetch(`/api/survey-response/check/${surveyId}/${userId}`, {
+  headers: { Authorization: `Bearer ${accessToken}` },
+});
+const hasResponded = await checkResponse.json();
+
+if (hasResponded) {
+  // Show "Already completed" message
+  return;
 }
+
+// 4. Get survey with questions
+const surveyResponse = await fetch(`/api/survey/${surveyId}/with-questions`, {
+  headers: { Authorization: `Bearer ${accessToken}` },
+});
+const surveyWithQuestions = await surveyResponse.json();
+
+// 5. Display survey to user and collect answers
+const userAnswers = collectUserAnswers(surveyWithQuestions.questions);
+
+// 6. Submit responses
+const submitResponse = await fetch("/api/survey-response/submit", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    surveyId: surveyId,
+    userId: userId,
+    answers: userAnswers,
+  }),
+});
+
+const result = await submitResponse.json();
+console.log("Survey submitted successfully:", result);
 ```
 
-**Answer format:** `"answerValue": "My detailed response here"`
+---
 
-### 2. Multiple Choice Questions
+### 💡 Survey Best Practices
 
-```json
-{
-  "questionType": "multiple_choice",
-  "questionText": "What's your experience level?",
-  "options": ["Beginner", "Intermediate", "Advanced", "Expert"]
-}
-```
+#### 1. Survey Creation
 
-**Answer format:** `"selectedOption": "Intermediate"`
+✅ **Do:**
 
-### 3. Rating Questions
+- Use `/with-questions` endpoint for efficiency (single API call)
+- Assign clear, descriptive titles
+- Set appropriate `type` (entry/exit)
+- Use group targeting for personalized surveys
+- Order questions logically (simple → complex)
 
-```json
-{
-  "questionType": "rating",
-  "questionText": "Rate your excitement level (1-10)"
-}
-```
+❌ **Don't:**
 
-**Answer format:** `"ratingValue": 8`
+- Create surveys without questions (unless adding questions later)
+- Mix entry and exit questions in same survey
+- Forget to set `isActive: false` for draft surveys
 
-### 4. Boolean Questions
+---
 
-```json
-{
-  "questionType": "boolean",
-  "questionText": "Is this your first tech conference?"
-}
-```
+#### 2. Question Design
 
-**Answer format:** `"booleanValue": true`
+✅ **Do:**
+
+- Mark critical questions as `isRequired: true`
+- Use `order` field to control question sequence
+- Provide comprehensive `options` for multiple choice
+- Keep question text clear and concise
+
+❌ **Don't:**
+
+- Create multiple choice without `options` array
+- Use rating for yes/no (use boolean instead)
+- Make all questions required (users may abandon)
+
+---
+
+#### 3. Group Targeting
+
+✅ **Do:**
+
+- Assign surveys to specific groups when appropriate
+- Leave `groupIds` empty for universal surveys
+- Update group assignments as event structure changes
+
+❌ **Don't:**
+
+- Assign surveys to non-existent groups
+- Over-segment (too many group-specific surveys)
+
+---
+
+#### 4. Mobile App Integration
+
+✅ **Do:**
+
+- Check if user already responded before showing survey
+- Filter surveys by user's groups
+- Cache survey data locally for offline access
+- Show progress indicator during submission
+- Handle network errors gracefully
+
+❌ **Don't:**
+
+- Allow duplicate submissions
+- Show surveys user's group can't access
+- Block UI during submission (use loading states)
+
+---
+
+#### 5. Analytics & Reporting
+
+✅ **Do:**
+
+- Use `/metrics` endpoint for dashboard stats
+- Export responses for detailed analysis
+- Track completion rates by group
+- Monitor response times
+
+❌ **Don't:**
+
+- Fetch all responses repeatedly (use caching)
+- Expose individual user responses publicly
 
 ---
 
@@ -2348,13 +3105,14 @@ The API is designed for seamless mobile app integration:
 
 ```
 Events (1:many) → Groups, Users (via assignments), Agenda, Speakers, Hotels, Surveys, Transports
-├── Groups (many:many) → Users (via assignments), Agenda items, Transports
+├── Groups (many:many) → Users (via assignments), Agenda items, Transports, Surveys
 ├── Users (many:many) → Events (via assignments), Survey responses
 ├── Agenda (many:many) → Groups
 ├── Transports (many:many) → Groups
 ├── Speakers (many:one) → Events
 ├── Hotels (many:one) → Events
-└── Surveys (1:many) → Questions, Responses
+└── Surveys (many:many) → Groups
+    ├── Surveys (1:many) → Questions, Responses
     ├── Questions (1:many) → Question answers
     └── Responses (1:many) → Question answers
         └── Question Answers (many:one) → Questions, Responses

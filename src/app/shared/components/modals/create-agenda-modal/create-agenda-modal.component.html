@@ -105,7 +105,7 @@
               matIconSuffix
               [for]="startDatePicker"
             ></mat-datepicker-toggle>
-            <mat-datepicker 
+            <mat-datepicker
               #startDatePicker
               [startAt]="minDate()"
             ></mat-datepicker>
@@ -153,7 +153,7 @@
               matIconSuffix
               [for]="endDatePicker"
             ></mat-datepicker-toggle>
-            <mat-datepicker 
+            <mat-datepicker
               #endDatePicker
               [startAt]="minDate()"
             ></mat-datepicker>
@@ -292,9 +292,6 @@
                     ></div>
                     <div class="group-details">
                       <span class="group-name">{{ group.name }}</span>
-                      <span class="group-stats">
-                        {{ group.assignments?.length || 0 }} participantes
-                      </span>
                     </div>
                   </div>
 
