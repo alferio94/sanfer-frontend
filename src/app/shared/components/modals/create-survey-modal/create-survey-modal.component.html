@@ -254,6 +254,83 @@
         }
       </div>
     </div>
+
+    <!-- Grupos Asignados -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>groups</mat-icon>
+        Grupos Asignados
+      </h3>
+
+      @if (availableGroups().length === 0) {
+        <div class="no-groups">
+          <mat-icon>info</mat-icon>
+          <span>No hay grupos disponibles en este evento</span>
+        </div>
+      } @else {
+        <div class="groups-section">
+          <!-- Select All Toggle -->
+          <div class="select-all-toggle">
+            <mat-slide-toggle
+              [checked]="isAllGroupsSelected"
+              (change)="toggleAllGroups()"
+              color="primary"
+            >
+              <strong>
+                @if (selectedGroups().size === 0) {
+                  Seleccionar todos los grupos
+                } @else if (isAllGroupsSelected) {
+                  Deseleccionar todos los grupos
+                } @else {
+                  Seleccionar todos los grupos ({{ selectedGroups().size }}/{{
+                    availableGroups().length
+                  }})
+                }
+              </strong>
+            </mat-slide-toggle>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Groups List -->
+          <div class="groups-list">
+            @for (group of availableGroups(); track group.id) {
+              <div class="group-toggle-item">
+                <div class="group-info">
+                  <div
+                    class="group-color"
+                    [style.background-color]="group.color"
+                  ></div>
+                  <div class="group-details">
+                    <span class="group-name">{{ group.name }}</span>
+                  </div>
+                </div>
+
+                <mat-slide-toggle
+                  [checked]="isGroupSelected(group.id)"
+                  (change)="onGroupToggle(group.id, $event.checked)"
+                  color="primary"
+                >
+                </mat-slide-toggle>
+              </div>
+            }
+          </div>
+
+          <!-- Selected Summary -->
+          <div class="selection-summary">
+            <mat-icon>info</mat-icon>
+            <span>
+              @if (selectedGroups().size === 0) {
+                La encuesta será visible para todos los participantes del evento
+              } @else {
+                Encuesta para {{ selectedGroups().size }} grupo(s)
+                seleccionado(s)
+              }
+            </span>
+          </div>
+        </div>
+      }
+    </div>
   </form>
   </div>
 

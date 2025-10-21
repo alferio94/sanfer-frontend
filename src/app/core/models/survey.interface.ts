@@ -20,6 +20,11 @@ export interface Survey {
     id: string;
     name: string;
   };
+  groups?: Array<{
+    id: string;
+    name: string;
+    color: string;
+  }>;
   questions?: SurveyQuestion[];
 }
 
@@ -73,6 +78,7 @@ export interface CreateSurveyRequest {
   type: SurveyType;
   isActive: boolean;
   eventId: string;
+  groupIds?: string[];
   questions: Array<{
     questionText: string;
     questionType: QuestionType;
@@ -86,6 +92,7 @@ export interface UpdateSurveyRequest {
   title?: string;
   description?: string;
   isActive?: boolean;
+  groupIds?: string[];
   questions?: Array<{
     id?: string;
     questionText: string;

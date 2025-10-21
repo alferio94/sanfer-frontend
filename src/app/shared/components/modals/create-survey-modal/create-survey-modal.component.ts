@@ -22,9 +22,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDividerModule } from '@angular/material/divider';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
-// Models
+// Models & Services
 import {
   Survey,
   SurveyQuestion,
@@ -33,6 +35,8 @@ import {
   CreateSurveyRequest,
   UpdateSurveyRequest,
 } from '@core/models/survey.interface';
+import { EventGroup } from '@core/models/group.interface';
+import { GroupsService } from '@core/services/groups.service';
 
 interface CreateSurveyModalData {
   eventId: string;
@@ -62,6 +66,8 @@ interface CreateSurveyModalResult {
     MatExpansionModule,
     MatTooltipModule,
     MatRadioModule,
+    MatSlideToggleModule,
+    MatDividerModule,
     DragDropModule,
   ],
   templateUrl: './create-survey-modal.component.html',
@@ -70,6 +76,11 @@ interface CreateSurveyModalResult {
 export class CreateSurveyModalComponent implements OnInit {
   surveyForm: FormGroup;
   loading = signal(false);
+  loadingGroups = signal(false);
+
+  // Groups
+  readonly availableGroups = signal<EventGroup[]>([]);
+  readonly selectedGroups = signal<Set<string>>(new Set());
 
   readonly questionTypes: { value: QuestionType; label: string; icon: string }[] = [
     { value: 'text', label: 'Texto libre', icon: 'text_fields' },
@@ -93,6 +104,7 @@ export class CreateSurveyModalComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private groupsService: GroupsService,
     private dialogRef: MatDialogRef<CreateSurveyModalComponent, CreateSurveyModalResult>,
     @Inject(MAT_DIALOG_DATA) public data: CreateSurveyModalData
   ) {
@@ -100,6 +112,8 @@ export class CreateSurveyModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadGroups();
+
     if (this.isEditMode && this.data.survey) {
       this.loadSurveyData(this.data.survey);
     }
@@ -133,6 +147,21 @@ export class CreateSurveyModalComponent implements OnInit {
     });
   }
 
+  private loadGroups(): void {
+    this.loadingGroups.set(true);
+
+    this.groupsService.getGroupsByEvent(this.data.eventId).subscribe({
+      next: (groups) => {
+        this.availableGroups.set(groups);
+        this.loadingGroups.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading groups:', error);
+        this.loadingGroups.set(false);
+      },
+    });
+  }
+
   private loadSurveyData(survey: Survey): void {
     this.surveyForm.patchValue({
       title: survey.title,
@@ -148,6 +177,12 @@ export class CreateSurveyModalComponent implements OnInit {
         .forEach((question) => {
           this.addQuestion(question);
         });
+    }
+
+    // Preselect groups
+    if (survey.groups) {
+      const selectedGroupIds = new Set(survey.groups.map((g) => g.id));
+      this.selectedGroups.set(selectedGroupIds);
     }
   }
 
@@ -234,6 +269,45 @@ export class CreateSurveyModalComponent implements OnInit {
     });
   }
 
+  // Group management
+  onGroupToggle(groupId: string, checked: boolean): void {
+    const selected = new Set(this.selectedGroups());
+
+    if (checked) {
+      selected.add(groupId);
+    } else {
+      selected.delete(groupId);
+    }
+
+    this.selectedGroups.set(selected);
+  }
+
+  isGroupSelected(groupId: string): boolean {
+    return this.selectedGroups().has(groupId);
+  }
+
+  toggleAllGroups(): void {
+    const allGroups = this.availableGroups();
+    const currentSelected = this.selectedGroups();
+
+    if (currentSelected.size === allGroups.length) {
+      // Deselect all
+      this.selectedGroups.set(new Set());
+    } else {
+      // Select all
+      this.selectedGroups.set(new Set(allGroups.map((g) => g.id)));
+    }
+  }
+
+  get isAllGroupsSelected(): boolean {
+    return this.selectedGroups().size === this.availableGroups().length;
+  }
+
+  get isSomeGroupsSelected(): boolean {
+    const selected = this.selectedGroups().size;
+    return selected > 0 && selected < this.availableGroups().length;
+  }
+
   // Form validation helpers
   isQuestionTypeMultipleChoice(questionIndex: number): boolean {
     return this.questions.at(questionIndex).get('questionType')?.value === 'multiple_choice';
@@ -256,6 +330,7 @@ export class CreateSurveyModalComponent implements OnInit {
         type: formValue.type,
         isActive: formValue.isActive,
         ...(this.isEditMode ? {} : { eventId: this.data.eventId }),
+        groupIds: Array.from(this.selectedGroups()),
         questions: formValue.questions.map((question: any, index: number) => ({
           ...(question.id ? { id: question.id } : {}),
           questionText: question.questionText,
