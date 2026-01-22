@@ -1,0 +1,43 @@
+<div class="charts-container">
+  @for (question of questionStats(); track question.questionId) {
+    <div class="chart-item" [class.full-width]="isTextQuestion(question)">
+      @if (isRatingQuestion(question)) {
+        <app-rating-chart
+          [questionText]="question.questionText"
+          [stats]="asRatingStats(question.stats)"
+          [totalAnswers]="question.totalAnswers"
+        />
+      }
+
+      @if (isMultipleChoiceQuestion(question)) {
+        <app-multiple-choice-chart
+          [questionText]="question.questionText"
+          [stats]="asMultipleChoiceStats(question.stats)"
+          [totalAnswers]="question.totalAnswers"
+        />
+      }
+
+      @if (isBooleanQuestion(question)) {
+        <app-boolean-chart
+          [questionText]="question.questionText"
+          [stats]="asBooleanStats(question.stats)"
+          [totalAnswers]="question.totalAnswers"
+        />
+      }
+
+      @if (isTextQuestion(question)) {
+        <app-text-responses
+          [questionText]="question.questionText"
+          [stats]="asTextStats(question.stats)"
+          [totalAnswers]="question.totalAnswers"
+        />
+      }
+    </div>
+  }
+</div>
+
+@if (questionStats().length === 0) {
+  <div class="empty-charts">
+    <p>No hay estadísticas de preguntas disponibles</p>
+  </div>
+}

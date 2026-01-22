@@ -1,0 +1,47 @@
+<mat-card class="chart-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>list</mat-icon>
+    <mat-card-title>{{ questionText() }}</mat-card-title>
+    <mat-card-subtitle>{{ totalAnswers() }} respuestas</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="chart-layout">
+      <!-- Pie Chart -->
+      <div class="pie-container">
+        <ngx-charts-pie-chart
+          [results]="chartData()"
+          [scheme]="colorScheme"
+          [doughnut]="true"
+          [arcWidth]="0.4"
+          [labels]="false"
+          [gradient]="true"
+        >
+        </ngx-charts-pie-chart>
+      </div>
+
+      <!-- Legend with percentages -->
+      <div class="options-legend">
+        @for (item of sortedOptions(); track item.option; let i = $index) {
+          <div class="legend-item">
+            <div class="legend-color" [style.background-color]="colorScheme.domain[i % colorScheme.domain.length]"></div>
+            <div class="legend-content">
+              <span class="legend-label">{{ item.option }}</span>
+              <div class="legend-stats">
+                <span class="legend-count">{{ item.count }}</span>
+                <span class="legend-percentage">({{ item.percentage | number : "1.1-1" }}%)</span>
+              </div>
+            </div>
+            <div class="legend-bar">
+              <div
+                class="legend-bar-fill"
+                [style.width.%]="item.percentage"
+                [style.background-color]="colorScheme.domain[i % colorScheme.domain.length]"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

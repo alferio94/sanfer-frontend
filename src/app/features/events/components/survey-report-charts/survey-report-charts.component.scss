@@ -1,0 +1,44 @@
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.chart-item {
+  min-height: 300px;
+
+  &.full-width {
+    grid-column: span 2;
+  }
+}
+
+.empty-charts {
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--mat-sys-on-surface-variant, #666);
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+// Responsive
+@media (max-width: 900px) {
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-item {
+    &.full-width {
+      grid-column: span 1;
+    }
+  }
+
+  .empty-charts {
+    grid-column: span 1;
+  }
+}

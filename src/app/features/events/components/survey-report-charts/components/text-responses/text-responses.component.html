@@ -1,0 +1,41 @@
+<mat-card class="chart-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>text_fields</mat-icon>
+    <mat-card-title>{{ questionText() }}</mat-card-title>
+    <mat-card-subtitle>{{ totalAnswers() }} respuestas</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (stats().responses.length === 0) {
+      <div class="empty-state">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <span>No hay respuestas de texto</span>
+      </div>
+    } @else {
+      <div class="responses-list">
+        @for (response of visibleResponses(); track $index) {
+          <div class="response-item">
+            <mat-icon class="quote-icon">format_quote</mat-icon>
+            <p class="response-text">{{ response }}</p>
+          </div>
+        }
+      </div>
+
+      @if (hasMore()) {
+        <div class="show-more-container">
+          @if (showAll()) {
+            <button mat-button color="primary" (click)="toggleShowAll()">
+              <mat-icon>expand_less</mat-icon>
+              Mostrar menos
+            </button>
+          } @else {
+            <button mat-button color="primary" (click)="toggleShowAll()">
+              <mat-icon>expand_more</mat-icon>
+              Ver {{ remainingCount() }} respuestas más
+            </button>
+          }
+        </div>
+      }
+    }
+  </mat-card-content>
+</mat-card>

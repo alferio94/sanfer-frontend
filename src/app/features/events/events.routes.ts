@@ -15,4 +15,11 @@ export const routes: Routes = [
         (m) => m.EventDetailsComponent,
       ),
   },
+  {
+    path: ':id/survey/:surveyId/report',
+    loadComponent: () =>
+      import('./components/survey-report/survey-report.component').then(
+        (m) => m.SurveyReportComponent,
+      ),
+  },
 ];

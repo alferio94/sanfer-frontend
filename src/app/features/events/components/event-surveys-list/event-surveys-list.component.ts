@@ -7,6 +7,7 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -48,6 +49,7 @@ export class EventSurveysListComponent implements OnInit {
   private surveyService = inject(SurveyService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
 
   // Signals
   readonly surveys = signal<Survey[]>([]);
@@ -128,12 +130,12 @@ export class EventSurveysListComponent implements OnInit {
       },
     },
     {
-      icon: 'poll',
-      label: 'Ver métricas',
+      icon: 'bar_chart',
+      label: 'Ver reporte',
       color: 'accent',
       handler: (processedSurvey) => {
         const survey = this.getOriginalSurvey(processedSurvey.id);
-        if (survey) this.onViewMetrics(survey);
+        if (survey) this.onViewReport(survey);
       },
     },
     {
@@ -211,8 +213,19 @@ export class EventSurveysListComponent implements OnInit {
     this.showMessage('Funcionalidad de vista detallada próximamente');
   }
 
+  onViewReport(survey: Survey): void {
+    // Navigate to the survey report page
+    this.router.navigate([
+      'dashboard',
+      this.eventId,
+      'survey',
+      survey.id,
+      'report',
+    ]);
+  }
+
   onViewMetrics(survey: Survey): void {
-    // TODO: Implement metrics modal
+    // Quick metrics preview in snackbar (kept for backward compatibility)
     this.surveyService.getSurveyMetrics(survey.id).subscribe({
       next: (metrics) => {
         if (metrics) {

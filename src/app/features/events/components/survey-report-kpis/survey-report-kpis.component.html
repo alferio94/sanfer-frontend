@@ -1,0 +1,86 @@
+<div class="kpis-container">
+  <!-- Total Responses KPI -->
+  <mat-card class="kpi-card">
+    <mat-card-content>
+      <div class="kpi-icon responses">
+        <mat-icon>people</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ summary().totalResponses }}</span>
+        <span class="kpi-label">Respuestas</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Completion Rate KPI -->
+  <mat-card class="kpi-card">
+    <mat-card-content>
+      <div class="kpi-icon" [class]="completionColor()">
+        <mat-icon>pie_chart</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ summary().completionRate | number : "1.1-1" }}%</span>
+        <span class="kpi-label">Tasa de Completado</span>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="summary().completionRate"
+          [class]="'progress-' + completionColor()"
+        ></mat-progress-bar>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Average Rating KPI -->
+  <mat-card class="kpi-card">
+    <mat-card-content>
+      <div class="kpi-icon" [class]="ratingColor()">
+        <mat-icon>star</mat-icon>
+      </div>
+      <div class="kpi-content">
+        @if (summary().averageRating !== null) {
+          <span class="kpi-value">{{ summary().averageRating | number : "1.2-2" }}</span>
+          <span class="kpi-label">Calificación Promedio</span>
+          <div class="rating-stars">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+              <mat-icon [class.filled]="star <= (summary().averageRating ?? 0)">
+                {{ star <= (summary().averageRating ?? 0) ? "star" : "star_border" }}
+              </mat-icon>
+            }
+          </div>
+        } @else {
+          <span class="kpi-value">N/A</span>
+          <span class="kpi-label">Sin calificaciones</span>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Questions Count KPI -->
+  <mat-card class="kpi-card">
+    <mat-card-content>
+      <div class="kpi-icon questions">
+        <mat-icon>quiz</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ summary().totalQuestions }}</span>
+        <span class="kpi-label">Preguntas</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Pending Responses KPI (if totalAssigned is provided) -->
+  @if (totalAssigned() > 0) {
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <div class="kpi-icon pending">
+          <mat-icon>pending_actions</mat-icon>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ pendingResponses() }}</span>
+          <span class="kpi-label">Pendientes</span>
+          <span class="kpi-sublabel">de {{ totalAssigned() }} asignados</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

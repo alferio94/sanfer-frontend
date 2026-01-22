@@ -1,0 +1,268 @@
+.survey-report-container {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Header
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  button[mat-icon-button] {
+    margin-top: 0.25rem;
+  }
+}
+
+.header-info {
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface, #1a1a1a);
+    line-height: 1.3;
+  }
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.type-entry {
+  background-color: #e3f2fd !important;
+  color: #1565c0 !important;
+}
+
+.type-exit {
+  background-color: #fce4ec !important;
+  color: #c62828 !important;
+}
+
+.event-name {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant, #666);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.group-filter {
+  width: 220px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.group-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.group-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.export-button {
+  mat-spinner {
+    margin-right: 0.5rem;
+  }
+
+  mat-icon {
+    margin-right: 0.25rem;
+  }
+}
+
+// Loading & Error States
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  p {
+    margin: 1rem 0 0;
+    color: var(--mat-sys-on-surface-variant, #666);
+  }
+}
+
+.error-container {
+  .error-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: var(--mat-sys-error, #ef3b42);
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: var(--mat-sys-on-surface, #1a1a1a);
+  }
+
+  button {
+    margin-top: 1rem;
+  }
+}
+
+// Active Filter
+.active-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--mat-sys-primary-container, #fce4ec);
+  color: var(--mat-sys-on-primary-container, #ef3b42);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  button[mat-icon-button] {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// Sections
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface, #1a1a1a);
+
+  mat-icon {
+    color: var(--mat-sys-primary, #ef3b42);
+  }
+}
+
+.kpis-section {
+  margin-bottom: 2rem;
+}
+
+.charts-section {
+  margin-bottom: 2rem;
+}
+
+.respondents-section {
+  margin-bottom: 2rem;
+}
+
+// Dark mode
+:host-context(.dark-theme) {
+  .header-info h1 {
+    color: var(--mat-sys-on-surface, #ffffff);
+  }
+
+  .type-entry {
+    background-color: rgba(25, 118, 210, 0.2) !important;
+    color: #64b5f6 !important;
+  }
+
+  .type-exit {
+    background-color: rgba(198, 40, 40, 0.2) !important;
+    color: #ef9a9a !important;
+  }
+
+  .section-title {
+    color: var(--mat-sys-on-surface, #ffffff);
+  }
+
+  .active-filter {
+    background: rgba(239, 59, 66, 0.15);
+  }
+
+  .error-container h3 {
+    color: var(--mat-sys-on-surface, #ffffff);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .survey-report-container {
+    padding: 1rem;
+  }
+
+  .report-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .group-filter {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .header-info h1 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .group-filter {
+    width: 100%;
+  }
+
+  .export-button {
+    width: 100%;
+  }
+}

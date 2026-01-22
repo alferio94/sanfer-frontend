@@ -9,6 +9,10 @@ import {
   CreateSurveyRequest,
   UpdateSurveyRequest,
   SubmitSurveyRequest,
+  SurveyReportResponse,
+  SurveyRespondentsResponse,
+  CompletionRateResponse,
+  SurveyExportResponse,
 } from '../models/survey.interface';
 import { environment } from '../../../environments/environment';
 
@@ -377,5 +381,91 @@ export class SurveyService {
   // Refrescar encuestas de un evento
   refreshEventSurveys(eventId: string): Observable<Survey[]> {
     return this.getSurveysByEvent(eventId);
+  }
+
+  // ===== REPORTES =====
+
+  /**
+   * Obtener reporte completo de encuesta con estadísticas por pregunta
+   */
+  getSurveyReport(
+    surveyId: string,
+    groupId?: string
+  ): Observable<SurveyReportResponse | null> {
+    const params = groupId ? `?groupId=${groupId}` : '';
+    return this.http
+      .get<SurveyReportResponse>(
+        `${environment.apiUrl}${this.baseUrl}/${surveyId}/report${params}`
+      )
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching survey report:', error);
+          this._error.set('Error al cargar el reporte de la encuesta');
+          return of(null);
+        })
+      );
+  }
+
+  /**
+   * Obtener lista de respondentes de una encuesta
+   */
+  getSurveyRespondents(
+    surveyId: string,
+    groupId?: string
+  ): Observable<SurveyRespondentsResponse | null> {
+    const params = groupId ? `?groupId=${groupId}` : '';
+    return this.http
+      .get<SurveyRespondentsResponse>(
+        `${environment.apiUrl}${this.baseUrl}/${surveyId}/respondents${params}`
+      )
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching survey respondents:', error);
+          this._error.set('Error al cargar los respondentes de la encuesta');
+          return of(null);
+        })
+      );
+  }
+
+  /**
+   * Obtener tasa de completado de una encuesta
+   */
+  getCompletionRate(
+    surveyId: string,
+    groupId?: string
+  ): Observable<CompletionRateResponse | null> {
+    const params = groupId ? `?groupId=${groupId}` : '';
+    return this.http
+      .get<CompletionRateResponse>(
+        `${environment.apiUrl}${this.baseUrl}/${surveyId}/completion-rate${params}`
+      )
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching completion rate:', error);
+          this._error.set('Error al cargar la tasa de completado');
+          return of(null);
+        })
+      );
+  }
+
+  /**
+   * Obtener datos para exportar a Excel
+   */
+  getSurveyExportData(
+    surveyId: string,
+    groupId?: string
+  ): Observable<SurveyExportResponse | null> {
+    const params = groupId ? `?groupId=${groupId}` : '';
+    return this.http
+      .get<SurveyExportResponse>(
+        `${environment.apiUrl}${this.baseUrl}/${surveyId}/export${params}`
+      )
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching export data:', error);
+          this._error.set('Error al obtener datos para exportar');
+          return of(null);
+        })
+      );
   }
 }

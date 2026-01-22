@@ -1,0 +1,64 @@
+<mat-card class="chart-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>toggle_on</mat-icon>
+    <mat-card-title>{{ questionText() }}</mat-card-title>
+    <mat-card-subtitle>{{ totalAnswers() }} respuestas</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="boolean-layout">
+      <!-- Donut Chart -->
+      <div class="donut-container">
+        <ngx-charts-pie-chart
+          [results]="chartData()"
+          [scheme]="colorScheme"
+          [doughnut]="true"
+          [arcWidth]="0.35"
+          [labels]="false"
+          [gradient]="true"
+        >
+        </ngx-charts-pie-chart>
+
+        <!-- Center indicator -->
+        <div class="donut-center" [class.positive]="isPositive()">
+          <mat-icon>{{ isPositive() ? "thumb_up" : "thumb_down" }}</mat-icon>
+        </div>
+      </div>
+
+      <!-- Yes/No Stats -->
+      <div class="boolean-stats">
+        <div class="stat-item yes">
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Sí</span>
+            <div class="stat-values">
+              <span class="stat-count">{{ stats().yes.count }}</span>
+              <span class="stat-percentage">{{ stats().yes.percentage | number : "1.1-1" }}%</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill yes" [style.width.%]="stats().yes.percentage"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-item no">
+          <div class="stat-icon">
+            <mat-icon>cancel</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">No</span>
+            <div class="stat-values">
+              <span class="stat-count">{{ stats().no.count }}</span>
+              <span class="stat-percentage">{{ stats().no.percentage | number : "1.1-1" }}%</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill no" [style.width.%]="stats().no.percentage"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

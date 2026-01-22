@@ -1,0 +1,128 @@
+<div class="survey-report-container">
+  <!-- Header -->
+  <header class="report-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()" matTooltip="Volver al evento">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-info">
+        <h1>{{ surveyTitle() }}</h1>
+        <div class="header-meta">
+          <mat-chip [class]="surveyTypeClass()">
+            <mat-icon matChipAvatar>{{ surveyType() === 'entry' ? 'login' : 'logout' }}</mat-icon>
+            {{ surveyTypeLabel() }}
+          </mat-chip>
+          @if (eventName()) {
+            <span class="event-name">
+              <mat-icon>event</mat-icon>
+              {{ eventName() }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Group Filter -->
+      <mat-form-field appearance="outline" class="group-filter">
+        <mat-label>Filtrar por grupo</mat-label>
+        <mat-select [value]="selectedGroupId()" (selectionChange)="onGroupFilterChange($event.value)">
+          <mat-option [value]="null">Todos los grupos</mat-option>
+          @for (group of availableGroups(); track group.id) {
+            <mat-option [value]="group.id">
+              <span class="group-option">
+                <span class="group-color" [style.background-color]="group.color"></span>
+                {{ group.name }}
+              </span>
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Export Button -->
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="exportToExcel()"
+        [disabled]="loading() || exporting()"
+        class="export-button"
+      >
+        @if (exporting()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>download</mat-icon>
+        }
+        Exportar Excel
+      </button>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando reporte...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h3>Error al cargar el reporte</h3>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadData()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Content -->
+  @if (!loading() && !error() && report()) {
+    <div class="report-content">
+      <!-- Active Filter Indicator -->
+      @if (selectedGroupId()) {
+        <div class="active-filter">
+          <mat-icon>filter_alt</mat-icon>
+          <span>{{ filterLabel() }}</span>
+          <button mat-icon-button (click)="onGroupFilterChange(null)" matTooltip="Quitar filtro">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+
+      <!-- KPIs Section -->
+      <section class="kpis-section">
+        <app-survey-report-kpis
+          [summary]="report()!.summary"
+          [totalAssigned]="totalAssigned()"
+        />
+      </section>
+
+      <!-- Charts Section -->
+      <section class="charts-section">
+        <h2 class="section-title">
+          <mat-icon>bar_chart</mat-icon>
+          Resultados por Pregunta
+        </h2>
+        <app-survey-report-charts [questionStats]="report()!.questionStats" />
+      </section>
+
+      <!-- Respondents Table Section -->
+      @if (respondents()) {
+        <section class="respondents-section">
+          <h2 class="section-title">
+            <mat-icon>groups</mat-icon>
+            Participantes
+          </h2>
+          <app-survey-respondents-table
+            [respondents]="respondents()!.respondents"
+            [loading]="false"
+            [error]="null"
+          />
+        </section>
+      }
+    </div>
+  }
+</div>

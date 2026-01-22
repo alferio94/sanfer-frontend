@@ -1,0 +1,57 @@
+<mat-card class="respondents-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>groups</mat-icon>
+    <mat-card-title>Participantes</mat-card-title>
+    <mat-card-subtitle>{{ respondents().length }} usuarios han completado la encuesta</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <app-reusable-table
+      [data]="processedRespondents()"
+      [columns]="tableColumns"
+      [config]="tableConfig"
+      [loading]="loading()"
+      [error]="error()"
+      [trackByFn]="trackByRespondentId"
+      emptyMessage="No hay participantes registrados"
+      (sortChange)="onSortChange($event)"
+      (pageChange)="onPageChange($event)"
+    >
+      <ng-template #cellTemplate let-value let-item="item" let-column="column">
+        @switch (column.key) {
+          @case ("groups") {
+            <div class="groups-cell">
+              @if (item.groups && item.groups.length > 0) {
+                <div class="groups-chips">
+                  @for (group of item.groups; track group.id) {
+                    <mat-chip class="group-chip" [style.background-color]="group.color" [style.color]="getContrastColor(group.color)">
+                      {{ group.name }}
+                    </mat-chip>
+                  }
+                </div>
+              } @else {
+                <span class="no-groups">Sin grupos</span>
+              }
+            </div>
+          }
+          @case ("email") {
+            <a [href]="'mailto:' + value" class="email-link">
+              {{ value }}
+            </a>
+          }
+          @default {
+            <span>{{ value || "-" }}</span>
+          }
+        }
+      </ng-template>
+
+      <ng-template #emptyTemplate>
+        <div class="empty-state">
+          <mat-icon>person_off</mat-icon>
+          <h3>Sin participantes</h3>
+          <p>Aún no hay usuarios que hayan completado esta encuesta</p>
+        </div>
+      </ng-template>
+    </app-reusable-table>
+  </mat-card-content>
+</mat-card>
