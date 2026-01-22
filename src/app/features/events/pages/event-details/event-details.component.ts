@@ -10,11 +10,17 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 // Models & Services
 import { AppEvent } from '@core/models';
 import { EventsService } from '@core/services/events.service';
 import { ModalService } from '@core/services/modal.service';
+import {
+  AppMenuConfigModalComponent,
+  AppMenuConfigModalData,
+  AppMenuConfigModalResult,
+} from '@shared/components/modals/app-menu-config-modal/app-menu-config-modal.component';
 
 // Components (we'll create these)
 import { EventOverviewComponent } from '../../components/event-overview/event-overview.component';
@@ -55,6 +61,7 @@ export class EventDetailsComponent {
   private eventsService = inject(EventsService);
   private modalService = inject(ModalService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   // Signals
   readonly event = signal<AppEvent | null>(null);
@@ -205,6 +212,33 @@ export class EventDetailsComponent {
 
   goBack(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  onConfigureAppMenu(): void {
+    const currentEvent = this.event();
+    if (!currentEvent) return;
+
+    const dialogData: AppMenuConfigModalData = {
+      eventId: currentEvent.id,
+      eventName: currentEvent.name,
+    };
+
+    const dialogRef = this.dialog.open(AppMenuConfigModalComponent, {
+      width: '550px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: dialogData,
+      disableClose: false,
+      autoFocus: true,
+      restoreFocus: true,
+      panelClass: 'sanfer-modal',
+    });
+
+    dialogRef.afterClosed().subscribe((result: AppMenuConfigModalResult | undefined) => {
+      if (result && result.action === 'save') {
+        this.showMessage('Configuracion del menu guardada exitosamente');
+      }
+    });
   }
 
   private showMessage(

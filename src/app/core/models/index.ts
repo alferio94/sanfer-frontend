@@ -7,3 +7,4 @@ export * from './hotel.interface';
 export * from './speaker.interface';
 export * from './survey.interface';
 export * from './transport.interface';
+export * from './app-menu.interface';

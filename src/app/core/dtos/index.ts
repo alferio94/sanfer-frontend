@@ -12,3 +12,4 @@ export * from './update-hotel.dto';
 export * from './update-event-speaker.dto';
 export * from './create-transport.dto';
 export * from './update-transport.dto';
+export * from './app-menu.dto';

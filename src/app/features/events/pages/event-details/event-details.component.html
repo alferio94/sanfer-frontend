@@ -22,6 +22,17 @@
 
     <div class="header-actions" *ngIf="event()">
       <button
+        mat-stroked-button
+        color="primary"
+        (click)="onConfigureAppMenu()"
+        class="action-button"
+        matTooltip="Configurar secciones visibles en la app movil"
+      >
+        <mat-icon>smartphone</mat-icon>
+        Configurar App
+      </button>
+
+      <button
         mat-raised-button
         color="primary"
         (click)="onEditEvent()"

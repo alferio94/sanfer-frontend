@@ -1,0 +1,130 @@
+<div class="app-menu-config-modal">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">smartphone</mat-icon>
+        <h2>Configuracion del Menu App</h2>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onCancel()"
+        matTooltip="Cerrar"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p class="header-subtitle">
+      Configura que secciones estaran visibles en la aplicacion movil para este
+      evento
+    </p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    @if (loading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando configuracion...</p>
+      </div>
+    } @else {
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <span class="quick-actions-label">Acciones rapidas:</span>
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="enableAll()"
+          [disabled]="allEnabled()"
+          class="quick-action-btn"
+        >
+          <mat-icon>check_circle</mat-icon>
+          Habilitar todas
+        </button>
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="disableAll()"
+          [disabled]="noneEnabled()"
+          class="quick-action-btn"
+        >
+          <mat-icon>cancel</mat-icon>
+          Deshabilitar todas
+        </button>
+        @if (hasChanges()) {
+          <button
+            mat-stroked-button
+            (click)="resetToOriginal()"
+            class="quick-action-btn reset-btn"
+          >
+            <mat-icon>restart_alt</mat-icon>
+            Restablecer
+          </button>
+        }
+      </div>
+
+      <!-- Stats -->
+      <div class="config-stats">
+        <mat-icon>info</mat-icon>
+        <span>{{ enabledCount() }} de {{ menuSections.length }} secciones habilitadas</span>
+      </div>
+
+      <!-- Menu Sections List -->
+      <div class="sections-list">
+        @for (section of menuSections; track section.key) {
+          <div class="section-item" [class.disabled]="!menuConfig()[section.key]">
+            <div class="section-info">
+              <mat-icon class="section-icon">{{ section.icon }}</mat-icon>
+              <div class="section-text">
+                <span class="section-label">{{ section.label }}</span>
+                <span class="section-description">{{ section.description }}</span>
+              </div>
+            </div>
+            <mat-slide-toggle
+              [checked]="menuConfig()[section.key]"
+              (change)="onToggleSection(section.key, $event.checked)"
+              color="primary"
+            >
+            </mat-slide-toggle>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer">
+    <div class="footer-info" *ngIf="hasChanges() && !loading()">
+      <mat-icon>warning</mat-icon>
+      <span>Tienes cambios sin guardar</span>
+    </div>
+    <div class="footer-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+        [disabled]="saving()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="save-button sanfer-btn-primary"
+        (click)="onSave()"
+        [disabled]="!hasChanges() || saving() || loading()"
+      >
+        @if (saving()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        Guardar Configuracion
+      </button>
+    </div>
+  </div>
+</div>
