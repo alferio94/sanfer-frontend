@@ -209,11 +209,11 @@ export class AppMenuConfigModalComponent implements OnInit {
   }
 
   /**
-   * Extract AppMenuConfig from AppMenu by removing id and eventId
+   * Extract AppMenuConfig from AppMenu by removing id, eventId, and any relation objects
    * This makes the code DRY - if new sections are added, this automatically handles them
    */
   private extractConfigFromAppMenu(appMenu: AppMenu): AppMenuConfig {
-    const { id, eventId, ...config } = appMenu;
+    const { id, eventId, event, ...config } = appMenu as AppMenu & { event?: unknown };
     return config;
   }
 }
